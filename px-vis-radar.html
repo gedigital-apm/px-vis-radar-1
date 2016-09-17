@@ -1,9 +1,17 @@
-<!--
-    Relative paths assume component is being run from inside an app or another component, where dependencies are flat
-    siblings. When this component is run from its own repo (e.g. tests, examples), we assume the server is started with
-    'gulp serve' (or similar server setup) to enable correct finding of bower dependencies for local runs.
--->
 <link rel="import" href="../polymer/polymer.html"/>
+<link rel="import" href="../px-colors-design/colors.html" />
+<link rel="import" href="../px-vis/px-vis-behavior-common.html" />
+<link rel="import" href="../px-vis/px-vis-behavior-d3.html" />
+<link rel="import" href="../px-vis/px-vis-behavior-chart.html"/>
+<link rel="import" href="../px-vis/px-vis-svg-canvas.html"/>
+<link rel="import" href="../px-vis/px-vis-line.html"/>
+<link rel="import" href="../px-vis/px-vis-line-canvas.html"/>
+<link rel="import" href="../px-vis/px-vis-multi-axis.html"/>
+<link rel="import" href="../px-vis/px-vis-multi-radial-scale.html"/>
+<link rel="import" href="../px-vis/px-vis-gridlines.html"/>
+<link rel="import" href="../px-vis/px-vis-tooltip.html"/>
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
+
 
 <link rel="import" href="css/px-vis-radar-styles.html">
 
@@ -23,15 +31,137 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
 <dom-module id="px-vis-radar">
   <template>
     <style include="px-vis-radar-styles"></style>
-    <a href="javascript:" on-click="handleClick">Click here to increment counter:</a>
-    <span>{{counterValue}}</span>
+    <div id="wrapper" class="wrapper">
+      <px-vis-multi-radial-scale
+        width="[[_minDim]]"
+        axes="[[axes]]"
+        dimensions="[[dimensions]]"
+        chart-data="[[chartData]]"
+        complete-series-config="[[completeSeriesConfig]]"
+        chart-extents="[[chartExtents]]"
+        x="{{x}}"
+        y="{{y}}"
+        current-domain-x="{{currentDomainX}}"
+        current-domain-y="{{currentDomainY}}"
+        domain-changed="{{domainChanged}}">
+      </px-vis-multi-radial-scale>
+      <px-vis-svg-canvas
+        canvas-context="{{canvasContext}}"
+        svg="{{svg}}"
+        width="[[width]]"
+        height="[[height]]"
+        margin="[[margin]]"
+        offset="[[_offset]]">
+      </px-vis-svg-canvas>
+      <px-vis-line
+        id="line"
+        radial-line
+        multi-path
+        gradient-line
+        svg="[[svg]]"
+        canvas-context="[[canvasContext]]"
+        series-id="[[seriesKey]]"
+        category-key="[[categoryKey]]"
+        categories="[[categories]]"
+        chart-data="[[chartData]]"
+        complete-series-config="[[completeSeriesConfig]]"
+        x="[[x]]"
+        y="[[y]]"
+        domain-changed="[[domainChanged]]"
+        selected-domain="[[selectedDomain]]"
+        muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
+        no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
+        interpolation-function="[[_returnInterpolation()]]">
+      </px-vis-line>
+      <px-vis-multi-axis
+        svg="[[svg]]"
+        width="[[width]]"
+        height="[[height]]"
+        margin="[[margin]]"
+        offset="[[_offset]]"
+        title-location='[[titleLocation]]'
+        x="[[x]]"
+        y="[[y]]"
+        current-domain-x="[[currentDomainX]]"
+        current-domain-y="[[currentDomainY]]"
+        complete-series-config="{{completeSeriesConfig}}"
+        series-key="[[seriesKey]]"
+        chart-data="[[chartData]]"
+        dimensions="[[dimensions]]"
+        axes="[[axes]]"
+        muted-series="{{mutedSeriesBrush}}"
+        redraw-series="true"
+        redraw-elems="[[_lineRedrawFun()]]"
+        stroke-width="2"
+        match-ticks="[[matchTicks]]"
+        grid-ticks="{{gridTicks}}"
+        grid-axis="{{gridAxis}}"
+        common-axis="[[commonAxis]]"
+        outer-tick-size="6"
+        truncation-length="[[truncationLength]]"
+        displayed-values="{{displayedValues}}"
+        append-unit-in-title
+        domain-changed="[[domainChanged]]"
+        axis-groups="{{axisGroups}}"
+        brush-elems="{{brushElems}}"
+        radial>
+      </px-vis-multi-axis>
+      <template is="dom-if" if="[[matchTicks]]">
+        <px-vis-gridlines
+          svg="[[_calcGridSvg(currentDomainX)]]"
+          tick-values="[[gridTicks]]"
+          axis="[[gridAxis]]"
+          margin="[[margin]]"
+          length="[[_calcGridWidth(currentDomainX)]]"
+          orientation="left"
+          current-domain="[[currentDomainY]]"
+          domain-changed="[[domainChanged]]">
+        </px-vis-gridlines>
+      </template>
+      <px-vis-tooltip
+        id="tooltip"
+        hover-target="[[brushElems]]"
+        mouse-position="[[mousePosition]]"
+        chart-data="[[chartData]]"
+        tooltip-data="[[tooltipData]]"
+        complete-series-config="[[_tooltipConfig]]"
+        x-axis-type="time">
+      </px-vis-tooltip>
+    </div>
   </template>
 </dom-module>
 
 <script>
   Polymer({
 
-    is: 'px-vis-radar', 
+    is: 'px-vis-radar',
+
+    behaviors: [
+    PxVisBehavior.sizing,
+    PxVisBehaviorD3.svg,
+    PxVisBehaviorD3.canvas,
+    PxVisBehaviorD3.axis,
+    PxVisBehavior.dataset,
+    PxVisBehavior.dimensions,
+    PxVisBehavior.commonMethods,
+    PxVisBehavior.chartExtents,
+    PxVisBehavior.completeSeriesConfig,
+    PxVisBehaviorD3.axisConfig,
+    PxVisBehavior.mutedSeries,
+    PxVisBehaviorD3.dynamicRedraw,
+    Polymer.IronResizableBehavior,
+    PxVisBehavior.categories,
+    PxVisBehavior.commonAxis,
+    PxVisBehaviorD3.selectedTimeDomain,
+    PxVisBehaviorChart.saveImage,
+    PxVisBehavior.progressiveRendering,
+    PxVisBehaviorChart.chartAutoResize,
+    PxVisBehavior.truncating,
+    PxVisBehaviorD3.domainUpdate,
+    PxVisBehavior.tooltipData,
+    PxVisBehaviorD3.selectedDomain,
+    commonColors
+  ],
 
     /**
     * Properties block, expose attribute values to the DOM via 'notify'
@@ -40,35 +170,581 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     * @type Object
     */
     properties: {
-      /*
-      * this property keeps track of the number of clicks
-      *
-      * @prop counterValue
-      *
-      */
-      counterValue: {
-        type: Number,
-        value: 0,
+      _offset: {
+        type: Array,
+        value: function() {
+          return [0,0]
+        }
+      },
+      /**
+       * A dev set Object of which keys in the chart data should not be used as axes.
+       *
+       * `Required` if axes is not specified.
+       *
+       * ```
+       *    {
+       *        "Axes_to_skip_1":true,
+       *        "Axes_to_skip_2":true
+       *    }
+       * ```
+       */
+      skipKeys: {
+        type: Object,
+        notify: true,
+        value: function() { return {}; }
+      },
+      /**
+       * A `Required` dev set string which defines which data key to use for the series lines
+       *
+       *  This depends on your data and could be *x*, *Timestamp*, ect.
+       *
+       */
+      seriesKey: {
+        type: String,
         notify: true
+      },
+      /**
+       * An object which holds the series lines that have been muted based on the selected domain
+       *
+       * @private
+       */
+      mutedSeriesDomain: {
+        type:Object,
+        notify: true,
+        value: function() { return {} }
+      },
+      /**
+       * An object which holds the series lines that have been muted based on the axes brushes
+       *
+       * @private
+       */
+      mutedSeriesBrush: {
+        type:Object,
+        notify: true
+      },
+      /**
+       * An object to hold which axes should be muted.
+       *
+       * *When adding keys to this, be sure to use Polymer set methods or notifyPath*
+       *
+       * ```
+       *    {
+       *        "Axes_to_skip_1":true,
+       *        "Axes_to_skip_2":true
+       *    }
+       * ```
+       */
+      mutedAxes: {
+        type: Object,
+        notify: true,
+        value: function() { return {}; }
+      },
+      /**
+       * A boolean to specify if axes are developer set or should be generated from the chart data
+       *
+       */
+      generateAxesFromData: {
+        type: Boolean,
+        value: false
+      },
+      /**
+      * A configuration file to associate series order, name, type, and colors.
+      *
+      * Association of name, type, and seriesNumber should be developer set. Color and axis are optional.
+      *
+      *```
+      *  {
+      *     "seriesKey": {              //seriesKey is a unique identifier for the configuration
+      *         "color": "line",        //color of the line for this axis
+      *         "yAxisUnit": "Oranges"  //unit to be used for this axis.
+      *     }
+      *  }
+      *```
+      */
+      seriesConfig: {
+        type: Object,
+        notify: true,
+        value: function(){ return {} }
+      },
+      /**
+       * Object representing the actual displayed titles for each axis
+       */
+      displayedValues: {
+        type: Object
+      },
+      /**
+       * The current bottom margin used for the label, usually changing when label rotation changes
+       */
+      _currentLabelRotation: {
+        type: String,
+        value: ''
+      },
+      _haveChartData: {
+        type: Boolean,
+        computed: '_doWeHaveChartData(chartData)'
+      },
+      _tooltipConfig: {
+        type: Object,
+        value: function(){ return {}; }
+      },
+      margin:{
+        type:Object,
+        notify: true,
+        value: function() {
+          return {
+            left: 15,
+            right: 15,
+            top: 15,
+            bottom: 15
+          };
+        }
+      },
+      _minDim: {
+        type: Number
+      },
+      _maxDim: {
+        type: Number
+      }
+    },
+
+    observers: [
+      '_pickMinMaxDim(width,height,margin)',
+      '_generateChartExtents(dimensions, commonAxis, _haveChartData)',
+      '_generateSeriesConfig(dimensions, seriesConfig, _haveChartData)',
+      '_computeAxes(chartData.*,skipKeys.*)',
+      '_computeDimensions(axes.*, mutedAxes.*)',
+      // '_calcRenderTarget(chartData)',
+      '_selectedDomain(selectedDomain.x)',
+      // '_calcTitleLocation(svg, height, width, displayedValues.*)'
+    ],
+
+    listeners: {
+     'iron-resize': '_onIronResize',
+     'px-vis-multi-axis-mousemove': '_calcTooltip'
+    },
+
+    _doWeHaveChartData: function(cD){
+      if(this.chartData && this.chartData.length > 0){
+        return true
+      }
+    },
+
+    _pickMinMaxDim: function(width,height,margin){
+      var w = width - margin.left - margin.right,
+          h = height - margin.top - margin.bottom,
+          min,max,offset;
+
+      if(w < h){
+        min = w;
+        max = h;
+      } else {
+        min = h;
+        max = w;
+      }
+
+      offset = [width / 2 , height / 2];
+
+      this.set('_offset', offset);
+      this.set('_maxDim', max);
+      this.set('_minDim', min / 2);
+    },
+
+    /**
+     * At ready, set the margin and titleLocation objects
+     *
+     */
+    _calcTitleLocation: function(svg, height, width, displayedValues) {
+      // this.debounce('calcTitleLocation', function() {
+      //   var textWidth = 0,
+      //       _this = this,
+      //       keys = Object.keys(this.displayedValues),
+      //       values = [];
+      //
+      //   for(var i=0; i<keys.length; i++) {
+      //     values.push(this.displayedValues[keys[i]]);
+      //   }
+      //
+      //   // append and remove the dimensions text so we can measure how long
+      //   var labels = svg.selectAll('.dummyText')
+      //     .data(values);
+      //     labels.enter()
+      //     .append("text")
+      //     .attr('class',"dummyText")
+      //     .attr('font-size', this.labelTypeSize + 'px')
+      //     .attr('font-style','GE Inspira Sans')
+      //     .text(function(d) {
+      //       return d
+      //     })
+      //     .each(function(d,i) {
+      //       var w = this.getComputedTextLength();
+      //       textWidth = Math.max(w,textWidth);
+      //       this.remove(); // remove them just after displaying them
+      //     });
+      //
+      //   // add a bit for a margin between text labels
+      //   textWidth += 10;
+      //
+      //   var isVertical = this.width / values.length < textWidth,
+      //       newRotation = isVertical ? 'vertical' : 'horizontal';
+      //       newBottomMargin = isVertical ? textWidth : (this.labelTypeSize + 10),
+      //       rotation = isVertical ? '-90' : '0',
+      //       yPos = isVertical ? (this.height - newBottomMargin) : this.height + 10 - newBottomMargin,
+      //       anchor = isVertical ? 'end' : 'middle';
+      //
+      //     //update size if needed
+      //     if(this.margin.bottom !== newBottomMargin) {
+      //       var m = this.margin;
+      //       this.set('margin', { "top": m.top, "right": m.right, "left": m.left, "bottom": newBottomMargin});
+      //     }
+      //
+      //     //set title location if rotation or y has changed
+      //     if(newRotation !== this._currentLabelRotation ||
+      //         yPos !== this.titleLocation.y) {
+      //
+      //       this.set('titleLocation', {
+      //         'x': '3',
+      //         'y': yPos,
+      //         'r': rotation,
+      //         'anchor': anchor
+      //       });
+      //     }
+      //
+      // }.bind(this), 5);
+    },
+
+    /**
+     * Method to compute the axes to use. It will use all the keys in the data except those specified in skipKeys
+     *
+     */
+    _computeAxes: function(cD, sK){
+      if(this._doesObjHaveValues(this.chartData)){
+        var axes;
+        // add series and category key to skipKeys
+        this.skipKeys[this.seriesKey] = true;
+        if(this.categoryKey){
+          this.skipKeys[this.categoryKey] = true;
+        }
+
+        if(this.generateAxesFromData){
+          if(typeof(this.axes) === 'undefined'){
+            // TODO what if the first object doesnt have all the dimensions?
+            axes = Object.keys(this.chartData[0]).filter(function(d) {
+              return !this.skipKeys[d];
+            }.bind(this));
+          } else {
+            var newAxes = Object.keys(this.chartData[0]).filter(function(d) {
+              // what if they add data but dont want all axes, only the ones previously specified?
+              return !this.skipKeys[d] && this.axes.indexOf(d) === -1;
+            }.bind(this));
+            //make sure we remove axis that are not there anymore
+            var oldAxes = this.axes.filter(function (d) {
+              return Object.keys(this.chartData[0]).indexOf(d) !== -1 && !this.skipKeys[d];
+            }.bind(this));
+            axes = oldAxes.concat(newAxes);
+          }
+
+          this.set('axes',axes);
+        }
       }
     },
 
     /**
-    * Handles click on the element defined in 'on-click' on the template
-    *
-    * @method handleClick
-    */
-    handleClick: function(event, detail, sender) {
-      this.increment();
+     * Method to compute the dimensions to use by using axes and mutedAxes.
+     *
+     */
+    _computeDimensions: function(axes, muted){
+      if(this._doesObjHaveValues(this.axes)){
+        if(this._doesObjHaveValues(this.mutedAxes)){
+          var dims = this.axes.filter(function(d) {
+            //only get dims that are not in dims, not supposed to be skiped, and not muted
+            return !this.mutedAxes[d];
+          }.bind(this));
+          this.set('dimensions',dims);
+        } else {
+          this.set('dimensions',this.axes);
+        }
+      }
     },
 
     /**
-    * Increments the counter
-    *
-    * @method increment
-    */
-    increment: function() {
-      this.counterValue++;
+     * Creates the series configuration file
+     *
+     */
+      _generateSeriesConfig: function(dimensions, seriesConfig) {
+
+     // this.debounce('_generateSeriesConfig', function() {
+
+        // TODO make work with multiple series
+        var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
+        // add a seriesConfig with seriesKey as default
+        config[this.seriesKey] = {
+          "name": this.seriesKey,
+          "x": dimensions,
+          "y": dimensions
+        };
+
+        //FIXME Not sure this works....See color on 449
+        if(!config[this.seriesKey]['color']) {
+          config[this.seriesKey]['color'] = this._getColor(18);
+        }
+
+        // if categories are specified, use them
+        if(typeof(this.categoryKey) !== 'undefined'){
+          for(var i = 0; i < this.categories.length; i ++){
+            config[this.categories[i]] = {
+              "color": this._getColor(18 + i),
+              "name": this.categories[i],
+              "x": dimensions,
+              "y": dimensions
+            }
+          }
+        }
+
+        this.set('completeSeriesConfig',config);
+   //   }.bind(this), 0);
+    },
+
+    // * TODO These are in behavior chart. Should make it so we can import them from there */
+    /**
+     * Helper function to return the correct color for a particular index.
+     **/
+    _getColor: function(i){
+      var l = this.seriesColorOrder.length,
+          index = this._calcIndex(i,l);
+      return this.dataVisColors[this.seriesColorOrder[ index ]];
+    },
+    /**
+     * Helper function to calculate the index. When we run out of indcies, it loops back over valid indicies.
+     **/
+    _calcIndex: function(i,l){
+      return i < l ? i : this._calcIndex(i - l,l);
+    },
+    /**
+     * Creates the chartExtents for each dimension
+     *
+     */
+    _generateChartExtents: function(dimensions){
+      var ext = {
+              "x": dimensions,
+              "y": {}
+            };
+
+      // TODO Is there a smarter way of doing this?
+      for(var i = 0; i < dimensions.length; i++){
+        ext.y[dimensions[i]] = d3.extent(this.chartData, function(d) {
+          return Number(d[dimensions[i]]);
+          if(ext.y[dimensions[i]][0] === ext.y[dimensions[i]][1]){
+            ext.y[dimensions[i]][1]++;
+          }
+        });
+      }
+
+      var maxMin = d3.extent(d3.merge(d3.values(ext.y)));
+      for(var i = 0; i < dimensions.length; i++){
+        // set each axis extent to max & min
+        // TODO this is not the most efficient strategy, but certainly is the easiest, especially to keep it dynamic. Better would be to use only a single scale instead of calculating a scale multiple times.
+        ext.y[dimensions[i]] = maxMin;
+      }
+
+      // TODO add 20% to min
+
+      this.set('chartExtents',ext);
+    },
+    /**
+     * Adds data to a muted series based on the selected domain
+     *
+     */
+    _selectedDomain: function(sd){
+      this.debounce('selected_domain',function(){
+        if(this.chartData && this.chartData.length > 0){
+          var muted = {};
+          for(var i = 0; i < this.chartData.length; i++){
+            if(this.chartData[i][this.seriesKey] < sd[0] || this.chartData[i][this.seriesKey] > sd[1]){
+              muted[this.chartData[i][this.seriesKey]] = true;
+            }
+          }
+          this.set('mutedSeriesDomain',muted);
+        }
+      },200);
+    },
+    /**
+     * Takes the muted series from the axis brush and the selected domain and returns a merged copy of them
+     *
+     */
+    _combineMutes: function(m1,m2){
+      var muted = {};
+      // for these, we assume that "false" items will just have been removed
+      for(var k in m1){
+        muted[k] = m1[k];
+      }
+      for(var k in m2){
+        muted[k] = m2[k];
+      }
+      return muted;
+    },
+
+    /**
+     * An array of the line elements.
+     *
+     */
+    _lineRedrawFun: function(){
+      return [this.$.line]
+    },
+
+    /**
+     * Forces the chart to resize and redraw
+     */
+    resizeChart: function() {
+      this._onIronResize();
+    },
+
+    /**
+     * Resizes the chart based on a container resize if prevent-resize is false (default)
+     *
+     * Can also be called manually to force a chart resize to container.
+     */
+    _onIronResize: function() {
+      this.debounce('ironresize', function() {
+         if(!this.preventResize) {
+          wrapperRect = this.$.wrapper.getBoundingClientRect();
+
+          this.set('width', wrapperRect.width);
+          this.set('height', wrapperRect.height);
+         }
+      },100);
+    },
+    /**
+     * Returns the width for the gridlines
+     *
+     */
+    _calcGridWidth: function(){
+      // overall width minus the inset for the axes
+      return this.width - this.x(this.dimensions[0]) * 2;
+    },
+    /**
+     * Retruns a g elem for the grid to draw to
+     *
+     */
+    _calcGridSvg: function(){
+      // if(this.currentDomainX){
+        // create a g and move it so it lines up with the first axis
+        var currentG = this.svg.select('.gridGroup');
+
+        if(!currentG.node()) {
+          return this.svg.append('g')
+            .attr("class", "gridGroup")
+            .attr("transform", "translate(" + this.x(this.dimensions[0]) + ",0)");
+        } else {
+          return currentG.attr("transform", "translate(" + this.x(this.dimensions[0]) + ",0)");
+        }
+      // }
+    },
+    /**
+     * Imperatively mute an axis or group of axes.
+     *
+     * This function both addes the axes to the mutedAxes list and fires a notifyPath
+     *
+     * Can pass a single axis id or an array of axes ids
+     */
+     addToMutedAxes: function(a) {
+       this._changeMutedAxes(a,true);
+     },
+     /**
+      * Imperatively mute an axis or group of axes.
+      *
+      * This function both addes the axes to the mutedAxes list and fires a notifyPath
+      *
+      * Can pass a single axis id or an array of axes ids
+      */
+      removeFromMutedAxes: function(a) {
+        this._changeMutedAxes(a,false);
+      },
+     /**
+      * Helper function to imperatively mute/unmute an axis or group of axes.
+      *
+      */
+     _changeMutedAxes: function(a,bool) {
+       var mA = this.mutedAxes;
+
+       if(typeof(a) === 'string'){
+         this.mutedAxes = null;
+         mA[a] = bool;
+         this.set('mutedAxes', mA);
+       } else if(Array.isArray(a)){
+         this.mutedAxes = null;
+         for(var i = 0; i < a.length; i++) {
+           mA[ a[i] ] = bool;
+         }
+         this.set('mutedAxes', mA);
+       } else {
+         console.error("Cannot add/remove axis. Improper axis type")
+       }
+     },
+     _calcTooltip: function(evt){
+      var aid = evt.detail.axis,          //axis ID
+          elem = evt.detail.elem,         //the group elem being hovered over
+          mousePos = evt.detail.mousePos, //the mouse position
+          mouseVal = this.y[aid].invert(mousePos[1]), // the data space value
+          distance = Number.MAX_VALUE,    //difference between cursor and value
+          minDistance = Number.MAX_VALUE, //difference between cursor and value
+          yVal = null,                    //the data value we will calc
+          time,                           //time we will calc
+          screenX,                        //the mouse x on the scree
+          screenY,                        //the mouse y on the scree
+          tooltipConfig = {},             //a fake configuration object we will build
+          group,                          //the group if categoryKey is being used
+          data,                           //our tooltipData obj
+          value = {};                     //the series obj within tooltipData
+
+      //loop through our chart data and find a closetest match
+      for(var i = 0; i < this.chartData.length; i++){
+        //figure out the differnce between the data value and our saved value
+        distance = Math.abs(this.chartData[i][aid] - mouseVal);
+        // if it is smaller than last time, save the data info
+        if(distance < minDistance){
+          yVal = this.chartData[i][aid];
+          minDistance = distance;
+          time = this.chartData[i][this.seriesKey];
+          if(this.categoryKey){
+            group = this.chartData[i][this.categoryKey];
+          }
+        }
+      }
+      //calc the screen positions for the tooltip
+      screenX = this.x(aid) + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 15;
+      screenY = mousePos[1] + elem.getBoundingClientRect().top + window.scrollY + 5;
+
+      //create our fake configuration object
+      tooltipConfig[aid] = {};
+      //if using categies, use it, otherwise default
+      tooltipConfig[aid]["color"] = group ? this.completeSeriesConfig[group]["color"] : this.completeSeriesConfig[this.seriesKey]["color"];
+      //if title is specified, use it, otherwiuse id
+      tooltipConfig[aid]["name"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['title'] ? this.completeSeriesConfig[aid]["title"] : aid;
+      //if there is a unit, add it
+      tooltipConfig[aid]["yAxisUnit"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]["yAxisUnit"] ? this.completeSeriesConfig[aid]["yAxisUnit"] : '';
+      //add the y series id
+      tooltipConfig[aid]['y'] = aid;
+
+      //create our value obj
+      value[aid] = yVal;
+      //create our tooltipData obj
+      data = {
+        "mouse": mousePos,
+        "time": time,
+        'series': [
+          { 'name': aid, 'value': value }
+        ]
+      };
+
+      this.set('mousePosition', [screenX, screenY]);
+      this.set('_tooltipConfig', tooltipConfig);
+      this.set('tooltipData', data);
+      // this.$.tooltip.tooltipElem._show();
+     },
+
+    _returnInterpolation: function(){
+      return Px.d3.curveLinearClosed;
     }
+
   });
 </script>

@@ -78,11 +78,10 @@ gulp.task('serve', function() {
     reloadOnRestart: true,
     logPrefix: `${pkg.name}`,
     https: false,
-    files: ['*.*'],
     server: ['./', 'bower_components'],
   });
 
-  gulp.watch(['css/*-styles.html', '*.html', 'bower_components/**/*.html']).on('change', browserSync.reload);
+  gulp.watch(['css/*-styles.html', '*.html', '*.js']).on('change', browserSync.reload);
   gulp.watch(['!sass/*-demo.scss', 'sass/*.scss'], ['sass']);
   gulp.watch('sass/*-demo.scss', ['demosass']);
 
