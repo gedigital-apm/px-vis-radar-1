@@ -7,7 +7,7 @@
 <link rel="import" href="../px-vis/px-vis-line.html"/>
 <link rel="import" href="../px-vis/px-vis-line-canvas.html"/>
 <link rel="import" href="../px-vis/px-vis-multi-axis.html"/>
-<link rel="import" href="../px-vis/px-vis-multi-radial-scale.html"/>
+<link rel="import" href="../px-vis/px-vis-radial-scale.html"/>
 <link rel="import" href="../px-vis/px-vis-gridlines.html"/>
 <link rel="import" href="../px-vis/px-vis-tooltip.html"/>
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
@@ -32,7 +32,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
   <template>
     <style include="px-vis-radar-styles"></style>
     <div id="wrapper" class="wrapper">
-      <px-vis-multi-radial-scale
+      <px-vis-radial-scale
         width="[[_minDim]]"
         axes="[[axes]]"
         dimensions="[[dimensions]]"
@@ -44,7 +44,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         current-domain-x="{{currentDomainX}}"
         current-domain-y="{{currentDomainY}}"
         domain-changed="{{domainChanged}}">
-      </px-vis-multi-radial-scale>
+      </px-vis-radial-scale>
       <px-vis-svg-canvas
         canvas-context="{{canvasContext}}"
         svg="{{svg}}"
@@ -104,7 +104,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         domain-changed="[[domainChanged]]"
         axis-groups="{{axisGroups}}"
         brush-elems="{{brushElems}}"
-        radial>
+        radial
+        single-domain>
       </px-vis-multi-axis>
       <template is="dom-if" if="[[matchTicks]]">
         <px-vis-gridlines
@@ -309,7 +310,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
 
     observers: [
       '_pickMinMaxDim(width,height,margin)',
-      '_generateChartExtents(dimensions, commonAxis, _haveChartData)',
+      '_generateChartExtents(dimensions, _haveChartData)',
       '_generateSeriesConfig(dimensions, seriesConfig, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*)',
@@ -526,27 +527,31 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     _generateChartExtents: function(dimensions){
       var ext = {
               "x": dimensions,
-              "y": {}
-            };
+              "y": null
+            },
+          min = Number.MAX_VALUE,
+          max = Number.MIN_VALUE,
+          buffer;
 
-      // TODO Is there a smarter way of doing this?
+      // go through all data and find min and max
       for(var i = 0; i < dimensions.length; i++){
-        ext.y[dimensions[i]] = d3.extent(this.chartData, function(d) {
-          return Number(d[dimensions[i]]);
-          if(ext.y[dimensions[i]][0] === ext.y[dimensions[i]][1]){
-            ext.y[dimensions[i]][1]++;
-          }
-        });
+        for(var j = 0; j < this.chartData.length; j++){
+          min = Math.min(min, this.chartData[j][dimensions[i]]);
+          max = Math.max(max, this.chartData[j][dimensions[i]]);
+        }
       }
 
-      var maxMin = d3.extent(d3.merge(d3.values(ext.y)));
-      for(var i = 0; i < dimensions.length; i++){
-        // set each axis extent to max & min
-        // TODO this is not the most efficient strategy, but certainly is the easiest, especially to keep it dynamic. Better would be to use only a single scale instead of calculating a scale multiple times.
-        ext.y[dimensions[i]] = maxMin;
+      // if all data is the same value, add 1 so we still get a range
+      if(min === max){
+        max += 1;
       }
 
-      // TODO add 20% to min
+      // add a buffer for the center
+      buffer = (max - min) * 0.2;
+
+      min = min - buffer;
+
+      ext.y = [min,max];
 
       this.set('chartExtents',ext);
     },
