@@ -105,7 +105,10 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         axis-groups="{{axisGroups}}"
         brush-elems="{{brushElems}}"
         radial
-        single-domain>
+        single-domain
+        balah
+        inline-axis-ticks
+        label-one-axis>
       </px-vis-multi-axis>
       <template is="dom-if" if="[[matchTicks]]">
         <px-vis-gridlines
@@ -321,7 +324,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
 
     listeners: {
      'iron-resize': '_onIronResize',
-     'px-vis-multi-axis-mousemove': '_calcTooltip'
+    //  'px-vis-multi-axis-mousemove': '_calcTooltip'
     },
 
     _doWeHaveChartData: function(cD){
@@ -547,9 +550,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       }
 
       // add a buffer for the center
-      buffer = (max - min) * 0.2;
-
-      min = min - buffer;
+      // buffer = (max - min) * 0.2;
+      // min = min - buffer;
 
       ext.y = [min,max];
 
