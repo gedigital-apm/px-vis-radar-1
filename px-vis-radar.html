@@ -34,6 +34,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     <div id="wrapper" class="wrapper">
       <px-vis-radial-scale
         width="[[_minDim]]"
+        margin="[[margin]]"
         axes="[[axes]]"
         dimensions="[[dimensions]]"
         chart-data="[[chartData]]"
@@ -79,7 +80,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         height="[[height]]"
         margin="[[margin]]"
         offset="[[_offset]]"
-        title-location='[[titleLocation]]'
+        length="[[_minDim]]"
         x="[[x]]"
         y="[[y]]"
         current-domain-x="[[currentDomainX]]"
@@ -97,7 +98,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         grid-ticks="{{gridTicks}}"
         grid-axis="{{gridAxis}}"
         common-axis="[[commonAxis]]"
-        outer-tick-size="6"
         truncation-length="[[truncationLength]]"
         displayed-values="{{displayedValues}}"
         append-unit-in-title
@@ -106,9 +106,10 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         brush-elems="{{brushElems}}"
         radial
         single-domain
-        balah
-        inline-axis-ticks
-        label-one-axis>
+        label-position="inline"
+        label-one-axis
+        axis-color="grey4"
+        ticks="5">
       </px-vis-multi-axis>
       <template is="dom-if" if="[[matchTicks]]">
         <px-vis-gridlines
@@ -296,10 +297,10 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         notify: true,
         value: function() {
           return {
-            left: 15,
-            right: 15,
-            top: 15,
-            bottom: 15
+            left: 30,
+            right: 30,
+            top: 30,
+            bottom: 30
           };
         }
       },
@@ -317,9 +318,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       '_generateSeriesConfig(dimensions, seriesConfig, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*)',
-      // '_calcRenderTarget(chartData)',
-      '_selectedDomain(selectedDomain.x)',
-      // '_calcTitleLocation(svg, height, width, displayedValues.*)'
+      '_selectedDomain(selectedDomain.x)'
     ],
 
     listeners: {
@@ -346,74 +345,11 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         max = w;
       }
 
-      offset = [width / 2 , height / 2];
+      offset = [ w / 2 , h / 2];
 
       this.set('_offset', offset);
       this.set('_maxDim', max);
       this.set('_minDim', min / 2);
-    },
-
-    /**
-     * At ready, set the margin and titleLocation objects
-     *
-     */
-    _calcTitleLocation: function(svg, height, width, displayedValues) {
-      // this.debounce('calcTitleLocation', function() {
-      //   var textWidth = 0,
-      //       _this = this,
-      //       keys = Object.keys(this.displayedValues),
-      //       values = [];
-      //
-      //   for(var i=0; i<keys.length; i++) {
-      //     values.push(this.displayedValues[keys[i]]);
-      //   }
-      //
-      //   // append and remove the dimensions text so we can measure how long
-      //   var labels = svg.selectAll('.dummyText')
-      //     .data(values);
-      //     labels.enter()
-      //     .append("text")
-      //     .attr('class',"dummyText")
-      //     .attr('font-size', this.labelTypeSize + 'px')
-      //     .attr('font-style','GE Inspira Sans')
-      //     .text(function(d) {
-      //       return d
-      //     })
-      //     .each(function(d,i) {
-      //       var w = this.getComputedTextLength();
-      //       textWidth = Math.max(w,textWidth);
-      //       this.remove(); // remove them just after displaying them
-      //     });
-      //
-      //   // add a bit for a margin between text labels
-      //   textWidth += 10;
-      //
-      //   var isVertical = this.width / values.length < textWidth,
-      //       newRotation = isVertical ? 'vertical' : 'horizontal';
-      //       newBottomMargin = isVertical ? textWidth : (this.labelTypeSize + 10),
-      //       rotation = isVertical ? '-90' : '0',
-      //       yPos = isVertical ? (this.height - newBottomMargin) : this.height + 10 - newBottomMargin,
-      //       anchor = isVertical ? 'end' : 'middle';
-      //
-      //     //update size if needed
-      //     if(this.margin.bottom !== newBottomMargin) {
-      //       var m = this.margin;
-      //       this.set('margin', { "top": m.top, "right": m.right, "left": m.left, "bottom": newBottomMargin});
-      //     }
-      //
-      //     //set title location if rotation or y has changed
-      //     if(newRotation !== this._currentLabelRotation ||
-      //         yPos !== this.titleLocation.y) {
-      //
-      //       this.set('titleLocation', {
-      //         'x': '3',
-      //         'y': yPos,
-      //         'r': rotation,
-      //         'anchor': anchor
-      //       });
-      //     }
-      //
-      // }.bind(this), 5);
     },
 
     /**

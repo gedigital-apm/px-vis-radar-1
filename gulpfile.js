@@ -81,7 +81,7 @@ gulp.task('serve', function() {
     server: ['./', 'bower_components'],
   });
 
-  gulp.watch(['css/*-styles.html', '*.html', '*.js']).on('change', browserSync.reload);
+  gulp.watch(['css/*-styles.html', '*.html', '*.js'])//.on('change', browserSync.reload);
   gulp.watch(['!sass/*-demo.scss', 'sass/*.scss'], ['sass']);
   gulp.watch('sass/*-demo.scss', ['demosass']);
 
