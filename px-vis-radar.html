@@ -54,7 +54,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         margin="[[margin]]"
         offset="[[_offset]]">
       </px-vis-svg-canvas>
-      <px-vis-line-canvas
+      <!-- <px-vis-line-canvas
         id="line"
         gradient-line
         radial-line
@@ -71,8 +71,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
         no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
         interpolation-function="[[_returnInterpolation()]]">
-      </px-vis-line-canvas>
-      <!-- <px-vis-line
+      </px-vis-line-canvas> -->
+      <px-vis-line
         id="line"
         radial-line
         multi-path
@@ -88,7 +88,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         domain-changed="[[domainChanged]]"
         selected-domain="[[selectedDomain]]"
         muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
-        interpolation-function="[[_returnInterpolation()]]"> -->
+        interpolation-function="[[_returnInterpolation()]]">
       </px-vis-line>
       <px-vis-multi-axis
         svg="[[svg]]"
@@ -127,7 +127,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         axis-color="grey4"
         ticks="5"
         label-rotation="180"
-        label-translation='[0,-13]'>
+        label-translation='[0,-13]'
+        brush-to-remove="[[brushToRemove]]">
       </px-vis-multi-axis>
       <template is="dom-if" if="[[matchTicks]]">
         <px-vis-gridlines
@@ -327,7 +328,11 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       },
       _maxDim: {
         type: Number
-      }
+      },
+      brushToRemove: {
+       type: Boolean,
+       value: false
+     }
     },
 
     observers: [
