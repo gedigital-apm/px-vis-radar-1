@@ -54,12 +54,10 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         margin="[[margin]]"
         offset="[[_offset]]">
       </px-vis-svg-canvas>
-      <px-vis-line
+      <px-vis-line-canvas
         id="line"
-        radial-line
-        multi-path
         gradient-line
-        svg="[[svg]]"
+        radial-line
         canvas-context="[[canvasContext]]"
         series-id="[[seriesKey]]"
         category-key="[[categoryKey]]"
@@ -73,6 +71,24 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
         no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
         interpolation-function="[[_returnInterpolation()]]">
+      </px-vis-line-canvas>
+      <!-- <px-vis-line
+        id="line"
+        radial-line
+        multi-path
+        gradient-line
+        svg="[[svg]]"
+        series-id="[[seriesKey]]"
+        category-key="[[categoryKey]]"
+        categories="[[categories]]"
+        chart-data="[[chartData]]"
+        complete-series-config="[[completeSeriesConfig]]"
+        x="[[x]]"
+        y="[[y]]"
+        domain-changed="[[domainChanged]]"
+        selected-domain="[[selectedDomain]]"
+        muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
+        interpolation-function="[[_returnInterpolation()]]"> -->
       </px-vis-line>
       <px-vis-multi-axis
         svg="[[svg]]"
@@ -109,7 +125,9 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         label-position="inline"
         label-one-axis
         axis-color="grey4"
-        ticks="5">
+        ticks="5"
+        label-rotation="180"
+        label-translation='[0,-13]'>
       </px-vis-multi-axis>
       <template is="dom-if" if="[[matchTicks]]">
         <px-vis-gridlines
