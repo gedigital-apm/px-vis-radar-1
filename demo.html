@@ -19,9 +19,9 @@
 
   <body>
 
-    <h3>Parallel Coordinates</h3>
+    <h3>Radar Chart</h3>
     <template is="dom-bind">
-      <h3>Parallel Coordinates linked with a rangepicker and navigator</h3>
+      <h3>Radar Chart linked with a rangepicker and navigator</h3>
       <px-rangepicker
         id="rangepicker"
         range="{{range}}"
@@ -56,7 +56,8 @@
               "title": "stout"
             }
           }'
-        brush-to-remove></px-vis-radar>
+        brush-to-remove>
+      </px-vis-radar>
       <div style="height:100px">
         <px-vis-chart-navigator
             id="navigator"
@@ -90,7 +91,7 @@
         <br />
         <br />
         <br />
-        <h3>Parallel Coordinates demonstrating responsive behavior</h3>
+        <h3>Radar Chart demonstrating responsive behavior</h3>
         <button id="btnInc">Increase wrapper width</button>
         <button id="btnDec">Decrease wrapper width</button>
         <button id="btnIH">Increase wrapper height</button>
@@ -113,7 +114,7 @@
       <!-- <br />
       <br />
       <br />
-      <h3>Parallel Coordinates with developer specified axes</h3>
+      <h3>Radar Chart with developer specified axes</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -125,7 +126,7 @@
       <br />
       <br />
       <br />
-      <h3>Parallel Coordinates with a category specified to color the lines</h3>
+      <h3>Radar Chart with a category specified to color the lines</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -140,7 +141,7 @@
       <br />
       <br />
       <br />
-      <h3>Parallel Coordinates with generated axes and developer specified keys to skip</h3>
+      <h3>Radar Chart with generated axes and developer specified keys to skip</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -153,7 +154,7 @@
       <br />
       <br />
       <br />
-      <h3>Parallel Coordinates with developer specified axes</h3>
+      <h3>Radar Chart with developer specified axes</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -165,7 +166,7 @@
       <br />
       <br />
       <br />
-      <h3>Parallel Coordinates with a common axes</h3>
+      <h3>Radar Chart with a common axes</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -173,12 +174,12 @@
         skip-keys='{"UnitNumber":true,"DLN_MODE":true}'
         series-key="TimeStamp"
         generate-axes-from-data
-      ></px-vis-radar>
+      ></px-vis-radar> -->
 
+      <!-- <br />
       <br />
       <br />
-      <br />
-      <h3>Parallel Coordinates with match ticks off</h3>
+      <h3>Radar Chart with match ticks off</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -186,6 +187,7 @@
         skip-keys='{"TimeStamp":true}'
         series-key="TimeStamp"
         axes='["TTXD1_1", "TTXD1_2", "TTXD1_3", "TTXD1_4", "TTXD1_5"]'
+        render-to-svg
       ></px-vis-radar> -->
 
       <px-vis-data

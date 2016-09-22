@@ -35,16 +35,15 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       <px-vis-radial-scale
         width="[[_minDim]]"
         margin="[[margin]]"
-        axes="[[axes]]"
-        dimensions="[[dimensions]]"
+        amplitude-keys="[[dimensions]]"
         chart-data="[[chartData]]"
         complete-series-config="[[completeSeriesConfig]]"
-        chart-extents="[[chartExtents]]"
         x="{{x}}"
         y="{{y}}"
         current-domain-x="{{currentDomainX}}"
         current-domain-y="{{currentDomainY}}"
-        domain-changed="{{domainChanged}}">
+
+        center-offset>
       </px-vis-radial-scale>
       <px-vis-svg-canvas
         canvas-context="{{canvasContext}}"
@@ -54,43 +53,50 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         margin="[[margin]]"
         offset="[[_offset]]">
       </px-vis-svg-canvas>
-      <!-- <px-vis-line-canvas
-        id="line"
-        gradient-line
-        radial-line
-        canvas-context="[[canvasContext]]"
-        series-id="[[seriesKey]]"
-        category-key="[[categoryKey]]"
-        categories="[[categories]]"
-        chart-data="[[chartData]]"
-        complete-series-config="[[completeSeriesConfig]]"
-        x="[[x]]"
-        y="[[y]]"
-        domain-changed="[[domainChanged]]"
-        selected-domain="[[selectedDomain]]"
-        muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
-        no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
-        interpolation-function="[[_returnInterpolation()]]">
-      </px-vis-line-canvas> -->
-      <px-vis-line
-        id="line"
-        radial-line
-        multi-path
-        gradient-line
-        svg="[[svg]]"
-        series-id="[[seriesKey]]"
-        category-key="[[categoryKey]]"
-        categories="[[categories]]"
-        chart-data="[[chartData]]"
-        complete-series-config="[[completeSeriesConfig]]"
-        x="[[x]]"
-        y="[[y]]"
-        domain-changed="[[domainChanged]]"
-        selected-domain="[[selectedDomain]]"
-        muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
-        interpolation-function="[[_returnInterpolation()]]">
-      </px-vis-line>
+
+      <template is="dom-if" if="[[!renderToSvg]]">
+        <px-vis-line-canvas
+          id="line"
+          gradient-line
+          radial-line
+          canvas-context="[[canvasContext]]"
+          series-id="[[seriesKey]]"
+          category-key="[[categoryKey]]"
+          categories="[[categories]]"
+          chart-data="[[chartData]]"
+          complete-series-config="[[completeSeriesConfig]]"
+          x="[[x]]"
+          y="[[y]]"
+          domain-changed="[[domainChanged]]"
+          selected-domain="[[selectedDomain]]"
+          muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
+          no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
+          interpolation-function="[[_returnInterpolation()]]">
+        </px-vis-line-canvas>
+      </template>
+      <template is="dom-if" if="[[renderToSvg]]">
+        <px-vis-line
+          id="line"
+          radial-line
+          multi-path
+          gradient-line
+          svg="[[svg]]"
+          series-id="[[seriesKey]]"
+          category-key="[[categoryKey]]"
+          categories="[[categories]]"
+          chart-data="[[chartData]]"
+          complete-series-config="[[completeSeriesConfig]]"
+          x="[[x]]"
+          y="[[y]]"
+          domain-changed="[[domainChanged]]"
+          selected-domain="[[selectedDomain]]"
+          muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
+          interpolation-function="[[_returnInterpolation()]]">
+        </px-vis-line>
+      </template>
+
       <px-vis-multi-axis
+      id="multiAxis"
         svg="[[svg]]"
         width="[[width]]"
         height="[[height]]"
@@ -332,12 +338,15 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       brushToRemove: {
        type: Boolean,
        value: false
+     },
+     renderToSvg: {
+       type: Boolean,
+       value: false
      }
     },
 
     observers: [
       '_pickMinMaxDim(width,height,margin)',
-      '_generateChartExtents(dimensions, _haveChartData)',
       '_generateSeriesConfig(dimensions, seriesConfig, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*)',
@@ -345,8 +354,16 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     ],
 
     listeners: {
-     'iron-resize': '_onIronResize',
+      'iron-resize': '_onIronResize',
+      'px-vis-domain-changed-updated': '_setDomainChanged'
     //  'px-vis-multi-axis-mousemove': '_calcTooltip'
+    },
+
+    _setDomainChanged: function(evt) {
+      // this.debounce('cd',function(){
+        this.$.multiAxis.dimensions = this.dimensions;
+        this.set('domainChanged',evt.detail.data);
+      // },0)
     },
 
     _doWeHaveChartData: function(cD){
@@ -356,6 +373,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     },
 
     _pickMinMaxDim: function(width,height,margin){
+      console.log(width)
       var w = width - margin.left - margin.right,
           h = height - margin.top - margin.bottom,
           min,max,offset;
