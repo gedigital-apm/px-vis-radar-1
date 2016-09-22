@@ -10,6 +10,7 @@
 <link rel="import" href="../px-vis/px-vis-radial-scale.html"/>
 <link rel="import" href="../px-vis/px-vis-gridlines.html"/>
 <link rel="import" href="../px-vis/px-vis-tooltip.html"/>
+<link rel="import" href="../px-vis/px-vis-radar-grid.html"/>
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
 
 
@@ -134,20 +135,19 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         ticks="5"
         label-rotation="180"
         label-translation='[0,-13]'
-        brush-to-remove="[[brushToRemove]]">
+        brush-to-remove="[[brushToRemove]]"
+        drawn-tick-values="{{drawnTickValues}}">
       </px-vis-multi-axis>
-      <template is="dom-if" if="[[matchTicks]]">
-        <px-vis-gridlines
-          svg="[[_calcGridSvg(currentDomainX)]]"
-          tick-values="[[gridTicks]]"
-          axis="[[gridAxis]]"
-          margin="[[margin]]"
-          length="[[_calcGridWidth(currentDomainX)]]"
-          orientation="left"
-          current-domain="[[currentDomainY]]"
-          domain-changed="[[domainChanged]]">
-        </px-vis-gridlines>
-      </template>
+      <px-vis-radar-grid
+        svg="[[svg]]"
+        x="[[x]]"
+        y="[[y]]"
+        axis-color="grey4"
+        tick-values="[[drawnTickValues]]"
+        dimensions="[[dimensions]]"
+        margin="[[margin]]"
+        domain-changed="[[domainChanged]]">
+      </px-vis-radar-grid>
       <px-vis-tooltip
         id="tooltip"
         hover-target="[[brushElems]]"
@@ -373,7 +373,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     },
 
     _pickMinMaxDim: function(width,height,margin){
-      console.log(width)
       var w = width - margin.left - margin.right,
           h = height - margin.top - margin.bottom,
           min,max,offset;
