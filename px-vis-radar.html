@@ -43,8 +43,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         y="{{y}}"
         current-domain-x="{{currentDomainX}}"
         current-domain-y="{{currentDomainY}}"
-
-        center-offset>
+        center-offset="[[centerOffset]]">
       </px-vis-radial-scale>
       <px-vis-svg-canvas
         canvas-context="{{canvasContext}}"
@@ -135,6 +134,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         ticks="[[ticks]]"
         label-rotation="180"
         brush-to-remove="[[brushToRemove]]"
+        center-offset="[[centerOffset]]"
         drawn-tick-values="{{drawnTickValues}}">
       </px-vis-multi-axis>
       <px-vis-radar-grid
@@ -189,6 +189,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     PxVisBehaviorD3.domainUpdate,
     PxVisBehavior.tooltipData,
     PxVisBehaviorD3.selectedDomain,
+    PxVisBehaviorD3.radialAxisConfig,
     commonColors
   ],
 
@@ -374,8 +375,9 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     _pickMinMaxDim: function(width,height,margin){
       var w = width - margin.left - margin.right,
           h = height - margin.top - margin.bottom,
-          min,max,offset;
+          min,max,offset,scaled,center;
 
+      //figure out which dimension is smaller
       if(w < h){
         min = w;
         max = h;
@@ -384,8 +386,14 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         max = w;
       }
 
+      //figure out the center of the svg
       offset = [ w / 2 , h / 2];
 
+      //figure out how big the center hole is
+      scaled = min * 0.25;
+      center = scaled < 75 ? scaled : 75;
+
+      this.set('centerOffset', center);
       this.set('ticks', Math.round(min/100));
       this.set('_offset', offset);
       this.set('_maxDim', max);
