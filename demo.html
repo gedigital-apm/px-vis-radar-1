@@ -9,6 +9,10 @@
       px-vis-radar Demo</title>
     <!-- Requires Webcomponents.js polyfill is provided by the page for browsers that don't support html imports -->
     <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <link rel="import" href="../px-theme/px-theme-styles.html">
+    <style include="px-theme-styles" is="custom-style"></style>
+
     <!-- Import custom element. Note: see comment about relative paths to dependencies in the *.html file referenced below -->
     <link rel="import" href="../px-vis/px-vis-data.html" />
     <link rel="import" href="../px-vis/px-vis-chart-navigator.html" />
@@ -177,19 +181,19 @@
         generate-axes-from-data
       ></px-vis-radar> -->
 
-      <!-- <br />
+      <br />
       <br />
       <br />
       <h3>Radar Chart with match ticks off</h3>
       <px-vis-radar
         width="1300"
-        height="500"
+        height="250"
         chart-data="[[chartData]]"
         skip-keys='{"TimeStamp":true}'
         series-key="TimeStamp"
         axes='["TTXD1_1", "TTXD1_2", "TTXD1_3", "TTXD1_4", "TTXD1_5"]'
         render-to-svg
-      ></px-vis-radar> -->
+      ></px-vis-radar>
 
       <px-vis-data
         id = "seriesAjax"

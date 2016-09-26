@@ -120,7 +120,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         match-ticks="[[matchTicks]]"
         grid-ticks="{{gridTicks}}"
         grid-axis="{{gridAxis}}"
-        common-axis="[[commonAxis]]"
+        common-axis="[[commonAxis]]"f
         truncation-length="[[truncationLength]]"
         displayed-values="{{displayedValues}}"
         append-unit-in-title
@@ -132,9 +132,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         label-position="inline"
         label-one-axis
         axis-color="grey4"
-        ticks="5"
+        ticks="[[ticks]]"
         label-rotation="180"
-        label-translation='[0,-13]'
         brush-to-remove="[[brushToRemove]]"
         drawn-tick-values="{{drawnTickValues}}">
       </px-vis-multi-axis>
@@ -387,6 +386,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
 
       offset = [ w / 2 , h / 2];
 
+      this.set('ticks', Math.round(min/100));
       this.set('_offset', offset);
       this.set('_maxDim', max);
       this.set('_minDim', min / 2);
