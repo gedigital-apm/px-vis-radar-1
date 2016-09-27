@@ -50,7 +50,6 @@
         prevent-resize
         selected-domain="{{selectedDomain}}"
         generate-axes-from-data
-        render-to-svg
         brush-to-remove>
       </px-vis-radar>
       <div style="height:100px">
@@ -95,7 +94,7 @@
         <br />
         <br />
         <div id="wrap" style="height:300px">
-          <!-- <px-vis-radar
+          <px-vis-radar
             id="chart"
             width="1300"
             height="500"
@@ -103,10 +102,10 @@
             skip-keys='{"UnitNumber":true,"DLN_MODE":true}'
             series-key="TimeStamp"
             generate-axes-from-data
-          ></px-vis-radar> -->
+          ></px-vis-radar>
         </div>
 
-      <!-- <br />
+      <br />
       <br />
       <br />
       <h3>Radar Chart with developer specified axes</h3>
@@ -157,19 +156,6 @@
         axes='[]'
         series-key="TimeStamp"
       ></px-vis-radar>
-
-      <br />
-      <br />
-      <br />
-      <h3>Radar Chart with a common axes</h3>
-      <px-vis-radar
-        width="1300"
-        height="500"
-        chart-data="[[chartData]]"
-        skip-keys='{"UnitNumber":true,"DLN_MODE":true}'
-        series-key="TimeStamp"
-        generate-axes-from-data
-      ></px-vis-radar> -->
 
       <br />
       <br />

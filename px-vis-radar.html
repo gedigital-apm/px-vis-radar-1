@@ -57,8 +57,9 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       <template is="dom-if" if="[[!renderToSvg]]">
         <px-vis-line-canvas
           id="lineCanvas"
-          gradient-line
           radial-line
+          multi-path
+          gradient-line
           canvas-context="[[canvasContext]]"
           series-id="[[seriesKey]]"
           category-key="[[categoryKey]]"
