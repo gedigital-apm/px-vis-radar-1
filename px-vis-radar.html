@@ -56,7 +56,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
 
       <template is="dom-if" if="[[!renderToSvg]]">
         <px-vis-line-canvas
-          id="line"
+          id="lineCanvas"
           gradient-line
           radial-line
           canvas-context="[[canvasContext]]"
@@ -76,7 +76,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       </template>
       <template is="dom-if" if="[[renderToSvg]]">
         <px-vis-line
-          id="line"
+          id="lineSVG"
           radial-line
           multi-path
           gradient-line
@@ -96,7 +96,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       </template>
 
       <px-vis-multi-axis
-      id="multiAxis"
+        id="multiAxis"
         svg="[[svg]]"
         width="[[width]]"
         height="[[height]]"
@@ -114,7 +114,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         axes="[[axes]]"
         muted-series="{{mutedSeriesBrush}}"
         redraw-series="true"
-        redraw-elems="[[_lineRedrawFun()]]"
         stroke-width="2"
         match-ticks="[[matchTicks]]"
         grid-ticks="{{gridTicks}}"
@@ -338,10 +337,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       brushToRemove: {
        type: Boolean,
        value: false
-     },
-     renderToSvg: {
-       type: Boolean,
-       value: false
      }
     },
 
@@ -355,7 +350,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
 
     listeners: {
       'iron-resize': '_onIronResize',
-      'px-vis-domain-changed-updated': '_setDomainChanged'
+      'px-vis-domain-changed-updated': '_setDomainChanged',
+      'px-vis-redraw-lines' : '_redrawLines'
     //  'px-vis-multi-axis-mousemove': '_calcTooltip'
     },
 
@@ -390,7 +386,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       offset = [ w / 2 , h / 2];
 
       //figure out how big the center hole is
-      scaled = min * 0.25;
+      scaled = min * 0.2;
       center = scaled < 75 ? scaled : 75;
 
       this.set('centerOffset', center);
@@ -575,11 +571,15 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     },
 
     /**
-     * An array of the line elements.
+     * call the line draw methods vis event.
      *
      */
-    _lineRedrawFun: function(){
-      return [this.$.line]
+    _redrawLines: function(){
+      if(this.renderToSvg){
+        this.$$('#lineSVG').drawElement();
+      } else {
+        this.$$('#lineCanvas').drawCanvas();
+      }
     },
 
     /**
