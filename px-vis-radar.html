@@ -32,6 +32,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
 <dom-module id="px-vis-radar">
   <template>
     <style include="px-vis-radar-styles"></style>
+    <style include="px-theme-styles"></style>
+
     <div id="wrapper" class="wrapper">
       <px-vis-radial-scale
         width="[[_minDim]]"
@@ -322,10 +324,10 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         notify: true,
         value: function() {
           return {
-            left: 30,
-            right: 30,
-            top: 30,
-            bottom: 30
+            left: 50,
+            right: 50,
+            top: 20,
+            bottom: 20
           };
         }
       },
