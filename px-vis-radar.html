@@ -396,7 +396,13 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       this.set('ticks', Math.round(min/100));
       this.set('_offset', offset);
       this.set('_maxDim', max);
-      this.set('_minDim', min / 2);
+
+      // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
+      if(this._minDim !== min / 2) {  //if there is a change, propogate it
+        this.set('_minDim', min / 2);
+      } else if(!this.renderToSvg) { //if no change and we need to refire canvas...
+        this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
+      }
     },
 
     /**
