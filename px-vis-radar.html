@@ -326,8 +326,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
           return {
             left: 50,
             right: 50,
-            top: 20,
-            bottom: 20
+            top: 25,
+            bottom: 25
           };
         }
       },
@@ -354,8 +354,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     listeners: {
       'iron-resize': '_onIronResize',
       'px-vis-domain-changed-updated': '_setDomainChanged',
-      'px-vis-redraw-lines' : '_redrawLines'
-    //  'px-vis-multi-axis-mousemove': '_calcTooltip'
+      'px-vis-redraw-lines' : '_redrawLines',
+     'px-vis-multi-axis-mousemove': '_calcTooltip'
     },
 
     _setDomainChanged: function(evt) {
@@ -512,40 +512,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     _calcIndex: function(i,l){
       return i < l ? i : this._calcIndex(i - l,l);
     },
-    /**
-     * Creates the chartExtents for each dimension
-     *
-     */
-    _generateChartExtents: function(dimensions){
-      var ext = {
-              "x": dimensions,
-              "y": null
-            },
-          min = Number.MAX_VALUE,
-          max = Number.MIN_VALUE,
-          buffer;
 
-      // go through all data and find min and max
-      for(var i = 0; i < dimensions.length; i++){
-        for(var j = 0; j < this.chartData.length; j++){
-          min = Math.min(min, this.chartData[j][dimensions[i]]);
-          max = Math.max(max, this.chartData[j][dimensions[i]]);
-        }
-      }
-
-      // if all data is the same value, add 1 so we still get a range
-      if(min === max){
-        max += 1;
-      }
-
-      // add a buffer for the center
-      // buffer = (max - min) * 0.2;
-      // min = min - buffer;
-
-      ext.y = [min,max];
-
-      this.set('chartExtents',ext);
-    },
     /**
      * Adds data to a muted series based on the selected domain
      *
@@ -684,7 +651,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       var aid = evt.detail.axis,          //axis ID
           elem = evt.detail.elem,         //the group elem being hovered over
           mousePos = evt.detail.mousePos, //the mouse position
-          mouseVal = this.y[aid].invert(mousePos[1]), // the data space value
+          mouseVal = this.y.invert(mousePos[1]), // the data space value
           distance = Number.MAX_VALUE,    //difference between cursor and value
           minDistance = Number.MAX_VALUE, //difference between cursor and value
           yVal = null,                    //the data value we will calc
@@ -710,9 +677,11 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
           }
         }
       }
+
       //calc the screen positions for the tooltip
-      screenX = this.x(aid) + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 15;
-      screenY = mousePos[1] + elem.getBoundingClientRect().top + window.scrollY + 5;
+      screenX = mousePos[1] * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 5;
+
+      screenY = mousePos[1] * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
 
       //create our fake configuration object
       tooltipConfig[aid] = {};

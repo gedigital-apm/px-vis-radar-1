@@ -40,7 +40,7 @@
       <br />
       <br />
       <br />
-      <!-- <px-vis-radar
+      <px-vis-radar
         id="parall"
         width="1300"
         height="800"
@@ -50,8 +50,18 @@
         prevent-resize
         selected-domain="{{selectedDomain}}"
         generate-axes-from-data
-        brush-to-remove>
-      </px-vis-radar> -->
+        brush-to-remove
+        series-config='{
+            "TTXD1_1":{
+              "yAxisUnit": "Hz",
+              "title": "verylongname"
+            },
+            "TTXD1_12":{
+              "yAxisUnit": "F",
+              "title": "stout"
+            }
+          }'>
+      </px-vis-radar>
       <div style="height:100px">
         <px-vis-chart-navigator
             id="navigator"
@@ -100,6 +110,7 @@
             skip-keys='{"UnitNumber":true,"DLN_MODE":true}'
             series-key="TimeStamp"
             generate-axes-from-data
+            render-to-svg
             margin='{
               "left": 100,
               "right": 100,
@@ -112,7 +123,7 @@
       <br />
       <br />
       <br />
-      <!-- <h3>Radar Chart with developer specified axes</h3>
+      <h3>Radar Chart with developer specified axes</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -173,7 +184,7 @@
         series-key="TimeStamp"
         axes='["TTXD1_1", "TTXD1_2", "TTXD1_3", "TTXD1_4", "TTXD1_5"]'
         render-to-svg
-      ></px-vis-radar> -->
+      ></px-vis-radar>
 
       <px-vis-data
         id = "seriesAjax"
