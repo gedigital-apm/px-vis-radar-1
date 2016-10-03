@@ -679,9 +679,12 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       }
 
       //calc the screen positions for the tooltip
-      screenX = mousePos[1] * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 5;
+      screenX = this.y(yVal) * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
 
-      screenY = mousePos[1] * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
+      screenY = this.y(yVal) * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
+      //stick on axis, but follow mouse
+      // screenX = mousePos[1] * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 5;
+      // screenY = mousePos[1] * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
 
       //create our fake configuration object
       tooltipConfig[aid] = {};
