@@ -355,7 +355,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       'iron-resize': '_onIronResize',
       'px-vis-domain-changed-updated': '_setDomainChanged',
       'px-vis-redraw-lines' : '_redrawLines',
-     'px-vis-multi-axis-mousemove': '_calcTooltip'
+      'px-vis-multi-axis-mousemove': '_calcTooltip'
     },
 
     _setDomainChanged: function(evt) {
@@ -464,9 +464,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
      *
      */
       _generateSeriesConfig: function(dimensions, seriesConfig) {
-
-     // this.debounce('_generateSeriesConfig', function() {
-
         // TODO make work with multiple series
         var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
         // add a seriesConfig with seriesKey as default
@@ -494,7 +491,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         }
 
         this.set('completeSeriesConfig',config);
-   //   }.bind(this), 0);
     },
 
     // * TODO These are in behavior chart. Should make it so we can import them from there */
