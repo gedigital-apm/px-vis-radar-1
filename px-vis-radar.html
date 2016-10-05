@@ -11,6 +11,7 @@
 <link rel="import" href="../px-vis/px-vis-gridlines.html"/>
 <link rel="import" href="../px-vis/px-vis-tooltip.html"/>
 <link rel="import" href="../px-vis/px-vis-radar-grid.html"/>
+<link rel="import" href="../px-vis/px-vis-clip-path-complex-area.html"/>
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
 
 
@@ -41,6 +42,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         amplitude-keys="[[dimensions]]"
         chart-data="[[chartData]]"
         complete-series-config="[[completeSeriesConfig]]"
+        chart-extents="[[chartExtents]]"
         x="{{x}}"
         y="{{y}}"
         current-domain-x="{{currentDomainX}}"
@@ -75,7 +77,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
           selected-domain="[[selectedDomain]]"
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
           no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
-          interpolation-function="[[_returnInterpolation()]]">
+          interpolation-function="bofCompleteManually">
         </px-vis-line-canvas>
       </template>
       <template is="dom-if" if="[[renderToSvg]]">
@@ -96,7 +98,8 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
           domain-changed="[[domainChanged]]"
           selected-domain="[[selectedDomain]]"
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
-          interpolation-function="[[_returnInterpolation()]]">
+          interpolation-function="bofCompleteManually"
+          clip-path="[[clipPath]]">
         </px-vis-line>
       </template>
 
@@ -160,6 +163,16 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         complete-series-config="[[_tooltipConfig]]"
         x-axis-type="time">
       </px-vis-tooltip>
+      <px-vis-clip-path-complex-area
+        svg="[[svg]]"
+        x="[[x]]"
+        y="[[y]]"
+        domain-changed="[[domainChanged]]"
+        current-domain-y="[[currentDomainY]]"
+        chart-data="[[chartData]]"
+        dimensions="[[dimensions]]"
+        clip-path="{{clipPath}}">
+      </px-vis-clip-path-complex-area>
     </div>
   </template>
 </dom-module>
@@ -194,6 +207,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     PxVisBehavior.tooltipData,
     PxVisBehaviorD3.selectedDomain,
     PxVisBehaviorD3.radialAxisConfig,
+    PxVisBehaviorD3.clipPath,
     commonColors
   ],
 
@@ -710,11 +724,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       this.set('_tooltipConfig', tooltipConfig);
       this.set('tooltipData', data);
       // this.$.tooltip.tooltipElem._show();
-     },
-
-    _returnInterpolation: function(){
-      return Px.d3.curveLinearClosed;
-    }
-
+     }
   });
 </script>

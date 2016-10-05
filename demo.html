@@ -18,6 +18,7 @@
     <link rel="import" href="../px-vis/px-vis-chart-navigator.html" />
     <link rel="import" href="../px-rangepicker/px-rangepicker.html" />
     <link rel="import" href="px-vis-radar.html" />
+    <link rel="import" href="../px-slider/px-slider.html" />
     <link rel="import" href="../px-theme/px-theme.html" />
   </head>
 
@@ -123,14 +124,20 @@
       <br />
       <br />
       <br />
-      <h3>Radar Chart with developer specified axes</h3>
+      <h3>Radar Chart with developer specified axes and control of axis extents</h3>
+      <div style="width: 500px;">
+        <px-slider id="slider" value="{{-1050}}" start-value="-1050" end-value="217" min="-1050" max="217" step="1"></px-slider>
+        <button id="sliderButton">Submit</button>
+      </div>
       <px-vis-radar
+        id="sliderChart"
         width="1300"
         height="500"
+        render-to-svg
         chart-data="[[chartData]]"
         series-key="TimeStamp"
-        axes='["DWATT", "TTXD1_1", "TTXD1_2", "TTXD1_3", "TTXD1_4", "TTXD1_5", "TTXD1_6", "TTXD1_7", "TTXD1_8", "TTXD1_9", "TTXD1_10", "TTXD1_11", "TTXD1_12", "TTXD1_13",  "TTXD1_14", "TTXD1_15", "TTXD1_16", "TTXD1_17", "TTXD1_18", "TTXD1_19", "TTXD1_20", "TTXD1_21", "TTXD1_22", "TTXD1_23", "TTXD1_24", "TTXD1_25", "TTXD1_26",  "TTXD1_27", "TTXD1_28", "TTXD1_29", "TTXD1_30", "TTXD1_31"]'
-      ></px-vis-radar>
+        axes='["DWATT", "TTXD1_1", "TTXD1_2", "TTXD1_3", "TTXD1_4", "TTXD1_5", "TTXD1_6", "TTXD1_7", "TTXD1_8", "TTXD1_9", "TTXD1_10", "TTXD1_11", "TTXD1_12", "TTXD1_13",  "TTXD1_14", "TTXD1_15", "TTXD1_16", "TTXD1_17", "TTXD1_18", "TTXD1_19", "TTXD1_20", "TTXD1_21", "TTXD1_22", "TTXD1_23", "TTXD1_24", "TTXD1_25", "TTXD1_26",  "TTXD1_27", "TTXD1_28", "TTXD1_29", "TTXD1_30", "TTXD1_31"]'>
+      </px-vis-radar>
 
       <br />
       <br />
@@ -163,7 +170,7 @@
       <br />
       <br />
       <br />
-      <h3>Radar Chart with developer specified axes</h3>
+      <h3>Radar Chart with three axes</h3>
       <px-vis-radar
         width="1300"
         height="500"
@@ -175,7 +182,7 @@
       <br />
       <br />
       <br />
-      <h3>Radar Chart with match ticks off</h3>
+      <h3>Radar Chart with 5 axes</h3>
       <px-vis-radar
         width="1300"
         height="250"
@@ -209,9 +216,16 @@
           rangepicker = document.getElementById('rangepicker'),
           btnSnap = document.getElementById('btnSnap'),
           parall = document.getElementById('parall'),
-          navigator = document.getElementById('navigator');
+          navigator = document.getElementById('navigator'),
+          slider = document.getElementById('slider'),
+          sliderButton = document.getElementById('sliderButton'),
+          sliderChart = document.getElementById('sliderChart');
 
       rangepicker.range = {"from":"2016-06-22T15:08:00Z","to":"2016-06-22T20:08:00.000Z"};
+
+      sliderButton.addEventListener('click', function() {
+        sliderChart.set('chartExtents', {'y': [slider.value , slider.endValue]});
+      });
 
       btnSnap.addEventListener('click', function() {
 
