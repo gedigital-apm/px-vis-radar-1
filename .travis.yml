@@ -1,0 +1,35 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+- stable
+branches:
+  except:
+  - gh-pages
+addons:
+  firefox: latest
+  apt:
+    sources:
+    - google-chrome
+    packages:
+    - google-chrome-stable
+before_script:
+- npm install web-component-tester
+- npm install bower
+- export PATH=$PWD/node_modules/.bin:$PATH
+- bower install
+script:
+- xvfb-run wct --skip-plugin sauce
+- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --plugin sauce --skip-plugin
+  local; fi
+env:
+  global:
+  - secure: G/lnA8XsY1OQvyATkyMxLZHOW93ElVZuOozJ/7wdhbfqsM1kKrb1dEByqnqE1UD33S0QFK/+bN/EsMgjw8vuw2CglAFPyeG923uSgfGS9EBIdcV0LVHNiph2gpfA7H7WXpnR02BEY+869nl3w7FuToRHoBlpGFAN8modAcinfPQSOu6ViuRf4RTF89vb+VJj72T3rLl/yVb6kLxH+5YYhvHUoPIFJn2EBu91GWuUWBOvkSkGFEam+sSf++Ugf52iZcwXKD36iAGH7xvBcNh/pBHK6WDP7PjOUlKKnmRKMO7zi7Ax9kWR89keRL6eMuKPHpmB9GTV/1+yCl15LcoBZ75JE7s48mTnSJcvIAqy+c6/1n+Xl4HvPBouDn4YwOcnVdV1H8Y2vDdqF3lyOSjgcx1loHbf1ce4CGUb+DK/XMFSqBKUKQuAkDan5aBKhEVYfr0Vywvmaaq+/Gw+sbJ2yqk2dZzlju0dKjoXHFocPomIJHUaRPUaIkTaq71BQqrCMsy3JpEvEwXJDyW86G4nfP3WqoQhSvMPUGw8DZ7SbCJwuTTfcvM47H/SOQ+6sqfRt2dNDZA5PUf0/Seqlw8OMcU3d1wUUtdmn+EC4oMhZhOYEMQtsaLgjIP/GUvyeGPgz35QB0gqMstK/H0V1aFjovFot5tA5B3SV0n9I1VgvyY=
+  - secure: V/g9PqRtPVpiCcU0mpugg0tM0eEh8rCZFAgrl0iHVVmIesUedBJ/wpdF9kvdbADwKmNS9s7WOliJhwvaYBkP9iIAIcUpLR9CK48KjY+oIrnnkdV6TQSEdovUrNCZkVFRsMJFzkJ/luJHd/ObQ6pN51RZgf74KzTJQSS3EHyEhW9yNQqU9Eor+NGfWGLi8laNO/wOrlkCOqu5qCswwTyDN4/+dVAqU1MVEstdI6kFBsB7aZnja9pRiDfjGDhyNsLBew4/1KE+QeIvH/+P8IVhb3bDjlG0uMqjNqAF3ircouLqSc+AVfhtUlPgxBhKhiGbXv2UuQbt/Bk22CfS1U6wgemQzufe2a67Efbq/8SNfLv2J9vhxAb43mMoJ/cO3ELvxGFN9rbWIusJ7H82cqTRjNUlSglHPWHh5udHF6QXQXURo2zNdYt3ljhWsdQ7QR5vRccyfMTK0EUtatPZtIIOG6EZrQXA0DXvPwoiVVVMuBbqxYGtT1qenCBu7jQ2JzzXmicoa/jlcTrnTxg9ehEAydqtUQdYZzAGtdjUI230lXtur8GCF0Gaq9olG3PSkrVFvPlR6PUFFUU0LaOwBWGAD/o51P+xqJmkZ0/2mSiiQhtE4gH4I8fFli2OUld+nxvsBJvqhPu1wGr/0r31DTQROuxmoIZK8broghVeBsQxCAk=
+before_install:
+- if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then openssl aes-256-cbc -k "$password"
+  -in id_rsa.enc -out deploy_key -d; fi
+after_success:
+- cd $TRAVIS_BUILD_DIR/scripts
+- chmod 755 ghp.sh
+- "./ghp.sh"
