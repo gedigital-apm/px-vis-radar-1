@@ -18,14 +18,19 @@
 <link rel="import" href="css/px-vis-radar-styles.html">
 
 <!--
-REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
-
+px-vis component which creates a radar (spider) chart.
 ##### Usage
 
-    <px-vis-radar counter-value="1"><a href="javascript:" on-click="handleClick">Click here to increment counter:</a><span>{{counterValue}}</span></px-vis-radar>
+    <px-vis-radar
+        width="[[width]]"
+        height="[[height]]"
+        chart-data="[[chartData]]"
+        series-key="[[timestampKey]]"
+        generate-axes-from-data
+    </px-vis-radar>
 
 @element px-vis-radar
-@blurb REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
+@blurb px-vis component which creates a radar (spider) chart.
 @homepage index.html
 @demo index.html
 -->
@@ -144,7 +149,9 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
         label-rotation="180"
         brush-to-remove="[[brushToRemove]]"
         center-offset="[[centerOffset]]"
-        drawn-tick-values="{{drawnTickValues}}">
+        drawn-tick-values="{{drawnTickValues}}"
+        title-type-size="15"
+        label-type-size="12">
       </px-vis-multi-axis>
       <px-vis-radar-grid
         svg="[[svg]]"
@@ -220,6 +227,11 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
     * @type Object
     */
     properties: {
+      /**
+       * An object which holds the series lines that have been muted based on the selected domain
+       *
+       * @private
+       */
       _offset: {
         type: Array,
         value: function() {
@@ -352,9 +364,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       _minDim: {
         type: Number
       },
-      _maxDim: {
-        type: Number
-      },
       brushToRemove: {
        type: Boolean,
        value: false
@@ -395,13 +404,7 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
           min,max,offset,scaled,center;
 
       //figure out which dimension is smaller
-      if(w < h){
-        min = w;
-        max = h;
-      } else {
-        min = h;
-        max = w;
-      }
+      min = (w < h) ? w : h;
 
       //figure out the center of the svg
       offset = [ w / 2 , h / 2];
@@ -413,7 +416,6 @@ REPLACE THIS TEXT WITH A COMPONENT DESCRIPTION
       this.set('centerOffset', center);
       this.set('ticks', Math.round(min/100));
       this.set('_offset', offset);
-      this.set('_maxDim', max);
 
       // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
       if(this._minDim !== min / 2) {  //if there is a change, propogate it
