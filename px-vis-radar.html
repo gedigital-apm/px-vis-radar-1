@@ -69,6 +69,7 @@ px-vis component which creates a radar (spider) chart.
           radial-line
           multi-path
           gradient-line
+          clip-path
           line-radius-limit="25"
           canvas-context="[[canvasContext]]"
           series-id="[[seriesKey]]"
@@ -79,6 +80,7 @@ px-vis component which creates a radar (spider) chart.
           muted-opacity="0"
           x="[[x]]"
           y="[[y]]"
+          current-domain-y="[[currentDomainY]]"
           domain-changed="[[domainChanged]]"
           selected-domain="[[selectedDomain]]"
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
@@ -108,6 +110,16 @@ px-vis component which creates a radar (spider) chart.
           interpolation-function="bofCompleteManually"
           clip-path="[[clipPath]]">
         </px-vis-line>
+        <px-vis-clip-path-complex-area
+          svg="[[svg]]"
+          x="[[x]]"
+          y="[[y]]"
+          domain-changed="[[domainChanged]]"
+          current-domain-y="[[currentDomainY]]"
+          chart-data="[[chartData]]"
+          dimensions="[[dimensions]]"
+          clip-path="{{clipPath}}">
+        </px-vis-clip-path-complex-area>
       </template>
 
       <px-vis-multi-axis
@@ -172,16 +184,6 @@ px-vis component which creates a radar (spider) chart.
         complete-series-config="[[_tooltipConfig]]"
         x-axis-type="time">
       </px-vis-tooltip>
-      <px-vis-clip-path-complex-area
-        svg="[[svg]]"
-        x="[[x]]"
-        y="[[y]]"
-        domain-changed="[[domainChanged]]"
-        current-domain-y="[[currentDomainY]]"
-        chart-data="[[chartData]]"
-        dimensions="[[dimensions]]"
-        clip-path="{{clipPath}}">
-      </px-vis-clip-path-complex-area>
     </div>
   </template>
 </dom-module>
@@ -367,7 +369,8 @@ px-vis component which creates a radar (spider) chart.
       brushToRemove: {
        type: Boolean,
        value: false
-     }
+     },
+
     },
 
     observers: [
@@ -397,7 +400,7 @@ px-vis component which creates a radar (spider) chart.
         return true
       }
     },
-
+    
     _pickMinMaxDim: function(width,height,margin){
       var w = width - margin.left - margin.right,
           h = height - margin.top - margin.bottom,
@@ -694,40 +697,45 @@ px-vis component which creates a radar (spider) chart.
         }
       }
 
-      //calc the screen positions for the tooltip
-      screenX = this.y(yVal) * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
+      //only update if the value is on the screen
+      if(this.currentDomainY[0] < yVal && yVal < this.currentDomainY[1]){
+        //calc the screen positions for the tooltip
+        screenX = this.y(yVal) * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
 
-      screenY = this.y(yVal) * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
-      //stick on axis, but follow mouse
-      // screenX = mousePos[1] * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 5;
-      // screenY = mousePos[1] * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
+        screenY = this.y(yVal) * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
+        //stick on axis, but follow mouse
+        // screenX = mousePos[1] * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 5;
+        // screenY = mousePos[1] * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
 
-      //create our fake configuration object
-      tooltipConfig[aid] = {};
-      //if using categies, use it, otherwise default
-      tooltipConfig[aid]["color"] = group ? this.completeSeriesConfig[group]["color"] : this.completeSeriesConfig[this.seriesKey]["color"];
-      //if title is specified, use it, otherwiuse id
-      tooltipConfig[aid]["name"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['title'] ? this.completeSeriesConfig[aid]["title"] : aid;
-      //if there is a unit, add it
-      tooltipConfig[aid]["yAxisUnit"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]["yAxisUnit"] ? this.completeSeriesConfig[aid]["yAxisUnit"] : '';
-      //add the y series id
-      tooltipConfig[aid]['y'] = aid;
+        //create our fake configuration object
+        tooltipConfig[aid] = {};
+        //if using categies, use it, otherwise default
+        tooltipConfig[aid]["color"] = group ? this.completeSeriesConfig[group]["color"] : this.completeSeriesConfig[this.seriesKey]["color"];
+        //if title is specified, use it, otherwiuse id
+        tooltipConfig[aid]["name"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['title'] ? this.completeSeriesConfig[aid]["title"] : aid;
+        //if there is a unit, add it
+        tooltipConfig[aid]["yAxisUnit"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]["yAxisUnit"] ? this.completeSeriesConfig[aid]["yAxisUnit"] : '';
+        //add the y series id
+        tooltipConfig[aid]['y'] = aid;
 
-      //create our value obj
-      value[aid] = yVal;
-      //create our tooltipData obj
-      data = {
-        "mouse": mousePos,
-        "time": time,
-        'series': [
-          { 'name': aid, 'value': value }
-        ]
-      };
+        //create our value obj
+        value[aid] = yVal;
+        //create our tooltipData obj
+        data = {
+          "mouse": mousePos,
+          "time": time,
+          'series': [
+            { 'name': aid, 'value': value }
+          ]
+        };
 
-      this.set('mousePosition', [screenX, screenY]);
-      this.set('_tooltipConfig', tooltipConfig);
-      this.set('tooltipData', data);
-      // this.$.tooltip.tooltipElem._show();
+        this.set('tooltipData', data);
+        this.set('_tooltipConfig', tooltipConfig);
+        this.set('mousePosition', [screenX, screenY]);
+      } else {
+        // if it is off the screen, still need to give mouse coords or else it errors out
+        this.set('mousePosition', [-1000, -1000]);
+      }
      }
   });
 </script>
