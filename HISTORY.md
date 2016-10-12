@@ -7,7 +7,7 @@ v0.0.3
 
 v0.0.2
 ==================
-* github page integration
+* added travis integration
 
 v0.0.1
 ==================

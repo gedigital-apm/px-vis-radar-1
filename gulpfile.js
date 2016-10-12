@@ -81,8 +81,8 @@ gulp.task('serve', function() {
     server: ['./', 'bower_components'],
   });
 
-  gulp.watch(['css/*-styles.html', '*.html', '*.js'])//.on('change', browserSync.reload);
-  gulp.watch(['!sass/*-demo.scss', 'sass/*.scss'], ['sass']);
+  gulp.watch(['css/*-styles.html', 'css/*-demo.css', '*.html', '*.js']).on('change', browserSync.reload);
+  gulp.watch(['sass/*.scss', '!sass/*-demo.scss'], ['sass']);
   gulp.watch('sass/*-demo.scss', ['demosass']);
 
 });
