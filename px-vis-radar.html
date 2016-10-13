@@ -19,8 +19,18 @@
 
 <!--
 px-vis component which creates a radar (spider) chart.
-##### Usage
+##### Usage - Auto-generating your axes from data
 
+    <px-vis-radar
+        width="[[width]]"
+        height="[[height]]"
+        axes='["Axes_1","Axes_2","Axes_n"]'
+        chart-data="[[chartData]]"
+        series-key="[[timestampKey]]"
+    </px-vis-radar>
+
+
+##### Usage - Specifying your axes manually
     <px-vis-radar
         width="[[width]]"
         height="[[height]]"
@@ -28,6 +38,7 @@ px-vis component which creates a radar (spider) chart.
         series-key="[[timestampKey]]"
         generate-axes-from-data
     </px-vis-radar>
+
 
 @element px-vis-radar
 @blurb px-vis component which creates a radar (spider) chart.
@@ -57,6 +68,7 @@ px-vis component which creates a radar (spider) chart.
       <px-vis-svg-canvas
         canvas-context="{{canvasContext}}"
         svg="{{svg}}"
+        px-svg-elem="{{pxSvgElem}}"
         width="[[width]]"
         height="[[height]]"
         margin="[[margin]]"
@@ -145,7 +157,7 @@ px-vis component which creates a radar (spider) chart.
         match-ticks="[[matchTicks]]"
         grid-ticks="{{gridTicks}}"
         grid-axis="{{gridAxis}}"
-        common-axis="[[commonAxis]]"f
+        common-axis="[[commonAxis]]"
         truncation-length="[[truncationLength]]"
         displayed-values="{{displayedValues}}"
         append-unit-in-title
@@ -343,14 +355,23 @@ px-vis component which creates a radar (spider) chart.
         type: String,
         value: ''
       },
+      /**
+       * Limiting Boolean saying if we have chart data or not
+       */
       _haveChartData: {
         type: Boolean,
         computed: '_doWeHaveChartData(chartData)'
       },
+      /**
+       * A "series configuration" object specifically for the tooltip
+       */
       _tooltipConfig: {
         type: Object,
         value: function(){ return {}; }
       },
+      /**
+       * Margin for the svg chart
+       */
       margin:{
         type:Object,
         notify: true,
@@ -363,9 +384,15 @@ px-vis component which creates a radar (spider) chart.
           };
         }
       },
+      /**
+       * The min size dimension (width or height) sans margin
+       */
       _minDim: {
         type: Number
       },
+      /**
+       * Boolean specifying if the axis brushes should remove the brushed data or retain it
+       */
       brushToRemove: {
        type: Boolean,
        value: false
@@ -387,20 +414,24 @@ px-vis component which creates a radar (spider) chart.
       'px-vis-redraw-lines' : '_redrawLines',
       'px-vis-multi-axis-mousemove': '_calcTooltip'
     },
-
+    /**
+     * Event listener resetting domainChanged when fired from elsewhere in the tree
+     */
     _setDomainChanged: function(evt) {
-      // this.debounce('cd',function(){
-        this.$.multiAxis.dimensions = this.dimensions;
-        this.set('domainChanged',evt.detail.data);
-      // },0)
+      this.$.multiAxis.dimensions = this.dimensions;
+      this.set('domainChanged',evt.detail.data);
     },
-
+    /**
+     * Computed value saying if we have chart data
+     */
     _doWeHaveChartData: function(cD){
       if(this.chartData && this.chartData.length > 0){
         return true
       }
     },
-    
+    /**
+     * Sets several base vars based on sizing
+     */
     _pickMinMaxDim: function(width,height,margin){
       var w = width - margin.left - margin.right,
           h = height - margin.top - margin.bottom,
@@ -612,18 +643,16 @@ px-vis component which creates a radar (spider) chart.
      *
      */
     _calcGridSvg: function(){
-      // if(this.currentDomainX){
-        // create a g and move it so it lines up with the first axis
-        var currentG = this.svg.select('.gridGroup');
+      // create a g and move it so it lines up with the first axis
+      var currentG = this.svg.select('.gridGroup');
 
-        if(!currentG.node()) {
-          return this.svg.append('g')
-            .attr("class", "gridGroup")
-            .attr("transform", "translate(" + this.x(this.dimensions[0]) + ",0)");
-        } else {
-          return currentG.attr("transform", "translate(" + this.x(this.dimensions[0]) + ",0)");
-        }
-      // }
+      if(!currentG.node()) {
+        return this.svg.append('g')
+          .attr("class", "gridGroup")
+          .attr("transform", "translate(" + this.x(this.dimensions[0]) + ",0)");
+      } else {
+        return currentG.attr("transform", "translate(" + this.x(this.dimensions[0]) + ",0)");
+      }
     },
     /**
      * Imperatively mute an axis or group of axes.
@@ -666,6 +695,9 @@ px-vis component which creates a radar (spider) chart.
          console.error("Cannot add/remove axis. Improper axis type")
        }
      },
+     /**
+      * Creates tooltip objects -- tooltipData, config, mouse coords -- on mouseover.
+      */
      _calcTooltip: function(evt){
       var aid = evt.detail.axis,          //axis ID
           elem = evt.detail.elem,         //the group elem being hovered over
