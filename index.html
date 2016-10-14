@@ -15,6 +15,7 @@
   <link rel="import" href="../px-api-viewer/px-api-viewer.html" />
   <link rel="import" href="../px-tabs/px-tab-set.html" />
   <link rel="import" href="../px-dropdown/px-dropdown.html" />
+  <link rel="import" href="../px-slider/px-slider.html" />
   <link rel="import" href="px-vis-radar.html" />
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
@@ -28,7 +29,6 @@
   <!-- Wrap elements with auto-binding template to -->
   <!-- allow use of Polymer bindings in main document -->
   <template id="just-for-demo" is="dom-bind">
-
     <!-- discription -->
     <div class="hero u-p++ text--shadow">
       <a class="actionable flex flex--right flex--middle" href="https://github.com/PredixDev/px-vis-radar" target="_blank">
@@ -36,7 +36,7 @@
       </a>
       <h1 class="delta">px-vis-radar</h1>
       <div class="description-text">
-        REPLACE ME WITH TEXT DESCRIBING THE COMPONENT
+        The	px-vis-radar component allows you to draw a radar (spider) chart. Initial height and width can be set but the component will try to fill its parent container on resize. It can be manually notified to recalculate its size by using notifyResize().
       </div>
       <div class="flex">
         <img class="u-mr-- " src="https://img.shields.io/travis/PredixDev/px-vis-radar.svg?style=flat-square" alt="Travis"  onerror="this.style.display='none'"/>
@@ -56,35 +56,110 @@
         </px-tab-set>
       </div>
       <px-tab-pages selected="{{selected}}">
-        <template is="dom-repeat" items="{{optionsArray}}">
+        <template id="myDomRepeat" is="dom-repeat" items="{{optionsArray}}">
           <section class="tab-page">
             <div class="mega-demo flex u-ph++ u-pb++">
               <!-- Properties -->
               <div class="properties u-ph+ u-pb+ u-mt+">
                 <p class="epsilon">Properties</p>
-                <!--
-                //code sample for dropdown
-                <div class="u-mb-">DROPDOWN TITLE:
-                  <div style="width: 100%;">
-                    <px-dropdown id="dropdownName{{indexPlusOne(index)}}" value="{{item.dropdownName}}" display-value="{{item.dropdownName}}" bound-target="properties">
-                      <px-dropdown-content
-                        items='[
-                          {"key":"one", "val": "firstVal"},
-                          {"key":"two", "val": "SecondVal"}]'>
-                      </px-dropdown-content>
-                    </px-dropdown>
-                  </div>
-                </div> -->
-                <!--
-                //code sample for input box:
-                <div class="u-mb-">Text Input Label: <input class="text-input" type="text" placeholder="{{item.textInputProp}}" value="{{item.textInputProp::input}}" /></div> -->
-                <!--
-                //code for boolean option
+
+                <!-- sizing -->
+                <div class="u-mb-">Width:
+                  <input
+                    id="width"
+                    class="text-input"
+                    type="text"
+                    placeholder="{{item.width}}"
+                    value="{{item.width::input}}" />
+                </div>
+                <div class="u-mb-">Height:
+                  <input
+                    id="height"
+                    class="text-input"
+                    type="text"
+                    placeholder="{{item.height}}"
+                    value="{{item.height::input}}" />
+                </div>
+
                 <div class="flex u-mb-">
-                  <input id="booleanID{{indexPlusOne(index)}}" class="toggle__input toggle__input--small" type="checkbox" checked="{{item.booleanID::change}}">
-                  <label for$="booleanID{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
-                  <div class="u-ml-">BOOLEAN TITLE</div>
-                </div> -->
+                  <input
+                    id="preventResize{{indexPlusOne(index)}}"
+                    class="toggle__input toggle__input--small"
+                    type="checkbox"
+                    checked="{{item.preventResize::change}}"/>
+                  <label for$="preventResize{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
+                  <div class="u-ml-">Prevent Resize</div>
+                </div>
+
+                <!-- brush to remove -->
+                <hr>
+                <div class="flex u-mb-">
+                  <input
+                    id="brushToRemove{{indexPlusOne(index)}}"
+                    class="toggle__input toggle__input--small"
+                    type="checkbox"
+                    checked="{{item.brushToRemove::change}}"/>
+                  <label for$="brushToRemove{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
+                  <div class="u-ml-">Brush to remove</div>
+                </div>
+
+                <hr>
+                <div class="flex u-mb-">
+                  <input
+                    id="renderToSvg{{indexPlusOne(index)}}"
+                    class="toggle__input toggle__input--small"
+                    type="checkbox"
+                    checked="{{item.renderToSvg::change}}"/>
+                  <label for$="renderToSvg{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
+                  <div class="u-ml-">Render to SVG (instead of Canvas)</div>
+                </div>
+
+                <!-- categories -->
+                <hr>
+                <div class="flex u-mb-">
+                  <input
+                    id="colorByCategires{{indexPlusOne(index)}}"
+                    class="toggle__input toggle__input--small"
+                    type="checkbox"
+                    index="{{index}}"
+                    on-change="_categoryChanged"/>
+                  <label for$="colorByCategires{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
+                  <div class="u-ml-">Color by categories</div>
+                </div>
+                <div class="hidden">
+                  <div class="u-mb- u-ml+">categoryKey:
+                    <input
+                      id="categoryKey{{indexPlusOne(index)}}"
+                      class="text-input"
+                      type="text"
+                      placeholder="{{item.categoryKey}}"
+                      value="{{item.categoryKey::input}}" />
+                  </div>
+                  <div class="u-mb- u-ml+">categories:
+                    <input
+                      id="categories{{indexPlusOne(index)}}"
+                      class="text-input"
+                      type="text"
+                      placeholder="{{item.categories}}"
+                      value="{{item.categories::input}}" />
+                  </div>
+                </div>
+
+                <!-- axis extents -->
+                <hr>
+                <div class="u-mb-">Axis Extents:
+                  <px-slider
+                    id="slider{{indexPlusOne(index)}}"
+                    index="[[index]]"
+                    value="0"
+                    start-value="0"
+                    end-value="10"
+                    min="-5"
+                    max="15"
+                    step="1"
+                    on-track="_sliderChange">
+                  </px-slider>
+                </div>
 
               </div>
 
@@ -93,14 +168,28 @@
                 <div class="flex flex--col">
                   <div class="flex__item demo u-ph+ u-pb+">
                     <div class="u-mt+">
-                      <px-vis-radar >
+                      <px-vis-radar
+                        id="radar1"
+                        width = "{{item.width}}"
+                        height = "{{item.height}}"
+                        prevent-resize = "{{item.preventResize}}"
+                        series-key="TimeStamp"
+                        axes="[[item.axes]]"
+                        categories='[[item.categories]]'
+                        category-key="[[item.categoryKey]]"
+                        chart-data="[[item.chartData]]"
+                        brush-to-remove="[[brushToRemove]]"
+                        series-config="[[item.seriesConfig]]">
                       </px-vis-radar>
                     </div>
                   </div>
                   <div class="flex__item">
                     <px-demo-snippet
                       element-properties={{item}}
-                      element-name="px-vis-radar">
+                      element-name="px-vis-radar"
+                      scripts-includes="[[scriptsIncludes]]"
+                      links-includes="[[linksIncludes]]"
+                      polygit-includes="[[polygitIncludes]]">
                     </px-demo-snippet>
                   </div>
                 </div>
@@ -163,23 +252,166 @@
     </footer>
   </template>
   <script>
-    window.addEventListener('WebComponentsReady', function() {
 
-      var template = document.querySelector('template[is=dom-bind]'),
+    window.addEventListener('WebComponentsReady', function() {
+      var template = document.querySelector('template[is=dom-bind]')
+          chartData1 = [
+            {
+              "TimeStamp":1465416480000,
+              "axis1":"1",
+              "axis2":"7",
+              "axis3":"6",
+              "axis4":"6",
+              "axis5":"7",
+              "category":"a"
+            },{
+              "TimeStamp":1465416540000,
+              "axis1":"3",
+              "axis2":"7",
+              "axis3":"7",
+              "axis4":"6",
+              "axis5":"6",
+              "category":"d"
+            },{
+              "TimeStamp":1465416600000,
+              "axis1":"4",
+              "axis2":"6",
+              "axis3":"7",
+              "axis4":"6",
+              "axis5":"7",
+              "category":"b"
+            },{
+              "TimeStamp":1465416660000,
+              "axis1":"6",
+              "axis2":"7",
+              "axis3":"7",
+              "axis4":"6",
+              "axis5":"6",
+              "category":"b"
+            },{
+              "TimeStamp":1465416720000,
+              "axis1":"8",
+              "axis2":"6",
+              "axis3":"6",
+              "axis4":"6",
+              "axis5":"7",
+              "category":"c"
+            },{
+              "TimeStamp":1465416780000,
+              "axis1":"9",
+              "axis2":"6",
+              "axis3":"8",
+              "axis4":"7",
+              "axis5":"8",
+              "category":"c"
+            },{
+              "TimeStamp":1465416840000,
+              "axis1":"10",
+              "axis2":"5",
+              "axis3":"7",
+              "axis4":"5",
+              "axis5":"6",
+              "category":"a"
+            },{
+              "TimeStamp":1465416900000,
+              "axis1":"7",
+              "axis2":"6",
+              "axis3":"7",
+              "axis4":"7",
+              "axis5":"7",
+              "category":"b"
+            },{
+              "TimeStamp":1465416960000,
+              "axis1":"5",
+              "axis2":"7",
+              "axis3":"6",
+              "axis4":"5",
+              "axis5":"6",
+              "category":"a"
+            },{
+              "TimeStamp":1465417020000,
+              "axis1":"2",
+              "axis2":"8",
+              "axis3":"6",
+              "axis4":"7",
+              "axis5":"6",
+              "category":"c"
+            }
+          ],
+
+          seriesConfig1 = {
+            "axis1":{
+              "yAxisUnit": "Hz",
+              "title": "Axis 1"
+            },
+            "axis2":{
+              "yAxisUnit": "F",
+              "title": "Axis 2"
+            }
+          },
+          categories = [],
+          chartExtents = {'y': [0 , 10]},
+
           optionsArray = [
             {
-              "conterValue" : "0",
-              "lightDomContent": '<a href="javascript:" on-click="handleClick">Click here to increment counter:</a><span>{{counterValue}}</span>'
+              "height":500,
+              "width":800,
+              "preventResize":false,
+              "chartData":chartData1,
+              "seriesConfig": seriesConfig1,
+              "axes": ["axis1", "axis2", "axis3", "axis4", "axis5"],
+              "brushToRemove":false,
+              "categories": categories,
+              "categoryKey": null,
+              "renderToSvg": false,
+              "chartExtents": chartExtents
             }
           ],
           indexPlusOne = function(num) {
             return num + 1;
           };
 
-          template.selected = "0";
-          template.optionsArray = optionsArray;
-          template.indexPlusOne = indexPlusOne;
+      template.selected = "0";
+      template.optionsArray = optionsArray;
+      template.indexPlusOne = indexPlusOne;
+      template._categoryChanged = function(e) {
+        var i = e.target.index,
+            bool = e.target.checked,
+            cats = bool ? ['a','b','c','d'] : [],
+            key = bool ? 'category' : null;
+
+        var ck = document.querySelector('#categoryKey' + (i+1)),
+            c = document.querySelector('#categories' + (i+1));
+        console.log(ck.classList);
+        // if(ck.classList)
+
+        template.set('optionsArray.#' + i + '.categories', cats);
+        template.set('optionsArray.#' + i + '.categoryKey', key);
+
+      };
+      template._sliderChange = function(e) {
+        var elem;
+        //we know this should be the path
+        if(e.path[6].tagName === 'PX-SLIDER') {
+          elem = e.path[6];
+        } else { //in case for some reason it isnt, find it
+          var path = e.path;
+          for(var i = 0; i < path.length; i++){
+            if(path[i].tagName.toUpperCase() === 'PX-SLIDER'){
+              elem = path[i];
+              break;
+            }
+          }
+        }
+
+        var i = elem.index,
+            start = elem.value,
+            end = elem.endValue;
+
+        template.set('optionsArray.#' + i + '.chartExtents', {'y': [start,end] });
+      }
     });
+
   </script>
 </body>
 </html>

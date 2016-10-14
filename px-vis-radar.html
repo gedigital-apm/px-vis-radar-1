@@ -19,6 +19,7 @@
 
 <!--
 px-vis component which creates a radar (spider) chart.
+
 ##### Usage - Auto-generating your axes from data
 
     <px-vis-radar
@@ -75,7 +76,7 @@ px-vis component which creates a radar (spider) chart.
         offset="[[_offset]]">
       </px-vis-svg-canvas>
 
-      <template is="dom-if" if="[[!renderToSvg]]">
+      <template is="dom-if" if="[[!renderToSvg]]" restamp>
         <px-vis-line-canvas
           id="lineCanvas"
           radial-line
@@ -100,7 +101,7 @@ px-vis component which creates a radar (spider) chart.
           interpolation-function="bofCompleteManually">
         </px-vis-line-canvas>
       </template>
-      <template is="dom-if" if="[[renderToSvg]]">
+      <template is="dom-if" if="[[renderToSvg]]" restamp>
         <px-vis-line
           id="lineSVG"
           radial-line
@@ -402,7 +403,7 @@ px-vis component which creates a radar (spider) chart.
 
     observers: [
       '_pickMinMaxDim(width,height,margin)',
-      '_generateSeriesConfig(dimensions, seriesConfig, _haveChartData)',
+      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*)',
       '_selectedDomain(selectedDomain.x)'
@@ -414,6 +415,7 @@ px-vis component which creates a radar (spider) chart.
       'px-vis-redraw-lines' : '_redrawLines',
       'px-vis-multi-axis-mousemove': '_calcTooltip'
     },
+
     /**
      * Event listener resetting domainChanged when fired from elsewhere in the tree
      */
@@ -517,7 +519,7 @@ px-vis component which creates a radar (spider) chart.
      * Creates the series configuration file
      *
      */
-      _generateSeriesConfig: function(dimensions, seriesConfig) {
+      _generateSeriesConfig: function(dimensions, seriesConfig, categories) {
         // TODO make work with multiple series
         var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
         // add a seriesConfig with seriesKey as default
@@ -606,13 +608,6 @@ px-vis component which creates a radar (spider) chart.
       } else {
         this.$$('#lineCanvas').drawCanvas();
       }
-    },
-
-    /**
-     * Forces the chart to resize and redraw
-     */
-    resizeChart: function() {
-      this._onIronResize();
     },
 
     /**
@@ -742,7 +737,7 @@ px-vis component which creates a radar (spider) chart.
         //create our fake configuration object
         tooltipConfig[aid] = {};
         //if using categies, use it, otherwise default
-        tooltipConfig[aid]["color"] = group ? this.completeSeriesConfig[group]["color"] : this.completeSeriesConfig[this.seriesKey]["color"];
+        tooltipConfig[aid]["color"] = group && this.completeSeriesConfig[group] ? this.completeSeriesConfig[group]["color"] : this.completeSeriesConfig[this.seriesKey]["color"];
         //if title is specified, use it, otherwiuse id
         tooltipConfig[aid]["name"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['title'] ? this.completeSeriesConfig[aid]["title"] : aid;
         //if there is a unit, add it
