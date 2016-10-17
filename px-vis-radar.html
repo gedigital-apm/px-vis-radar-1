@@ -403,7 +403,7 @@ px-vis component which creates a radar (spider) chart.
 
     observers: [
       '_pickMinMaxDim(width,height,margin)',
-      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, _haveChartData)',
+      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*)',
       '_selectedDomain(selectedDomain.x)'

@@ -173,7 +173,7 @@
                         width = "{{item.width}}"
                         height = "{{item.height}}"
                         prevent-resize = "{{item.preventResize}}"
-                        series-key="TimeStamp"
+                        series-key="[[item.seriesKey]]"
                         axes="[[item.axes]]"
                         categories='[[item.categories]]'
                         category-key="[[item.categoryKey]]"
@@ -185,12 +185,13 @@
                   </div>
                   <div class="flex__item">
                     <px-demo-snippet
-                      element-properties={{item}}
+                      element-properties="{{item}}"
                       element-name="px-vis-radar"
                       scripts-includes="[[scriptsIncludes]]"
                       links-includes="[[linksIncludes]]"
-                      polygit-includes="[[polygitIncludes]]">
-                    </px-demo-snippet>
+                      polygit-includes="[[polygitIncludes]]"
+                      >
+                  </px-demo-snippet>
                   </div>
                 </div>
               </div>
@@ -356,6 +357,7 @@
             {
               "height":500,
               "width":800,
+              "seriesKey": "TimeStamp",
               "preventResize":false,
               "chartData":chartData1,
               "seriesConfig": seriesConfig1,
@@ -374,6 +376,9 @@
       template.selected = "0";
       template.optionsArray = optionsArray;
       template.indexPlusOne = indexPlusOne;
+      template.scriptsIncludes = ['https://cdn.rawgit.com/foretagsplatsen/numbro/1.7.1/numbro.js'];
+      template.linksIncludes = ['px-vis/px-polygit-imports-vis.html', 'px-datetime-common/px-polygit-imports-datetime.html', 'numbro-element/numbro-element.html'];
+      template.polygitIncludes = ['numbro*+MeTaNoV+*'];
       template._categoryChanged = function(e) {
         var i = e.target.index,
             bool = e.target.checked,
