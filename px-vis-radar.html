@@ -232,6 +232,7 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorD3.selectedDomain,
     PxVisBehaviorD3.radialAxisConfig,
     PxVisBehaviorD3.clipPath,
+    PxVisBehaviorChart.waitForAttach,
     commonColors
   ],
 
@@ -395,18 +396,17 @@ px-vis component which creates a radar (spider) chart.
        * Boolean specifying if the axis brushes should remove the brushed data or retain it
        */
       brushToRemove: {
-       type: Boolean,
-       value: false
-     },
-
+        type: Boolean,
+        value: false
+      }
     },
 
     observers: [
       '_pickMinMaxDim(width,height,margin)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
-      '_computeDimensions(axes.*, mutedAxes.*)',
-      '_selectedDomain(selectedDomain.x)'
+      '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
+      '_selectedDomain(selectedDomain.x, _loadedOnPage)'
     ],
 
     listeners: {
@@ -414,6 +414,10 @@ px-vis component which creates a radar (spider) chart.
       'px-vis-domain-changed-updated': '_setDomainChanged',
       'px-vis-redraw-lines' : '_redrawLines',
       'px-vis-multi-axis-mousemove': '_calcTooltip'
+    },
+
+    attached: function() {
+      this._isLoadedOnPage();
     },
 
     /**

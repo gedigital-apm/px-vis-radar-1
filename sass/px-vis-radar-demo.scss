@@ -88,6 +88,7 @@ $inuit-enable-list-inline--delimited : true;
   background: $white;
   border: 1px solid $gray4;
   overflow: auto;
+  min-height: calculateRem(500px);
 }
 .componentList {
   a {

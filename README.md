@@ -1,5 +1,7 @@
 #Px-Vis-Radar
 
+[![px-vis-radar demo](px-vis-radar.png?raw=true)](https://predixdev.github.io/px-vis-radar)
+
 ## Overview
 
 Px-Vis-Radar is a Predix UI component
