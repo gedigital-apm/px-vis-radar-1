@@ -126,7 +126,7 @@
                   <label for$="colorByCategires{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
                   <div class="u-ml-">Color by categories</div>
                 </div>
-                <div class="hidden">
+                <div id="categoryWrapper{{indexPlusOne(index)}}" class="hidden">
                   <div class="u-mb- u-ml+">categoryKey:
                     <input
                       id="categoryKey{{indexPlusOne(index)}}"
@@ -381,9 +381,10 @@
             key = bool ? 'category' : null;
 
         var ck = document.querySelector('#categoryKey' + (i+1)),
-            c = document.querySelector('#categories' + (i+1));
-        console.log(ck.classList);
-        // if(ck.classList)
+            c = document.querySelector('#categories' + (i+1)),
+            wrapper = document.querySelector('#categoryWrapper' + (i+1));
+
+        wrapper.className = (wrapper.className === 'hidden') ? "" : "hidden"
 
         template.set('optionsArray.#' + i + '.categories', cats);
         template.set('optionsArray.#' + i + '.categoryKey', key);
