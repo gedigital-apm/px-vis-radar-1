@@ -1,3 +1,7 @@
+v0.0.7
+==================
+* delay chart draw until after attach
+
 v0.0.6
 ==================
 * codepen
