@@ -33,7 +33,14 @@ Second, import the component to your application with the following tag in your 
 Finally, use the component in your application:
 
 ```
-Insert Your demo code here.
+  <px-vis-radar
+    width="1300"
+    height="500"
+    chart-data="[[chartData]]"
+    series-key="TimeStamp"
+    axes='["axis1","axis2","axis3"]'>
+  </px-vis-radar>
+
 ```
 
 <br />
