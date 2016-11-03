@@ -1,3 +1,7 @@
+v0.0.8
+==================
+* fixed seriesConfig color
+
 v0.0.7
 ==================
 * delay chart draw until after attach
