@@ -95,7 +95,7 @@
         </div>
 
 
-        <!--<br />
+        <br />
         <br />
         <br />
         <h3>Radar Chart demonstrating responsive behavior</h3>
@@ -133,7 +133,7 @@
       <px-vis-radar
         id="sliderChart"
         width="1300"
-        height="500"
+        height="800"
         brush-to-remove
         chart-data="[[chartData]]"
         series-key="TimeStamp"
@@ -146,7 +146,7 @@
       <h3>Radar Chart with a category specified to color the lines</h3>
       <px-vis-radar
         width="1300"
-        height="500"
+        height="800"
         chart-data="[[chartData]]"
         skip-keys='{"UnitNumber":true}'
         series-key="TimeStamp"
@@ -161,7 +161,7 @@
       <h3>Radar Chart with generated axes and developer specified keys to skip</h3>
       <px-vis-radar
         width="1300"
-        height="500"
+        height="800"
         chart-data="[[chartData]]"
         series-config='{"TimeStamp": {"color": "rgb(255,0,0)"}}'
         skip-keys='{"UnitNumber":true,"DLN_MODE":true,"DWATT":true,"TTXD1_31":true,"TTXD1_30":true,"TTXD1_29":true,"TTXD1_28":true,"TTXD1_27":true,"TTXD1_26":true,"TTXD1_25":true,"TTXD1_24":true,"TTXD1_23":true,"TTXD1_22":true,"TTXD1_21":true}'
@@ -176,6 +176,12 @@
       <px-vis-radar
         width="1300"
         height="500"
+        margin='{
+              "left": -120,
+              "right": -120,
+              "top": 0,
+              "bottom": 0
+            }'
         chart-data="[[chartData]]"
         axes='["TTXD1_1", "TTXD1_2", "TTXD1_3"]'
         series-key="TimeStamp"
@@ -187,13 +193,13 @@
       <h3>Radar Chart with 5 axes</h3>
       <px-vis-radar
         width="1300"
-        height="250"
+        height="550"
         chart-data="[[chartData]]"
         skip-keys='{"TimeStamp":true}'
         series-key="TimeStamp"
         axes='["TTXD1_1", "TTXD1_2", "TTXD1_3", "TTXD1_4", "TTXD1_5"]'
         render-to-svg
-      ></px-vis-radar>-->
+      ></px-vis-radar>
 
       <px-vis-data
         id = "seriesAjax"

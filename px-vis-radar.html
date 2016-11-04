@@ -68,17 +68,17 @@ px-vis component which creates a radar (spider) chart.
       </px-vis-radial-scale>
       <div id="registerWrapper" class$="{{_registerWrapperClass}}">
         <!--TODO: INSERT REGISTERS HERE-->
-        <div 
+        <!--<div 
           style="background-color:red; width:250px; height: 50px"
           class$="{{_getHideClass(hideRegister)}}">
-        </div>
+        </div>-->
         <px-vis-svg-canvas
           canvas-context="{{canvasContext}}"
           svg="{{svg}}"
           px-svg-elem="{{pxSvgElem}}"
-          width="[[_smallerSide]]"
+          width="[[_extendedWidth]]"
           height="[[_smallerSide]]"
-          offset="[[_center]]">
+          offset="[[_extendedCenter]]">
         </px-vis-svg-canvas>
       </div>
 
@@ -144,9 +144,9 @@ px-vis component which creates a radar (spider) chart.
       <px-vis-multi-axis
         id="multiAxis"
         svg="[[svg]]"
-        width="[[_smallerSide]]"
+        width="[[_extendedWidth]]"
         height="[[_smallerSide]]"
-        offset="[[_center]]"
+        offset="[[_extendedCenter]]"
         length="[[_radius]]"
         x="[[x]]"
         y="[[y]]"
@@ -372,11 +372,28 @@ px-vis component which creates a radar (spider) chart.
       brushToRemove: {
         type: Boolean,
         value: false
+      },
+      /**
+       * Extend width if possible to fit labels
+       */
+      _extendedWidth: {
+        type: Number
+      },
+      /**
+       * Center of the drawing, adjusted for extendedWidth
+       */
+      _extendedCenter: {
+        type: Array,
+        computed: '_getExtendedCenter(_center, _extendedWidth)'
+      },
+      _internalLabelMargin: {
+        type: Number,
+        value: 150
       }
     },
 
     observers: [
-      '_pickMinMaxDim(_smallerSide)',
+      '_processSizing(_smallerSide)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
@@ -395,7 +412,7 @@ px-vis component which creates a radar (spider) chart.
     },
     ready: function() {
       //use some default internal margins to make space for labels
-      this.set('_internalCircleMargins', {top: 25, right: 150, bottom: 25,left: 150});
+      this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
     },
 
     /**
@@ -413,12 +430,14 @@ px-vis component which creates a radar (spider) chart.
         return true
       }
     },
+    _getExtendedCenter: function(_center, _extendedWidth) {
+      return [this._center[0] + (this._extendedWidth - this._smallerSide)/2, this._center[1]];
+    },
     /**
      * Sets several base vars based on sizing
      */
-    _pickMinMaxDim: function(smallerSide){
+    _processSizing: function(smallerSide){
       var scaled,center;
-
 
       //figure out how big the center hole is
       scaled = this._smallerSide * 0.15;
@@ -427,10 +446,21 @@ px-vis component which creates a radar (spider) chart.
       this.set('centerOffset', center);
       this.set('ticks', Math.round(this._smallerSide/100));
 
-      //init _extendedWidth if needed
-      if(!this._extendedWidth) {
-        this.set('_extendedWidth', this._smallerSide)
-      }
+      //find out if we can extend the width
+      var wrapperRect = this.$.wrapper.getBoundingClientRect(),
+          registerRect = this.$.registerWrapper.getBoundingClientRect(),
+          availableWidth = Math.max(0, wrapperRect.width - registerRect.width),
+          adjust = Math.min(this._internalLabelMargin * 2, availableWidth),
+          newMargin = {
+            top: this._internalCircleMargins.top,
+            bottom: this._internalCircleMargins.bottom,
+            left: this._internalLabelMargin - adjust/2,
+            right: this._internalLabelMargin - adjust/2
+          }
+
+      //extend width and recalculate internal margins for this adjustment
+      this.set('_extendedWidth', this._smallerSide + adjust);
+      this.set('_internalCircleMargins', newMargin);
 
       // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
       if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
@@ -606,6 +636,7 @@ px-vis component which creates a radar (spider) chart.
          if(!this.preventResize) {
           wrapperRect = this.$.wrapper.getBoundingClientRect();
 
+          //TODO: measure and substract register appropriately
           this.set('width', wrapperRect.width);
           this.set('height', wrapperRect.height);
          }
