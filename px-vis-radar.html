@@ -52,9 +52,10 @@ px-vis component which creates a radar (spider) chart.
     <style include="px-vis-radar-styles"></style>
     <style include="px-theme-styles"></style>
 
-    <div id="wrapper" class="wrapper">
+    <div id="wrapper" class$="{{_chartWrapperClass}}">
       <px-vis-radial-scale
-        width="[[_minDim]]"
+        width="[[_radius]]"
+        height="[[_radius]]"
         margin="[[margin]]"
         amplitude-keys="[[dimensions]]"
         chart-data="[[chartData]]"
@@ -65,15 +66,21 @@ px-vis component which creates a radar (spider) chart.
         current-domain-y="{{currentDomainY}}"
         center-offset="[[centerOffset]]">
       </px-vis-radial-scale>
-      <px-vis-svg-canvas
-        canvas-context="{{canvasContext}}"
-        svg="{{svg}}"
-        px-svg-elem="{{pxSvgElem}}"
-        width="[[width]]"
-        height="[[height]]"
-        margin="[[margin]]"
-        offset="[[_offset]]">
-      </px-vis-svg-canvas>
+      <div id="registerWrapper" class$="{{_registerWrapperClass}}">
+        <!--TODO: INSERT REGISTERS HERE-->
+        <div 
+          style="background-color:red; width:250px; height: 50px"
+          class$="{{_getHideClass(hideRegister)}}">
+        </div>
+        <px-vis-svg-canvas
+          canvas-context="{{canvasContext}}"
+          svg="{{svg}}"
+          px-svg-elem="{{pxSvgElem}}"
+          width="[[_smallerSide]]"
+          height="[[_smallerSide]]"
+          offset="[[_center]]">
+        </px-vis-svg-canvas>
+      </div>
 
       <template is="dom-if" if="[[!renderToSvg]]" restamp>
         <px-vis-line-canvas
@@ -137,11 +144,10 @@ px-vis component which creates a radar (spider) chart.
       <px-vis-multi-axis
         id="multiAxis"
         svg="[[svg]]"
-        width="[[width]]"
-        height="[[height]]"
-        margin="[[margin]]"
-        offset="[[_offset]]"
-        length="[[_minDim]]"
+        width="[[_smallerSide]]"
+        height="[[_smallerSide]]"
+        offset="[[_center]]"
+        length="[[_radius]]"
         x="[[x]]"
         y="[[y]]"
         current-domain-x="[[currentDomainX]]"
@@ -173,6 +179,7 @@ px-vis component which creates a radar (spider) chart.
         brush-to-remove="[[brushToRemove]]"
         center-offset="[[centerOffset]]"
         drawn-tick-values="{{drawnTickValues}}"
+        displayed-values="{{displayedValues}}"
         title-type-size="15"
         label-type-size="12">
       </px-vis-multi-axis>
@@ -217,7 +224,6 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorD3.axisConfig,
     PxVisBehavior.mutedSeries,
     PxVisBehaviorD3.dynamicRedraw,
-    Polymer.IronResizableBehavior,
     PxVisBehavior.categories,
     PxVisBehavior.commonAxis,
     PxVisBehaviorD3.selectedTimeDomain,
@@ -231,6 +237,8 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorD3.radialAxisConfig,
     PxVisBehaviorD3.clipPath,
     PxVisBehaviorChart.waitForAttach,
+    PxVisBehaviorChart.registerPositioning,
+    PxVisBehaviorChart.circleChart,
     commonColors
   ],
 
@@ -241,17 +249,6 @@ px-vis component which creates a radar (spider) chart.
     * @type Object
     */
     properties: {
-      /**
-       * An object which holds the series lines that have been muted based on the selected domain
-       *
-       * @private
-       */
-      _offset: {
-        type: Array,
-        value: function() {
-          return [0,0]
-        }
-      },
       /**
        * A dev set Object of which keys in the chart data should not be used as axes.
        *
@@ -370,24 +367,9 @@ px-vis component which creates a radar (spider) chart.
         value: function(){ return {}; }
       },
       /**
-       * Margin for the svg chart
+       * extended width used if labels are too big and we have enough space for them
        */
-      margin:{
-        type:Object,
-        notify: true,
-        value: function() {
-          return {
-            left: 50,
-            right: 50,
-            top: 25,
-            bottom: 25
-          };
-        }
-      },
-      /**
-       * The min size dimension (width or height) sans margin
-       */
-      _minDim: {
+      _extendedWidth: {
         type: Number
       },
       /**
@@ -400,7 +382,8 @@ px-vis component which creates a radar (spider) chart.
     },
 
     observers: [
-      '_pickMinMaxDim(width,height,margin)',
+      '_pickMinMaxDim(_smallerSide)',
+      '_manageLabels(_smallerSide, displayedValues.*)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
@@ -416,6 +399,67 @@ px-vis component which creates a radar (spider) chart.
 
     attached: function() {
       this._isLoadedOnPage();
+    },
+    ready: function() {
+      //use some default internal margins to make space for labels
+      this.set('_internalCircleMargins', {top: 25, right: 150, bottom: 25,left: 150});
+    },
+    /**
+     * Extend the width to include labels if we can, increase margins otherwise
+     */
+    _manageLabels: function(_smallerSide, displayedValues) {
+      this.debounce('_manageLabels', function() {
+        // console.log('manage labels')
+        // //make sure we're finished initializing
+        // if(Object.keys(this.displayedValues).length === this.dimensions.length) {
+
+        //   //get the labels
+        //   var labels = this.pxSvgElem.querySelectorAll('g.title-group'),
+        //       svgRect = this.pxSvgElem.getBoundingClientRect(),
+        //       wrapperRect = this.$.wrapper.getBoundingClientRect(),
+        //       registerWrapperRect = this.$.registerWrapper.getBoundingClientRect(),
+        //       svgLeft = svgRect.left,
+        //       svgRight = svgRect.right,
+        //       rect,
+        //       rightOffset = 0,
+        //       leftOffset = 0;
+          
+        //   //find how much space we need on left and right to accomodate labels
+        //   for(var i=0; i<labels.length; i++) {
+        //     rect = labels[i].getBoundingClientRect();
+
+        //     var right = Math.max(0, rect.right - svgRight),
+        //         left = Math.max(0, svgLeft - rect.left);
+
+        //     rightOffset = Math.max(rightOffset, right);
+        //     leftOffset = Math.max(leftOffset, left);
+        //   }
+
+        //   console.log('right: ' + rightOffset);
+        //   console.log('left: ' + leftOffset);
+
+        //   //do we have enough space to accomodate those?
+        //   var availableWidth = wrapperRect.width - registerWrapperRect.width;
+        //   if(availableWidth >= rightOffset + leftOffset) {
+
+        //     //OK, just make svg bigger
+        //  //   this.set('_extendedWidth', this._extendedWidth + leftOffset + rightOffset);
+        //   } 
+
+        //     //NOK, use internal margins to fit labels
+        //     var newMargins = {
+        //       top: this._internalCircleMargins.top,
+        //       bottom: this._internalCircleMargins.bottom,
+        //       right: this._internalCircleMargins.right,
+        //       left: this._internalCircleMargins.left};
+            
+        //     newMargins.left =  leftOffset;
+        //     newMargins.right =  rightOffset;
+
+        //     this.set('_internalCircleMargins', newMargins);
+          
+        // }
+      }, 500);
     },
 
     /**
@@ -436,30 +480,25 @@ px-vis component which creates a radar (spider) chart.
     /**
      * Sets several base vars based on sizing
      */
-    _pickMinMaxDim: function(width,height,margin){
-      var w = width - margin.left - margin.right,
-          h = height - margin.top - margin.bottom,
-          min,max,offset,scaled,center;
+    _pickMinMaxDim: function(smallerSide){
+      var scaled,center;
 
-      //figure out which dimension is smaller
-      min = (w < h) ? w : h;
-
-      //figure out the center of the svg
-      offset = [ w / 2 , h / 2];
 
       //figure out how big the center hole is
-      scaled = min * 0.15;
+      scaled = this._smallerSide * 0.15;
       center = scaled < 75 ? scaled : 75;
 
       this.set('centerOffset', center);
-      this.set('ticks', Math.round(min/100));
-      this.set('_offset', offset);
+      this.set('ticks', Math.round(this._smallerSide/100));
+
+      //init _extendedWidth if needed
+      if(!this._extendedWidth) {
+        this.set('_extendedWidth', this._smallerSide)
+      }
 
       // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
-      if(this._minDim !== min / 2) {  //if there is a change, propogate it
-        this.set('_minDim', min / 2);
-      } else if(!this.renderToSvg) { //if no change and we need to refire canvas...
-        this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
+      if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
+      //  this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
       }
     },
 
@@ -738,7 +777,7 @@ px-vis component which creates a radar (spider) chart.
       //only update if the value is on the screen
       if(this.currentDomainY[0] < yVal && yVal < this.currentDomainY[1]){
         //calc the screen positions for the tooltip
-        screenX = this.y(yVal) * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
+        screenX = this.y(yVal) * Math.sin(this.x(aid)) + this._center[0] + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
 
         screenY = this.y(yVal) * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
         //stick on axis, but follow mouse

@@ -41,14 +41,15 @@
       <br />
       <br />
       <br />
+      <div style="height:800px">
       <px-vis-radar
         id="parall"
-        width="1300"
+        
         height="800"
         chart-data="[[chartData]]"
         skip-keys='{"UnitNumber":true,"DLN_MODE":true}'
         series-key="TimeStamp"
-        prevent-resize
+   
         selected-domain="{{selectedDomain}}"
         generate-axes-from-data
         brush-to-remove
@@ -63,6 +64,7 @@
             }
           }'>
       </px-vis-radar>
+      </div>
       <div style="height:100px">
         <px-vis-chart-navigator
             id="navigator"
@@ -93,7 +95,7 @@
         </div>
 
 
-        <br />
+        <!--<br />
         <br />
         <br />
         <h3>Radar Chart demonstrating responsive behavior</h3>
@@ -191,7 +193,7 @@
         series-key="TimeStamp"
         axes='["TTXD1_1", "TTXD1_2", "TTXD1_3", "TTXD1_4", "TTXD1_5"]'
         render-to-svg
-      ></px-vis-radar>
+      ></px-vis-radar>-->
 
       <px-vis-data
         id = "seriesAjax"
