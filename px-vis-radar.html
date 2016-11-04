@@ -367,12 +367,6 @@ px-vis component which creates a radar (spider) chart.
         value: function(){ return {}; }
       },
       /**
-       * extended width used if labels are too big and we have enough space for them
-       */
-      _extendedWidth: {
-        type: Number
-      },
-      /**
        * Boolean specifying if the axis brushes should remove the brushed data or retain it
        */
       brushToRemove: {
@@ -383,7 +377,6 @@ px-vis component which creates a radar (spider) chart.
 
     observers: [
       '_pickMinMaxDim(_smallerSide)',
-      '_manageLabels(_smallerSide, displayedValues.*)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
@@ -403,63 +396,6 @@ px-vis component which creates a radar (spider) chart.
     ready: function() {
       //use some default internal margins to make space for labels
       this.set('_internalCircleMargins', {top: 25, right: 150, bottom: 25,left: 150});
-    },
-    /**
-     * Extend the width to include labels if we can, increase margins otherwise
-     */
-    _manageLabels: function(_smallerSide, displayedValues) {
-      this.debounce('_manageLabels', function() {
-        // console.log('manage labels')
-        // //make sure we're finished initializing
-        // if(Object.keys(this.displayedValues).length === this.dimensions.length) {
-
-        //   //get the labels
-        //   var labels = this.pxSvgElem.querySelectorAll('g.title-group'),
-        //       svgRect = this.pxSvgElem.getBoundingClientRect(),
-        //       wrapperRect = this.$.wrapper.getBoundingClientRect(),
-        //       registerWrapperRect = this.$.registerWrapper.getBoundingClientRect(),
-        //       svgLeft = svgRect.left,
-        //       svgRight = svgRect.right,
-        //       rect,
-        //       rightOffset = 0,
-        //       leftOffset = 0;
-          
-        //   //find how much space we need on left and right to accomodate labels
-        //   for(var i=0; i<labels.length; i++) {
-        //     rect = labels[i].getBoundingClientRect();
-
-        //     var right = Math.max(0, rect.right - svgRight),
-        //         left = Math.max(0, svgLeft - rect.left);
-
-        //     rightOffset = Math.max(rightOffset, right);
-        //     leftOffset = Math.max(leftOffset, left);
-        //   }
-
-        //   console.log('right: ' + rightOffset);
-        //   console.log('left: ' + leftOffset);
-
-        //   //do we have enough space to accomodate those?
-        //   var availableWidth = wrapperRect.width - registerWrapperRect.width;
-        //   if(availableWidth >= rightOffset + leftOffset) {
-
-        //     //OK, just make svg bigger
-        //  //   this.set('_extendedWidth', this._extendedWidth + leftOffset + rightOffset);
-        //   } 
-
-        //     //NOK, use internal margins to fit labels
-        //     var newMargins = {
-        //       top: this._internalCircleMargins.top,
-        //       bottom: this._internalCircleMargins.bottom,
-        //       right: this._internalCircleMargins.right,
-        //       left: this._internalCircleMargins.left};
-            
-        //     newMargins.left =  leftOffset;
-        //     newMargins.right =  rightOffset;
-
-        //     this.set('_internalCircleMargins', newMargins);
-          
-        // }
-      }, 500);
     },
 
     /**
