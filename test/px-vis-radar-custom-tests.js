@@ -39,19 +39,6 @@ function runCustomTests() {
             'y3': 75
           }
         ],
-        seriesConfig = {
-          "y1": {
-            "title": "2nd Title"
-          },
-          "y2": {
-            "title": "Third Title",
-            "yAxisUnit": "bofs"
-          },
-          "y3": {
-            "title": "New Title",
-            "yAxisUnit": "bofs"
-          }
-        },
         dim = ['y','y1','y2','y3'],
         w = 500,
         h = 460;
@@ -166,6 +153,67 @@ function runCustomTests() {
 
   }); //suite
 
+  suite('px-vis-brush with seriesConfig', function() {
+    var basicRadar = document.getElementById('basicRadar');
+    var colors = commonColors.properties.colors.value;
+    var colorOrder = commonColors.properties.seriesColorOrder.value;
+    var colorSet = commonColors.properties.dataVisColors.value;
+
+    suiteSetup(function(done){
+      var seriesConfig = {
+          "x": {
+            "color": "rgb(255,0,0)"
+          },
+          "y1": {
+            "title": "2nd Title"
+          },
+          "y2": {
+            "title": "Third Title",
+            "yAxisUnit": "bofs"
+          },
+          "y3": {
+            "title": "New Title",
+            "yAxisUnit": "bofs"
+          }
+        };
+
+      basicRadar.set('seriesConfig',seriesConfig);
+
+      setTimeout(function(){done()},500);
+      // done();
+    });
+
+    test('basicRadar completeSeriesConfig', function() {
+      assert.isObject(basicRadar.completeSeriesConfig.x);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(255,0,0)');
+      assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
+      assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3']);
+      assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
+
+      assert.isObject(basicRadar.completeSeriesConfig.y1);
+      assert.equal(basicRadar.completeSeriesConfig.y1.title, '2nd Title');
+
+      assert.isObject(basicRadar.completeSeriesConfig.y2);
+      assert.equal(basicRadar.completeSeriesConfig.y2.title, 'Third Title');
+      assert.equal(basicRadar.completeSeriesConfig.y2.yAxisUnit, 'bofs');
+
+      assert.isObject(basicRadar.completeSeriesConfig.y3);
+      assert.equal(basicRadar.completeSeriesConfig.y3.title, 'New Title');
+      assert.equal(basicRadar.completeSeriesConfig.y3.yAxisUnit, 'bofs');
+    });
+
+    test('basicRadar dislplayed Titles', function() {
+      var t = basicRadar.$$('#multiAxis').displayedValues;
+
+      assert.equal(t.y, 'y');
+      assert.equal(t.y1, '2nd Title');
+      assert.equal(t.y2, 'Third...Title [bofs]');
+      assert.equal(t.y3, 'New Title [bofs]');
+    });
+
+  }); //suite
+
+
   suite('px-vis-brush muting an axis works', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
@@ -175,7 +223,9 @@ function runCustomTests() {
     suiteSetup(function(done){
       var muted = {
         'y': true
-      }
+      };
+
+      delete basicRadar.seriesConfig.x;
 
       basicRadar.set('mutedAxes',muted);
 
@@ -227,7 +277,7 @@ function runCustomTests() {
     suiteSetup(function(done){
       var muted = {
         'y': false
-      }
+      };
 
       basicRadar.set('mutedAxes',muted);
 
@@ -653,6 +703,340 @@ function runCustomTests() {
 
     test('basicRadar drawnTickValues', function() {
       assert.deepEqual(basicRadar.drawnTickValues, [20,30,40,50]);
+    });
+  }); //suite
+
+
+  // ###########################################################################################
+
+
+  suite('px-vis-brush generateAxesFromData works', function() {
+    var fromDataRadar = document.getElementById('fromDataRadar');
+    var colors = commonColors.properties.colors.value;
+    var colorOrder = commonColors.properties.seriesColorOrder.value;
+    var colorSet = commonColors.properties.dataVisColors.value;
+
+    suiteSetup(function(done){
+      var d = [{
+            "x": 1397102460000,
+            "y": 1,
+            "y1": 1,
+            "y2": 1,
+            'y3': 5
+          },{
+            "x": 1397131620000,
+            "y": 6,
+            "y1": 15,
+            "y2": 21,
+            'y3': 10
+          },{
+            "x": 1397160780000,
+            "y": 10,
+            "y1": 8,
+            "y2": 3,
+            'y3': 15
+          },{
+            "x": 1397189940000,
+            "y": 4,
+            "y1": 10,
+            "y2": 10,
+            'y3': 55
+          },{
+            "x": 1397219100000,
+            "y": 6,
+            "y1": 20,
+            "y2": 27,
+            'y3': 75
+          }
+        ],
+        seriesConfig = {
+          "y1": {
+            "title": "2nd Title"
+          },
+          "y2": {
+            "title": "Third Title",
+            "yAxisUnit": "bofs"
+          },
+          "y3": {
+            "title": "New Title",
+            "yAxisUnit": "bofs"
+          }
+        },
+        w = 500,
+        h = 460;
+
+      fromDataRadar.set('width',w);
+      fromDataRadar.set('height',h);
+      fromDataRadar.set('seriesKey',"x");
+      fromDataRadar.set('chartData',d);
+
+      setTimeout(function(){done()},500);
+      // done();
+    });
+
+    test('fromDataRadar fixture is created', function() {
+      assert.isTrue(fromDataRadar !== null);
+    });
+
+    test('fromDataRadar minDim', function() {
+      assert.equal(fromDataRadar._minDim, 200);
+    });
+
+    test('fromDataRadar _offset', function() {
+      assert.deepEqual(fromDataRadar._offset, [200,205]);
+    });
+
+    test('fromDataRadar centerOffset', function() {
+      assert.equal(fromDataRadar.centerOffset, 60);
+    });
+
+    test('fromDataRadar ticks', function() {
+      assert.equal(fromDataRadar.ticks, 4);
+    });
+
+    test('fromDataRadar completeSeriesConfig', function() {
+      assert.isObject(fromDataRadar.completeSeriesConfig.x);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.color, colorSet[colorOrder[18]]);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.name, 'x');
+      assert.deepEqual(fromDataRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3']);
+      assert.deepEqual(fromDataRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
+    });
+
+    test('fromDataRadar ticks', function() {
+      assert.equal(fromDataRadar.ticks, 4);
+    });
+
+    test('fromDataRadar dimensions', function() {
+      assert.deepEqual(fromDataRadar.dimensions, ['y','y1','y2','y3']);
+    });
+
+    test('fromDataRadar svg', function() {
+      var re = /translate\((\d+)\s?,?(\d*)\)/,
+          translate = re.exec(fromDataRadar.svg.attr('transform'));
+
+      assert.equal(fromDataRadar.svg.node().tagName, 'g');
+      assert.equal(translate[1], 250);
+      assert.equal(translate[2], 230);
+    });
+
+    test('fromDataRadar pxSvgElem', function() {
+      assert.equal(fromDataRadar.pxSvgElem.tagName, 'svg');
+      assert.equal(fromDataRadar.pxSvgElem.width.baseVal.value, 500);
+      assert.equal(fromDataRadar.pxSvgElem.height.baseVal.value, 460);
+    });
+
+    test('fromDataRadar canvasContext', function() {
+      assert.deepEqual(fromDataRadar.canvasContext._translation, [250,230]);
+      assert.equal(fromDataRadar.canvasContext._pxLinesRedraw, 1);
+      assert.equal(fromDataRadar.canvasContext._pxLinesTotal, 1);
+      assert.deepEqual(fromDataRadar.canvasContext._pxLinesSeries, {"x":true});
+      assert.equal(fromDataRadar.canvasContext.canvas.width, 500);
+      assert.equal(fromDataRadar.canvasContext.canvas.height, 460);
+    });
+
+    test('fromDataRadar x', function() {
+      assert.deepEqual(fromDataRadar.x.range(), [0,Math.PI*2]);
+      assert.deepEqual(fromDataRadar.x.domain(), ['y','y1','y2','y3']);
+    });
+
+    test('fromDataRadar y', function() {
+      assert.deepEqual(fromDataRadar.y.range(), [60,200]);
+      assert.deepEqual(fromDataRadar.y.domain(), [1,75]);
+    });
+
+    test('fromDataRadar mutedSeriesBrush', function() {
+      assert.deepEqual(fromDataRadar.mutedSeriesBrush, {});
+    });
+
+    test('fromDataRadar mutedSeriesDomain', function() {
+      assert.deepEqual(fromDataRadar.mutedSeriesDomain, {});
+    });
+
+    test('fromDataRadar truncationLength', function() {
+      assert.equal(fromDataRadar.truncationLength, 10);
+    });
+
+    test('fromDataRadar axisGroups', function() {
+      assert.equal(fromDataRadar.axisGroups.nodes().length, 4);
+    });
+
+    test('fromDataRadar brushElems', function() {
+      assert.equal(fromDataRadar.brushElems.length, 4);
+    });
+
+    test('fromDataRadar drawnTickValues', function() {
+      assert.deepEqual(fromDataRadar.drawnTickValues, [20,40,60,1,75]);
+    });
+
+    test('fromDataRadar _tooltipConfig', function() {
+      assert.deepEqual(fromDataRadar._tooltipConfig, {});
+    });
+
+  }); //suite
+
+  suite('px-vis-brush adding to data', function() {
+    var fromDataRadar = document.getElementById('fromDataRadar');
+    var colors = commonColors.properties.colors.value;
+    var colorOrder = commonColors.properties.seriesColorOrder.value;
+    var colorSet = commonColors.properties.dataVisColors.value;
+
+    suiteSetup(function(done){
+      var d = [{
+            "x": 1397102460000,
+            "y": 1,
+            "y1": 1,
+            "y2": 1,
+            'y3': 5,
+            'y4': 35
+          },{
+            "x": 1397131620000,
+            "y": 6,
+            "y1": 15,
+            "y2": 21,
+            'y3': 10,
+            'y4': 35
+          },{
+            "x": 1397160780000,
+            "y": 10,
+            "y1": 8,
+            "y2": 3,
+            'y3': 15,
+            'y4': 35
+          },{
+            "x": 1397189940000,
+            "y": 4,
+            "y1": 10,
+            "y2": 10,
+            'y3': 55,
+            'y4': 35
+          },{
+            "x": 1397219100000,
+            "y": 6,
+            "y1": 20,
+            "y2": 27,
+            'y3': 75,
+            'y4': 35
+          }
+        ],
+        dim = ['y','y1','y2','y3','y4'];
+
+      fromDataRadar.set('chartData',d);
+
+      setTimeout(function(){done()},500);
+      // done();
+    });
+
+    test('fromDataRadar completeSeriesConfig', function() {
+      assert.isObject(fromDataRadar.completeSeriesConfig.x);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.color, colorSet[colorOrder[18]]);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.name, 'x');
+      assert.deepEqual(fromDataRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3','y4']);
+      assert.deepEqual(fromDataRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3','y4']);
+    });
+
+    test('fromDataRadar dimensions', function() {
+      assert.deepEqual(fromDataRadar.dimensions, ['y','y1','y2','y3','y4']);
+    });
+
+
+    test('fromDataRadar x', function() {
+      assert.deepEqual(fromDataRadar.x.range(), [0,Math.PI*2]);
+      assert.deepEqual(fromDataRadar.x.domain(), ['y','y1','y2','y3','y4']);
+    });
+
+    test('fromDataRadar y', function() {
+      assert.deepEqual(fromDataRadar.y.range(), [60,200]);
+      assert.deepEqual(fromDataRadar.y.domain(), [1,75]);
+    });
+
+    test('fromDataRadar axisGroups', function() {
+      assert.equal(fromDataRadar.axisGroups.nodes().length, 5);
+    });
+
+    test('fromDataRadar brushElems', function() {
+      assert.equal(fromDataRadar.brushElems.length, 5);
+    });
+
+    test('fromDataRadar drawnTickValues', function() {
+      assert.deepEqual(fromDataRadar.drawnTickValues, [20,40,60,1,75]);
+    });
+  }); //suite
+
+  suite('px-vis-brush delete data ', function() {
+    var fromDataRadar = document.getElementById('fromDataRadar');
+    var colors = commonColors.properties.colors.value;
+    var colorOrder = commonColors.properties.seriesColorOrder.value;
+    var colorSet = commonColors.properties.dataVisColors.value;
+
+    suiteSetup(function(done){
+      var d = [{
+            "x": 1397102460000,
+            "y": 1,
+            "y1": 1,
+            'y4': 35
+          },{
+            "x": 1397131620000,
+            "y": 6,
+            "y1": 15,
+            'y4': 35
+          },{
+            "x": 1397160780000,
+            "y": 10,
+            "y1": 8,
+            'y4': 35
+          },{
+            "x": 1397189940000,
+            "y": 4,
+            "y1": 10,
+            'y4': 35
+          },{
+            "x": 1397219100000,
+            "y": 6,
+            "y1": 20,
+            'y4': 35
+          }
+        ],
+        dim = ['y','y1','y3','y4'];
+
+      fromDataRadar.set('chartData',d);
+
+      setTimeout(function(){done()},500);
+      // done();
+    });
+
+    test('fromDataRadar completeSeriesConfig', function() {
+      assert.isObject(fromDataRadar.completeSeriesConfig.x);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.color, colorSet[colorOrder[18]]);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.name, 'x');
+      assert.deepEqual(fromDataRadar.completeSeriesConfig.x.x, ['y','y1','y4']);
+      assert.deepEqual(fromDataRadar.completeSeriesConfig.x.y, ['y','y1','y4']);
+    });
+
+    test('fromDataRadar dimensions', function() {
+      assert.deepEqual(fromDataRadar.dimensions, ['y','y1','y4']);
+    });
+
+
+    test('fromDataRadar x', function() {
+      assert.deepEqual(fromDataRadar.x.range(), [0,Math.PI*2]);
+      assert.deepEqual(fromDataRadar.x.domain(), ['y','y1','y4']);
+    });
+
+    test('fromDataRadar y', function() {
+      assert.deepEqual(fromDataRadar.y.range(), [60,200]);
+      assert.deepEqual(fromDataRadar.y.domain(), [1,35]);
+    });
+
+    test('fromDataRadar axisGroups', function() {
+      assert.equal(fromDataRadar.axisGroups.nodes().length, 3);
+    });
+
+    test('fromDataRadar brushElems', function() {
+      assert.equal(fromDataRadar.brushElems.length, 3);
+    });
+
+    test('fromDataRadar drawnTickValues', function() {
+      assert.deepEqual(fromDataRadar.drawnTickValues, [10,20,30,1,35]);
     });
   }); //suite
 
