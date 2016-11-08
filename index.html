@@ -91,6 +91,32 @@
                   <div class="u-ml-">Prevent Resize</div>
                 </div>
 
+                <div class="u-mb-">Horizontal Alignment:
+                <div style="width: 100%;">
+                  <px-dropdown id="chartHorizontalAlignment" value="{{item.chartHorizontalAlignment}}" display-value="{{item.chartHorizontalAlignment}}" bound-target="properties">
+                    <px-dropdown-content
+                      items='[
+                        {"key":"one", "val": "left"},
+                        {"key":"two", "val": "center"},
+                        {"key":"three", "val": "right"}]'>
+                    </px-dropdown-content>
+                  </px-dropdown>
+                </div>
+              </div>
+
+              <div class="u-mb-">Vertical Alignment:
+                <div style="width: 100%;">
+                  <px-dropdown id="chartVerticalAlignment" value="{{item.chartVerticalAlignment}}" display-value="{{item.chartVerticalAlignment}}" bound-target="properties">
+                    <px-dropdown-content
+                      items='[
+                        {"key":"one", "val": "top"},
+                        {"key":"two", "val": "center"},
+                        {"key":"three", "val": "bottom"}]'>
+                    </px-dropdown-content>
+                  </px-dropdown>
+                </div>
+              </div>
+
                 <!-- brush to remove -->
                 <hr>
                 <div class="flex u-mb-">
@@ -165,23 +191,27 @@
 
               <div class="demoContainer u-mt+">
                 <!-- demo -->
-                <div class="flex flex--col">
-                  <div class="flex__item demo u-ph+ u-pb+">
-                    <div class="u-mt+">
-                      <px-vis-radar
-                        id="radar1"
-                        width = "{{item.width}}"
-                        height = "{{item.height}}"
-                        prevent-resize = "{{item.preventResize}}"
-                        series-key="[[item.seriesKey]]"
-                        axes="[[item.axes]]"
-                        categories='[[item.categories]]'
-                        category-key="[[item.categoryKey]]"
-                        chart-data="[[item.chartData]]"
-                        brush-to-remove="[[brushToRemove]]"
-                        series-config="[[item.seriesConfig]]">
-                      </px-vis-radar>
-                    </div>
+                <div class="flex flex--col full-height">
+                  <div class="flex__item demo full-height">
+                    <px-vis-radar
+                      id="radar1"
+                      width = "{{item.width}}"
+                      height = "{{item.height}}"
+                      prevent-resize = "{{item.preventResize}}"
+                      series-key="[[item.seriesKey]]"
+                      axes="[[item.axes]]"
+                      categories='[[item.categories]]'
+                      category-key="[[item.categoryKey]]"
+                      chart-data="[[item.chartData]]"
+                      brush-to-remove="[[brushToRemove]]"
+                      margin='{
+                        "left": -120,
+                        "right": -120,
+                        "top": 0,
+                        "bottom": 0
+                      }'
+                      series-config="[[item.seriesConfig]]">
+                    </px-vis-radar>
                   </div>
                   <div class="flex__item">
                     <px-demo-snippet
@@ -366,7 +396,9 @@
               "categories": categories,
               "categoryKey": null,
               "renderToSvg": false,
-              "chartExtents": chartExtents
+              "chartExtents": chartExtents,
+              "chartHorizontalAlignment": "center",
+              "chartVerticalAlignment": "center",
             }
           ],
           indexPlusOne = function(num) {

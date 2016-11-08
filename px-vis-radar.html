@@ -68,10 +68,9 @@ px-vis component which creates a radar (spider) chart.
       </px-vis-radial-scale>
       <div id="registerWrapper" class$="{{_registerWrapperClass}}">
         <!--TODO: INSERT REGISTERS HERE-->
-        <!--<div 
-          style="background-color:red; width:250px; height: 50px"
-          class$="{{_getHideClass(hideRegister)}}">
-        </div>-->
+        <div 
+          >
+        </div>
         <px-vis-svg-canvas
           canvas-context="{{canvasContext}}"
           svg="{{svg}}"
@@ -389,11 +388,16 @@ px-vis component which creates a radar (spider) chart.
       _internalLabelMargin: {
         type: Number,
         value: 150
+      },
+      //TODO: REMOVE WHEN REGISTERS IMPLEMENTED
+      _registerType: {
+        type: String,
+        value: "vertical"
       }
     },
 
     observers: [
-      '_processSizing(_smallerSide)',
+      '_processSizing(height, width, margin, _smallerSide)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
@@ -436,36 +440,40 @@ px-vis component which creates a radar (spider) chart.
     /**
      * Sets several base vars based on sizing
      */
-    _processSizing: function(smallerSide){
-      var scaled,center;
+    _processSizing: function(smallerSide) {
 
-      //figure out how big the center hole is
-      scaled = this._smallerSide * 0.15;
-      center = scaled < 75 ? scaled : 75;
+      this.debounce('processSizing', function() {
 
-      this.set('centerOffset', center);
-      this.set('ticks', Math.round(this._smallerSide/100));
+        var scaled,center;
 
-      //find out if we can extend the width
-      var wrapperRect = this.$.wrapper.getBoundingClientRect(),
-          registerRect = this.$.registerWrapper.getBoundingClientRect(),
-          availableWidth = Math.max(0, wrapperRect.width - registerRect.width),
-          adjust = Math.min(this._internalLabelMargin * 2, availableWidth),
-          newMargin = {
-            top: this._internalCircleMargins.top,
-            bottom: this._internalCircleMargins.bottom,
-            left: this._internalLabelMargin - adjust/2,
-            right: this._internalLabelMargin - adjust/2
-          }
+        //figure out how big the center hole is
+        scaled = this._smallerSide * 0.15;
+        center = scaled < 75 ? scaled : 75;
 
-      //extend width and recalculate internal margins for this adjustment
-      this.set('_extendedWidth', this._smallerSide + adjust);
-      this.set('_internalCircleMargins', newMargin);
+        this.set('centerOffset', center);
+        this.set('ticks', Math.round(this._smallerSide/100));
 
-      // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
-      if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
-      //  this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
-      }
+        //find out if we can extend the width
+        var wrapperRect = this.$.wrapper.getBoundingClientRect(),
+            registerRect = this.$.registerWrapper.getBoundingClientRect(),
+            availableWidth = Math.max(0, wrapperRect.width - registerRect.width),
+            adjust = Math.min(this._internalLabelMargin * 2, availableWidth),
+            newMargin = {
+              top: this._internalCircleMargins.top,
+              bottom: this._internalCircleMargins.bottom,
+              left: this._internalLabelMargin - adjust/2,
+              right: this._internalLabelMargin - adjust/2
+            }
+
+        //extend width and recalculate internal margins for this adjustment
+        this.set('_extendedWidth', this._smallerSide + adjust);
+        this.set('_internalCircleMargins', newMargin);
+
+        // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
+        if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
+          this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
+        }
+      }, 5);
     },
 
     /**
@@ -744,7 +752,7 @@ px-vis component which creates a radar (spider) chart.
       //only update if the value is on the screen
       if(this.currentDomainY[0] < yVal && yVal < this.currentDomainY[1]){
         //calc the screen positions for the tooltip
-        screenX = this.y(yVal) * Math.sin(this.x(aid)) + this._center[0] + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
+        screenX = this.y(yVal) * Math.sin(this.x(aid)) + this._extendedCenter[0] + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
 
         screenY = this.y(yVal) * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
         //stick on axis, but follow mouse
