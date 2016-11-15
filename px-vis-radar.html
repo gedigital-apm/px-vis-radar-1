@@ -194,8 +194,7 @@ px-vis component which creates a radar (spider) chart.
         mouse-position="[[mousePosition]]"
         chart-data="[[chartData]]"
         tooltip-data="[[tooltipData]]"
-        complete-series-config="[[_tooltipConfig]]"
-        x-axis-type="time">
+        complete-series-config="[[_tooltipSeriesConfig]]">
       </px-vis-tooltip>
     </div>
   </template>
@@ -234,6 +233,7 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorChart.waitForAttach,
     PxVisBehaviorChart.registerPositioning,
     PxVisBehaviorChart.circleChart,
+    PxVisBehaviorChart.subConfiguration,
     commonColors
   ],
 
@@ -332,7 +332,7 @@ px-vis component which creates a radar (spider) chart.
       seriesConfig: {
         type: Object,
         notify: true,
-        value: function(){ return {} }
+        value: function() { return {} }
       },
       /**
        * Object representing the actual displayed titles for each axis
@@ -357,9 +357,22 @@ px-vis component which creates a radar (spider) chart.
       /**
        * A "series configuration" object specifically for the tooltip
        */
-      _tooltipConfig: {
+      _tooltipSeriesConfig: {
         type: Object,
-        value: function(){ return {}; }
+        value: function() { return {}; }
+      },
+      /**
+       * Configuration object used to customize the tooltip.
+       * Please refer to px-vis-tooltip (https://github.com/PredixDev/px-vis) for a list of supported properties.
+       * Most interesting properties include:
+       * - width
+       * - height
+       * - tooltipStyle
+       * - forceDateTimeDisplay
+       */
+      tooltipConfig: {
+        type: Object,
+        observer: '_tooltipConfigChanged'
       },
       /**
        * Boolean specifying if the axis brushes should remove the brushed data or retain it
@@ -415,6 +428,9 @@ px-vis component which creates a radar (spider) chart.
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
     },
 
+    _tooltipConfigChanged: function(conf) {
+      this._applyConfigToElement(this.tooltipConfig, this.$.tooltip);
+    },
     /**
      * Event listener resetting domainChanged when fired from elsewhere in the tree
      */
@@ -425,8 +441,8 @@ px-vis component which creates a radar (spider) chart.
     /**
      * Computed value saying if we have chart data
      */
-    _doWeHaveChartData: function(cD){
-      if(this.chartData && this.chartData.length > 0){
+    _doWeHaveChartData: function(cD) {
+      if(this.chartData && this.chartData.length > 0) {
         return true
       }
     },
@@ -476,17 +492,17 @@ px-vis component which creates a radar (spider) chart.
      * Method to compute the axes to use. It will use all the keys in the data except those specified in skipKeys
      *
      */
-    _computeAxes: function(cD, sK){
-      if(this._doesObjHaveValues(this.chartData)){
+    _computeAxes: function(cD, sK) {
+      if(this._doesObjHaveValues(this.chartData)) {
         var axes;
         // add series and category key to skipKeys
         this.skipKeys[this.seriesKey] = true;
-        if(this.categoryKey){
+        if(this.categoryKey) {
           this.skipKeys[this.categoryKey] = true;
         }
 
-        if(this.generateAxesFromData){
-          if(typeof(this.axes) === 'undefined'){
+        if(this.generateAxesFromData) {
+          if(typeof(this.axes) === 'undefined') {
             // TODO what if the first object doesnt have all the dimensions?
             axes = Object.keys(this.chartData[0]).filter(function(d) {
               return !this.skipKeys[d];
@@ -512,9 +528,9 @@ px-vis component which creates a radar (spider) chart.
      * Method to compute the dimensions to use by using axes and mutedAxes.
      *
      */
-    _computeDimensions: function(axes, muted){
-      if(this._doesObjHaveValues(this.axes)){
-        if(this._doesObjHaveValues(this.mutedAxes)){
+    _computeDimensions: function(axes, muted) {
+      if(this._doesObjHaveValues(this.axes)) {
+        if(this._doesObjHaveValues(this.mutedAxes)) {
           var dims = this.axes.filter(function(d) {
             //only get dims that are not in dims, not supposed to be skiped, and not muted
             return !this.mutedAxes[d];
@@ -555,8 +571,8 @@ px-vis component which creates a radar (spider) chart.
       }
 
       // if categories are specified, use them
-      if(typeof(this.categoryKey) !== 'undefined'){
-        for(var i = 0; i < this.categories.length; i ++){
+      if(typeof(this.categoryKey) !== 'undefined') {
+        for(var i = 0; i < this.categories.length; i ++) {
           config[this.categories[i]] = {
             "color": this._getColor(18 + i),
             "name": this.categories[i],
@@ -573,7 +589,7 @@ px-vis component which creates a radar (spider) chart.
     /**
      * Helper function to return the correct color for a particular index.
      **/
-    _getColor: function(i){
+    _getColor: function(i) {
       var l = this.seriesColorOrder.length,
           index = this._calcIndex(i,l);
       return this.dataVisColors[this.seriesColorOrder[ index ]];
@@ -581,7 +597,7 @@ px-vis component which creates a radar (spider) chart.
     /**
      * Helper function to calculate the index. When we run out of indcies, it loops back over valid indicies.
      **/
-    _calcIndex: function(i,l){
+    _calcIndex: function(i,l) {
       return i < l ? i : this._calcIndex(i - l,l);
     },
 
@@ -589,12 +605,12 @@ px-vis component which creates a radar (spider) chart.
      * Adds data to a muted series based on the selected domain
      *
      */
-    _selectedDomain: function(sd){
-      this.debounce('selected_domain',function(){
-        if(this.chartData && this.chartData.length > 0){
+    _selectedDomain: function(sd) {
+      this.debounce('selected_domain',function() {
+        if(this.chartData && this.chartData.length > 0) {
           var muted = {};
-          for(var i = 0; i < this.chartData.length; i++){
-            if(this.chartData[i][this.seriesKey] < sd[0] || this.chartData[i][this.seriesKey] > sd[1]){
+          for(var i = 0; i < this.chartData.length; i++) {
+            if(this.chartData[i][this.seriesKey] < sd[0] || this.chartData[i][this.seriesKey] > sd[1]) {
               muted[this.chartData[i][this.seriesKey]] = true;
             }
           }
@@ -606,13 +622,13 @@ px-vis component which creates a radar (spider) chart.
      * Takes the muted series from the axis brush and the selected domain and returns a merged copy of them
      *
      */
-    _combineMutes: function(m1,m2){
+    _combineMutes: function(m1,m2) {
       var muted = {};
       // for these, we assume that "false" items will just have been removed
-      for(var k in m1){
+      for(var k in m1) {
         muted[k] = m1[k];
       }
-      for(var k in m2){
+      for(var k in m2) {
         muted[k] = m2[k];
       }
       return muted;
@@ -622,8 +638,8 @@ px-vis component which creates a radar (spider) chart.
      * call the line draw methods vis event.
      *
      */
-    _redrawLines: function(){
-      if(this.renderToSvg){
+    _redrawLines: function() {
+      if(this.renderToSvg) {
         this.$$('#lineSVG').drawElement();
       } else {
         this.$$('#lineCanvas').drawCanvas();
@@ -650,7 +666,7 @@ px-vis component which creates a radar (spider) chart.
      * Returns the width for the gridlines
      *
      */
-    _calcGridWidth: function(){
+    _calcGridWidth: function() {
       // overall width minus the inset for the axes
       return this.width - this.x(this.dimensions[0]) * 2;
     },
@@ -658,7 +674,7 @@ px-vis component which creates a radar (spider) chart.
      * Retruns a g elem for the grid to draw to
      *
      */
-    _calcGridSvg: function(){
+    _calcGridSvg: function() {
       // create a g and move it so it lines up with the first axis
       var currentG = this.svg.select('.gridGroup');
 
@@ -697,11 +713,11 @@ px-vis component which creates a radar (spider) chart.
      _changeMutedAxes: function(a,bool) {
        var mA = this.mutedAxes;
 
-       if(typeof(a) === 'string'){
+       if(typeof(a) === 'string') {
          this.mutedAxes = null;
          mA[a] = bool;
          this.set('mutedAxes', mA);
-       } else if(Array.isArray(a)){
+       } else if(Array.isArray(a)) {
          this.mutedAxes = null;
          for(var i = 0; i < a.length; i++) {
            mA[ a[i] ] = bool;
@@ -714,7 +730,7 @@ px-vis component which creates a radar (spider) chart.
      /**
       * Creates tooltip objects -- tooltipData, config, mouse coords -- on mouseover.
       */
-     _calcTooltip: function(evt){
+     _calcTooltip: function(evt) {
       var aid = evt.detail.axis,          //axis ID
           elem = evt.detail.elem,         //the group elem being hovered over
           mousePos = evt.detail.mousePos, //the mouse position
@@ -731,22 +747,22 @@ px-vis component which creates a radar (spider) chart.
           value = {};                     //the series obj within tooltipData
 
       //loop through our chart data and find a closetest match
-      for(var i = 0; i < this.chartData.length; i++){
+      for(var i = 0; i < this.chartData.length; i++) {
         //figure out the differnce between the data value and our saved value
         distance = Math.abs(this.chartData[i][aid] - mouseVal);
         // if it is smaller than last time, save the data info
-        if(distance < minDistance){
+        if(distance < minDistance) {
           yVal = this.chartData[i][aid];
           minDistance = distance;
           time = this.chartData[i][this.seriesKey];
-          if(this.categoryKey){
+          if(this.categoryKey) {
             group = this.chartData[i][this.categoryKey];
           }
         }
       }
 
       //only update if the value is on the screen
-      if(this.currentDomainY[0] < yVal && yVal < this.currentDomainY[1]){
+      if(this.currentDomainY[0] < yVal && yVal < this.currentDomainY[1]) {
         //calc the screen positions for the tooltip
         screenX = this.y(yVal) * Math.sin(this.x(aid)) + this._extendedCenter[0] + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
 
@@ -778,7 +794,7 @@ px-vis component which creates a radar (spider) chart.
         };
 
         this.set('tooltipData', data);
-        this.set('_tooltipConfig', tooltipConfig);
+        this.set('_tooltipSeriesConfig', tooltipConfig);
         this.set('mousePosition', [screenX, screenY]);
       } else {
         // if it is off the screen, still need to give mouse coords or else it errors out

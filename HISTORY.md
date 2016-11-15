@@ -1,3 +1,10 @@
+
+==================
+* modified internal mechanism for sizing and laying out the chart
+* added chartHorizontalAlignment and chartVerticalAlignment to align the chart drawing when smaller than its container
+* added tooltipConfig
+* tooltip doesn't show timestamp by default anymore. To enable it use forecDateTimeDisplay in tooltipConfig
+
 v0.0.8
 ==================
 * fixed seriesConfig color

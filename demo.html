@@ -49,7 +49,10 @@
         chart-data="[[chartData]]"
         skip-keys='{"UnitNumber":true,"DLN_MODE":true}'
         series-key="TimeStamp"
-   
+        tooltip-config='{
+          "tooltipStyle": "light",
+          "forceDateTimeDisplay": true
+        }'
         selected-domain="{{selectedDomain}}"
         generate-axes-from-data
         brush-to-remove
