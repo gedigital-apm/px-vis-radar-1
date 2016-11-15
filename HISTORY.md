@@ -1,3 +1,8 @@
+
+v0.0.9
+==================
+* bower updating px-demo-snippet
+
 v0.0.8
 ==================
 * fixed seriesConfig color
