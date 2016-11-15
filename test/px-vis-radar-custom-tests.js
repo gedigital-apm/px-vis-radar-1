@@ -57,20 +57,16 @@ function runCustomTests() {
       assert.isTrue(basicRadar !== null);
     });
 
-    test('basicRadar minDim', function() {
-      assert.equal(basicRadar._minDim, 200);
-    });
-
     test('basicRadar _offset', function() {
-      assert.deepEqual(basicRadar._offset, [200,205]);
+      assert.deepEqual(basicRadar._extendedCenter, [380,230]);
     });
 
     test('basicRadar centerOffset', function() {
-      assert.equal(basicRadar.centerOffset, 60);
+      assert.equal(basicRadar.centerOffset, 69);
     });
 
     test('basicRadar ticks', function() {
-      assert.equal(basicRadar.ticks, 4);
+      assert.equal(basicRadar.ticks, 5);
     });
 
     test('basicRadar completeSeriesConfig', function() {
@@ -79,10 +75,6 @@ function runCustomTests() {
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
-    });
-
-    test('basicRadar ticks', function() {
-      assert.equal(basicRadar.ticks, 4);
     });
 
     test('basicRadar dimensions', function() {
@@ -94,22 +86,22 @@ function runCustomTests() {
           translate = re.exec(basicRadar.svg.attr('transform'));
 
       assert.equal(basicRadar.svg.node().tagName, 'g');
-      assert.equal(translate[1], 250);
+      assert.equal(translate[1], 380);
       assert.equal(translate[2], 230);
     });
 
     test('basicRadar pxSvgElem', function() {
       assert.equal(basicRadar.pxSvgElem.tagName, 'svg');
-      assert.equal(basicRadar.pxSvgElem.width.baseVal.value, 500);
+      assert.equal(basicRadar.pxSvgElem.width.baseVal.value, 760);
       assert.equal(basicRadar.pxSvgElem.height.baseVal.value, 460);
     });
 
     test('basicRadar canvasContext', function() {
-      assert.deepEqual(basicRadar.canvasContext._translation, [250,230]);
+      assert.deepEqual(basicRadar.canvasContext._translation, [380,230]);
       assert.equal(basicRadar.canvasContext._pxLinesRedraw, 1);
       assert.equal(basicRadar.canvasContext._pxLinesTotal, 1);
       assert.deepEqual(basicRadar.canvasContext._pxLinesSeries, {"x":true});
-      assert.equal(basicRadar.canvasContext.canvas.width, 500);
+      assert.equal(basicRadar.canvasContext.canvas.width, 760);
       assert.equal(basicRadar.canvasContext.canvas.height, 460);
     });
 
@@ -119,7 +111,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -148,7 +140,7 @@ function runCustomTests() {
     });
 
     test('basicRadar _tooltipConfig', function() {
-      assert.deepEqual(basicRadar._tooltipConfig, {});
+      assert.deepEqual(basicRadar._tooltipSeriesConfig, {});
     });
 
   }); //suite
@@ -254,7 +246,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -306,7 +298,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -353,7 +345,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -402,7 +394,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -427,12 +419,12 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
     test('basicRadar drawnTickValues', function() {
-      assert.deepEqual(basicRadar.drawnTickValues, [20,30,40,50]);
+      assert.deepEqual(basicRadar.drawnTickValues, [20, 25, 30, 35, 40, 45, 50]);
     });
 
   }); //suite
@@ -509,7 +501,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -522,7 +514,7 @@ function runCustomTests() {
     });
 
     test('basicRadar drawnTickValues', function() {
-      assert.deepEqual(basicRadar.drawnTickValues, [20,30,40,50]);
+      assert.deepEqual(basicRadar.drawnTickValues, [20, 25, 30, 35, 40, 45, 50]);
     });
   }); //suite
 
@@ -559,7 +551,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -608,7 +600,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -689,7 +681,7 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [60,200]);
+      assert.deepEqual(basicRadar.y.range(), [69,205]);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -702,7 +694,7 @@ function runCustomTests() {
     });
 
     test('basicRadar drawnTickValues', function() {
-      assert.deepEqual(basicRadar.drawnTickValues, [20,30,40,50]);
+      assert.deepEqual(basicRadar.drawnTickValues, [20, 25, 30, 35, 40, 45, 50]);
     });
   }); //suite
 
@@ -778,20 +770,16 @@ function runCustomTests() {
       assert.isTrue(fromDataRadar !== null);
     });
 
-    test('fromDataRadar minDim', function() {
-      assert.equal(fromDataRadar._minDim, 200);
-    });
-
     test('fromDataRadar _offset', function() {
-      assert.deepEqual(fromDataRadar._offset, [200,205]);
+      assert.deepEqual(fromDataRadar._extendedCenter, [380,230]);
     });
 
     test('fromDataRadar centerOffset', function() {
-      assert.equal(fromDataRadar.centerOffset, 60);
+      assert.equal(fromDataRadar.centerOffset, 69);
     });
 
     test('fromDataRadar ticks', function() {
-      assert.equal(fromDataRadar.ticks, 4);
+      assert.equal(fromDataRadar.ticks, 5);
     });
 
     test('fromDataRadar completeSeriesConfig', function() {
@@ -803,7 +791,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar ticks', function() {
-      assert.equal(fromDataRadar.ticks, 4);
+      assert.equal(fromDataRadar.ticks, 5);
     });
 
     test('fromDataRadar dimensions', function() {
@@ -815,22 +803,22 @@ function runCustomTests() {
           translate = re.exec(fromDataRadar.svg.attr('transform'));
 
       assert.equal(fromDataRadar.svg.node().tagName, 'g');
-      assert.equal(translate[1], 250);
+      assert.equal(translate[1], 380);
       assert.equal(translate[2], 230);
     });
 
     test('fromDataRadar pxSvgElem', function() {
       assert.equal(fromDataRadar.pxSvgElem.tagName, 'svg');
-      assert.equal(fromDataRadar.pxSvgElem.width.baseVal.value, 500);
+      assert.equal(fromDataRadar.pxSvgElem.width.baseVal.value, 760);
       assert.equal(fromDataRadar.pxSvgElem.height.baseVal.value, 460);
     });
 
     test('fromDataRadar canvasContext', function() {
-      assert.deepEqual(fromDataRadar.canvasContext._translation, [250,230]);
+      assert.deepEqual(fromDataRadar.canvasContext._translation, [380,230]);
       assert.equal(fromDataRadar.canvasContext._pxLinesRedraw, 1);
       assert.equal(fromDataRadar.canvasContext._pxLinesTotal, 1);
       assert.deepEqual(fromDataRadar.canvasContext._pxLinesSeries, {"x":true});
-      assert.equal(fromDataRadar.canvasContext.canvas.width, 500);
+      assert.equal(fromDataRadar.canvasContext.canvas.width, 760);
       assert.equal(fromDataRadar.canvasContext.canvas.height, 460);
     });
 
@@ -840,7 +828,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar y', function() {
-      assert.deepEqual(fromDataRadar.y.range(), [60,200]);
+      assert.deepEqual(fromDataRadar.y.range(), [69,205]);
       assert.deepEqual(fromDataRadar.y.domain(), [1,75]);
     });
 
@@ -869,7 +857,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar _tooltipConfig', function() {
-      assert.deepEqual(fromDataRadar._tooltipConfig, {});
+      assert.deepEqual(fromDataRadar._tooltipSeriesConfig, {});
     });
 
   }); //suite
@@ -945,7 +933,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar y', function() {
-      assert.deepEqual(fromDataRadar.y.range(), [60,200]);
+      assert.deepEqual(fromDataRadar.y.range(), [69,205]);
       assert.deepEqual(fromDataRadar.y.domain(), [1,75]);
     });
 
@@ -1023,7 +1011,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar y', function() {
-      assert.deepEqual(fromDataRadar.y.range(), [60,200]);
+      assert.deepEqual(fromDataRadar.y.range(), [69,205]);
       assert.deepEqual(fromDataRadar.y.domain(), [1,35]);
     });
 
@@ -1036,7 +1024,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar drawnTickValues', function() {
-      assert.deepEqual(fromDataRadar.drawnTickValues, [10,20,30,1,35]);
+      assert.deepEqual(fromDataRadar.drawnTickValues, [ 5, 10, 15, 20, 25, 30, 35, 1, 35]);
     });
   }); //suite
 
