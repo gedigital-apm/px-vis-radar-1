@@ -1,3 +1,7 @@
+v0.0.9
+==================
+* allow setting empty axes to delete axes
+
 v0.0.8
 ==================
 * fixed seriesConfig color

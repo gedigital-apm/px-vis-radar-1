@@ -1,6 +1,6 @@
 // This is the wrapper for custom tests, called upon web components ready state
 function runCustomTests() {
-  suite('px-vis-brush basic setup works', function() {
+  suite('px-vis-radar basic setup works', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -153,7 +153,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush with seriesConfig', function() {
+  suite('px-vis-radar with seriesConfig', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -214,7 +214,7 @@ function runCustomTests() {
   }); //suite
 
 
-  suite('px-vis-brush muting an axis works', function() {
+  suite('px-vis-radar muting an axis works', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -268,7 +268,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush unmuting an axis works', function() {
+  suite('px-vis-radar unmuting an axis works', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -320,7 +320,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush muting with addToMutedAxes works', function() {
+  suite('px-vis-radar muting with addToMutedAxes works', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -367,7 +367,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush unmuting with removeFromMutedAxes works', function() {
+  suite('px-vis-radar unmuting with removeFromMutedAxes works', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -416,7 +416,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush change domains', function() {
+  suite('px-vis-radar change domains', function() {
     var basicRadar = document.getElementById('basicRadar');
 
     suiteSetup(function(done){
@@ -437,7 +437,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush adding an axis', function() {
+  suite('px-vis-radar adding an axis', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -526,7 +526,7 @@ function runCustomTests() {
     });
   }); //suite
 
-  suite('px-vis-brush muting with addToMutedAxes works  with an array', function() {
+  suite('px-vis-radar muting with addToMutedAxes works  with an array', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -573,7 +573,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush unmuting with removeFromMutedAxes works with an array', function() {
+  suite('px-vis-radar unmuting with removeFromMutedAxes works with an array', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -622,7 +622,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush delete an axis', function() {
+  suite('px-vis-radar delete an axis', function() {
     var basicRadar = document.getElementById('basicRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -710,7 +710,7 @@ function runCustomTests() {
   // ###########################################################################################
 
 
-  suite('px-vis-brush generateAxesFromData works', function() {
+  suite('px-vis-radar generateAxesFromData works', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -874,7 +874,7 @@ function runCustomTests() {
 
   }); //suite
 
-  suite('px-vis-brush adding to data', function() {
+  suite('px-vis-radar adding to data', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
@@ -962,7 +962,7 @@ function runCustomTests() {
     });
   }); //suite
 
-  suite('px-vis-brush delete data ', function() {
+  suite('px-vis-radar delete data ', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
     var colors = commonColors.properties.colors.value;
     var colorOrder = commonColors.properties.seriesColorOrder.value;
