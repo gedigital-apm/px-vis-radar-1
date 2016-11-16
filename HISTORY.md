@@ -1,6 +1,10 @@
-v0.0.9
+v0.0.10
 ==================
 * allow setting empty axes to delete axes
+
+v0.0.9
+==================
+* bower updating px-demo-snippet
 
 v0.0.8
 ==================
