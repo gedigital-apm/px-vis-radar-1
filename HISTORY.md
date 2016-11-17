@@ -1,3 +1,7 @@
+v0.0.11
+==================
+* removing px-theme style call
+
 v0.0.10
 ==================
 * allow setting empty axes to delete axes
