@@ -1,3 +1,7 @@
+==================
+* update to vis 0.7.0
+* added PxVisBehaviorChart.chartCommonMethods and associated changes
+
 v0.0.12
 ==================
 * update dependencies for dropdown

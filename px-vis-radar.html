@@ -50,7 +50,7 @@ px-vis component which creates a radar (spider) chart.
 <dom-module id="px-vis-radar">
   <template>
     <style include="px-vis-radar-styles"></style>
-    
+
 
     <div id="wrapper" class="wrapper">
       <px-vis-radial-scale
@@ -227,6 +227,7 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorD3.radialAxisConfig,
     PxVisBehaviorD3.clipPath,
     PxVisBehaviorChart.waitForAttach,
+    PxVisBehaviorChart.chartCommonMethods,
     commonColors
   ],
 
@@ -475,17 +476,18 @@ px-vis component which creates a radar (spider) chart.
         if(this.generateAxesFromData){
           if(typeof(this.axes) === 'undefined'){
             // TODO what if the first object doesnt have all the dimensions?
-            axes = Object.keys(this.chartData[0]).filter(function(d) {
+            axes = this._returnAllKeys(this.chartData).filter(function(d) {
               return !this.skipKeys[d];
             }.bind(this));
           } else {
-            var newAxes = Object.keys(this.chartData[0]).filter(function(d) {
+            var k = this._returnAllKeys(this.chartData);
+            var newAxes = k.filter(function(d) {
               // what if they add data but dont want all axes, only the ones previously specified?
               return !this.skipKeys[d] && this.axes.indexOf(d) === -1;
             }.bind(this));
             //make sure we remove axis that are not there anymore
             var oldAxes = this.axes.filter(function (d) {
-              return Object.keys(this.chartData[0]).indexOf(d) !== -1 && !this.skipKeys[d];
+              return k.indexOf(d) !== -1 && !this.skipKeys[d];
             }.bind(this));
             axes = oldAxes.concat(newAxes);
           }
@@ -557,23 +559,7 @@ px-vis component which creates a radar (spider) chart.
 
       this.set('completeSeriesConfig',config);
     },
-
-    // * TODO These are in behavior chart. Should make it so we can import them from there */
-    /**
-     * Helper function to return the correct color for a particular index.
-     **/
-    _getColor: function(i){
-      var l = this.seriesColorOrder.length,
-          index = this._calcIndex(i,l);
-      return this.dataVisColors[this.seriesColorOrder[ index ]];
-    },
-    /**
-     * Helper function to calculate the index. When we run out of indcies, it loops back over valid indicies.
-     **/
-    _calcIndex: function(i,l){
-      return i < l ? i : this._calcIndex(i - l,l);
-    },
-
+    
     /**
      * Adds data to a muted series based on the selected domain
      *
