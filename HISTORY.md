@@ -1,9 +1,26 @@
-
 ==================
 * modified internal mechanism for sizing and laying out the chart
 * added chartHorizontalAlignment and chartVerticalAlignment to align the chart drawing when smaller than its container
 * added tooltipConfig
 * tooltip doesn't show timestamp by default anymore. To enable it use forecDateTimeDisplay in tooltipConfig
+* update to vis 0.7.0
+* added PxVisBehaviorChart.chartCommonMethods and associated changes
+
+v0.0.12
+==================
+* update dependencies for dropdown
+
+v0.0.11
+==================
+* removing px-theme style call
+
+v0.0.10
+==================
+* allow setting empty axes to delete axes
+
+v0.0.9
+==================
+* bower updating px-demo-snippet
 
 v0.0.8
 ==================
