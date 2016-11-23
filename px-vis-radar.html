@@ -555,7 +555,7 @@ px-vis component which creates a radar (spider) chart.
         } else {
           this.set('dimensions',this.axes);
         }
-      } else if(this.dimensions.length > 0){
+      } else if(this.dimensions && this.dimensions.length > 0) {
         this.set('dimensions',[]);
       }
     },
