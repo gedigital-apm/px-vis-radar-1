@@ -1,6 +1,6 @@
 {
     "name": "px-vis-radar",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "main": [
         "px-vis-radar.html"
     ],
@@ -42,7 +42,7 @@
         "px-meta-lists-design": "^0.3.4",
         "px-dropdown": "^2.0.0",
         "px-rangepicker": "^1.2.1",
-        "px-slider": "^0.6.1",
+        "px-slider": "^0.7.6",
         "px-demo-data": "^0.0.1",
         "px-starter-kit-design": "^0.6.0"
     }
