@@ -43,7 +43,7 @@
         "px-dropdown": "^2.0.0",
         "px-rangepicker": "^1.2.1",
         "px-slider": "^0.7.6",
-        "px-demo-data": "^0.0.1",
+        "px-demo-data": "^0.0.20",
         "px-starter-kit-design": "^0.6.0"
     }
 }
