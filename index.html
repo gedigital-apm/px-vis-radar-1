@@ -62,6 +62,7 @@
               <!-- Properties -->
               <div class="properties u-ph+ u-pb+ u-mt+">
                 <p class="epsilon">Properties</p>
+                <p>NOTE: this interactive demo does not work on Firefox. Please use a different browser.</p>
 
                 <!-- sizing -->
                 <div class="u-mb-">Width:
@@ -397,16 +398,31 @@
       };
       template._sliderChange = function(e) {
         var elem;
-        //we know this should be the path
-        if(e.path[6].tagName === 'PX-SLIDER') {
-          elem = e.path[6];
-        } else { //in case for some reason it isnt, find it
-          var path = e.path;
-          for(var i = 0; i < path.length; i++){
-            if(path[i].tagName.toUpperCase() === 'PX-SLIDER'){
-              elem = path[i];
+
+        if(e.path) {
+          //we know this should be the path
+          if(e.path[6].tagName.toUpperCase() === 'PX-SLIDER') {
+            elem = e.path[6];
+          } else { //in case for some reason it isnt, find it
+            var path = e.path;
+            for(var i = 0; i < path.length; i++){
+              if(path[i].tagName.toUpperCase() === 'PX-SLIDER'){
+                elem = path[i];
+                break;
+              }
+            }
+          }
+        } else {
+          var counter = 0;
+          var curElem = e.target;
+          while(curElem.parentNode !== null && counter < 1000) {
+            if(curElem.tagName.toUpperCase() === 'PX-SLIDER') {
+              elem = curElem;
               break;
             }
+
+            counter += 1;
+            curElem = curElem.parentNode;
           }
         }
 
@@ -415,6 +431,7 @@
             end = elem.endValue;
 
         template.set('optionsArray.#' + i + '.chartExtents', {'y': [start,end] });
+        console.log(template.optionsArray)
       }
     });
 
