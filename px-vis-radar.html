@@ -4,7 +4,7 @@
 <link rel="import" href="../px-vis/px-vis-behavior-d3.html" />
 <link rel="import" href="../px-vis/px-vis-behavior-chart.html"/>
 <link rel="import" href="../px-vis/px-vis-svg-canvas.html"/>
-<link rel="import" href="../px-vis/px-vis-line.html"/>
+<link rel="import" href="../px-vis/px-vis-line-svg.html"/>
 <link rel="import" href="../px-vis/px-vis-line-canvas.html"/>
 <link rel="import" href="../px-vis/px-vis-multi-axis.html"/>
 <link rel="import" href="../px-vis/px-vis-radial-scale.html"/>
@@ -75,6 +75,8 @@ px-vis component which creates a radar (spider) chart.
           canvas-context="{{canvasContext}}"
           svg="{{svg}}"
           px-svg-elem="{{pxSvgElem}}"
+          svg-lower="{{svgLower}}"
+          px-svg-elem-lower="{{pxSvgElemLower}}"
           width="[[_extendedWidth]]"
           height="[[_smallerSide]]"
           offset="[[_extendedCenter]]">
@@ -107,13 +109,13 @@ px-vis component which creates a radar (spider) chart.
         </px-vis-line-canvas>
       </template>
       <template is="dom-if" if="[[renderToSvg]]" restamp>
-        <px-vis-line
+        <px-vis-line-svg
           id="lineSVG"
           radial-line
           multi-path
           gradient-line
           line-radius-limit="25"
-          svg="[[svg]]"
+          svg="[[layer.0]]"
           series-id="[[seriesKey]]"
           category-key="[[categoryKey]]"
           categories="[[categories]]"
@@ -127,9 +129,9 @@ px-vis component which creates a radar (spider) chart.
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
           interpolation-function="bofCompleteManually"
           clip-path="[[clipPath]]">
-        </px-vis-line>
+        </px-vis-line-svg>
         <px-vis-clip-path-complex-area
-          svg="[[svg]]"
+          svg="[[layer.0]]"
           x="[[x]]"
           y="[[y]]"
           domain-changed="[[domainChanged]]"
@@ -142,7 +144,7 @@ px-vis component which creates a radar (spider) chart.
 
       <px-vis-multi-axis
         id="multiAxis"
-        svg="[[svg]]"
+        svg="[[layer.1]]"
         width="[[_extendedWidth]]"
         height="[[_smallerSide]]"
         offset="[[_extendedCenter]]"
@@ -179,7 +181,7 @@ px-vis component which creates a radar (spider) chart.
         label-type-size="12">
       </px-vis-multi-axis>
       <px-vis-radar-grid
-        svg="[[svg]]"
+        svg="[[svgLower]]"
         x="[[x]]"
         y="[[y]]"
         axis-color="grey4"
@@ -208,6 +210,7 @@ px-vis component which creates a radar (spider) chart.
     behaviors: [
     PxVisBehavior.sizing,
     PxVisBehaviorD3.svg,
+    PxVisBehaviorD3.svgLower,
     PxVisBehaviorD3.canvas,
     PxVisBehaviorD3.axis,
     PxVisBehavior.dataset,
@@ -235,6 +238,7 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorChart.circleChart,
     PxVisBehaviorChart.subConfiguration,
     PxVisBehaviorChart.chartCommonMethods,
+    PxVisBehaviorChart.layers,
     commonColors
   ],
 
@@ -411,7 +415,8 @@ px-vis component which creates a radar (spider) chart.
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
-      '_selectedDomain(selectedDomain.x, _loadedOnPage)'
+      '_selectedDomain(selectedDomain.x, _loadedOnPage)',
+      '_createLayersOnce(svg, numberOfLayers)'
     ],
 
     listeners: {
@@ -421,12 +426,14 @@ px-vis component which creates a radar (spider) chart.
       'px-vis-multi-axis-mousemove': '_calcTooltip'
     },
 
-    attached: function() {
-      this._isLoadedOnPage();
-    },
     ready: function() {
+      this.set('numberOfLayers',2);
       //use some default internal margins to make space for labels
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
+    },
+
+    attached: function() {
+      this._isLoadedOnPage();
     },
 
     _tooltipConfigChanged: function(conf) {
