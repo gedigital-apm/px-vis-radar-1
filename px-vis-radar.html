@@ -50,7 +50,7 @@ px-vis component which creates a radar (spider) chart.
 <dom-module id="px-vis-radar">
   <template>
     <style include="px-vis-radar-styles"></style>
-    
+
 
     <div id="wrapper" class="wrapper">
       <px-vis-radial-scale
@@ -228,7 +228,7 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorD3.clipPath,
     PxVisBehaviorChart.waitForAttach,
     commonColors,
-    PxVisBehaviorChart.dataVisColorTheming 
+    PxVisBehaviorChart.dataVisColorTheming
   ],
 
     /**
@@ -393,12 +393,19 @@ px-vis component which creates a radar (spider) chart.
       brushToRemove: {
         type: Boolean,
         value: false
+      },
+      /**
+       * Specifies which seriesColorOrder color to start with for assigning the series color
+       */
+      startColorIndex: {
+        type: Number,
+        value: 0
       }
     },
 
     observers: [
       '_pickMinMaxDim(width,height,margin)',
-      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
+      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, seriesColorOrder.*)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
       '_selectedDomain(selectedDomain.x, _loadedOnPage)'
@@ -541,14 +548,14 @@ px-vis component which creates a radar (spider) chart.
       }
 
       if(!config[this.seriesKey]['color']) {
-        config[this.seriesKey]['color'] = this._getColor(18);
+        config[this.seriesKey]['color'] = this._getColor(this.startColorIndex);
       }
 
       // if categories are specified, use them
       if(typeof(this.categoryKey) !== 'undefined'){
         for(var i = 0; i < this.categories.length; i ++){
           config[this.categories[i]] = {
-            "color": this._getColor(18 + i),
+            "color": this._getColor(this.startColorIndex + i),
             "name": this.categories[i],
             "x": dimensions,
             "y": dimensions

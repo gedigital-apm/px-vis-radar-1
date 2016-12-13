@@ -1,3 +1,9 @@
+v0.1.1
+==================
+* Themeable
+* Changed default dataVisColor order to start at 0 for consistency with dark theme
+* updated tests
+
 v0.1.0
 ==================
 * Updated dependencies
