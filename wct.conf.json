@@ -20,14 +20,14 @@
           "version": "11"
         },
         {
-          "browserName": "safari",
+          "browserName": "safari 9",
           "platform": "OS X 10.11",
           "version": "9"
         },
         {
-          "browserName": "safari",
-          "platform": "OS X 10.10",
-          "version": "8"
+          "browserName": "safari 10",
+          "platform": "OS X 10.11",
+          "version": "10"
         },
         {
           "browserName": "firefox",
