@@ -1,3 +1,4 @@
+v1.0.0
 ==================
 * modified internal mechanism for sizing and laying out the chart
 * added chartHorizontalAlignment and chartVerticalAlignment to align the chart drawing when smaller than its container
@@ -6,6 +7,28 @@
 * update to vis 0.7.0
 * added PxVisBehaviorChart.chartCommonMethods and associated changes
 * Added layers and svgLower
+
+v0.1.1
+==================
+* Themeable
+* Changed default dataVisColor order to start at 0 for consistency with dark theme
+* updated tests
+
+v0.1.0
+==================
+* Updated dependencies
+
+v0.0.15
+==================
+* updating slider dependency
+
+v0.0.14
+==================
+* changing all devDeps to ^
+
+v0.0.13
+==================
+* Update px-theme to 2.0.1 and update test fixtures
 
 v0.0.12
 ==================
