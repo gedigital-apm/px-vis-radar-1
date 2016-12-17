@@ -23,7 +23,8 @@
   "dependencies": {
     "polymer": "^1.6.0",
     "px-theme": "^2.0.1",
-    "px-vis": "^0.8.0"
+    "px-vis": "^0.8.0",
+    "px-colors-design": "^0"
   },
   "devDependencies": {
     "px-forms-design": "^1.1.0",
