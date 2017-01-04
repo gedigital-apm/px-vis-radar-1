@@ -4,7 +4,7 @@ v1.0.0
 * added chartHorizontalAlignment and chartVerticalAlignment to align the chart drawing when smaller than its container
 * added tooltipConfig
 * tooltip doesn't show timestamp by default anymore. To enable it use forecDateTimeDisplay in tooltipConfig
-* update to vis 0.7.0
+* update to vis 1.0.0
 * added PxVisBehaviorChart.chartCommonMethods and associated changes
 * Added layers and svgLower
 
