@@ -93,29 +93,29 @@
                 </div>
 
                 <div class="u-mb-">Horizontal Alignment:
-                <div style="width: 100%;">
-                  <px-dropdown id="chartHorizontalAlignment" value="{{item.chartHorizontalAlignment}}" display-value="{{item.chartHorizontalAlignment}}" bound-target="properties">
-                    <px-dropdown-content
-                      items='[
-                        {"key":"one", "val": "left"},
-                        {"key":"two", "val": "center"},
-                        {"key":"three", "val": "right"}]'>
-                    </px-dropdown-content>
-                  </px-dropdown>
+                  <div style="width: 100%;">
+                    <px-dropdown id="chartHorizontalAlignment" value="{{item.chartHorizontalAlignment}}" display-value="{{item.chartHorizontalAlignment}}" bound-target="properties">
+                      <px-dropdown-content
+                        items='[
+                          {"key":"one", "val": "left"},
+                          {"key":"two", "val": "center"},
+                          {"key":"three", "val": "right"}]'>
+                      </px-dropdown-content>
+                    </px-dropdown>
+                  </div>
                 </div>
-              </div>
 
-              <div class="u-mb-">Vertical Alignment:
-                <div style="width: 100%;">
-                  <px-dropdown id="chartVerticalAlignment" value="{{item.chartVerticalAlignment}}" display-value="{{item.chartVerticalAlignment}}" bound-target="properties">
-                    <px-dropdown-content
-                      items='[
-                        {"key":"one", "val": "top"},
-                        {"key":"two", "val": "center"},
-                        {"key":"three", "val": "bottom"}]'>
-                    </px-dropdown-content>
-                  </px-dropdown>
-                </div>
+                <div class="u-mb-">Vertical Alignment:
+                  <div style="width: 100%;">
+                    <px-dropdown id="chartVerticalAlignment" value="{{item.chartVerticalAlignment}}" display-value="{{item.chartVerticalAlignment}}" bound-target="properties">
+                      <px-dropdown-content
+                        items='[
+                          {"key":"one", "val": "top"},
+                          {"key":"two", "val": "center"},
+                          {"key":"three", "val": "bottom"}]'>
+                      </px-dropdown-content>
+                    </px-dropdown>
+                  </div>
               </div>
 
                 <!-- brush to remove -->
@@ -188,6 +188,28 @@
                   </px-slider>
                 </div>
 
+                <!-- registers -->
+                <hr>
+                <div class="flex u-mb-">
+                  <input
+                    id="hideAxisRegister{{indexPlusOne(index)}}"
+                    class="toggle__input toggle__input--small"
+                    type="checkbox"
+                    checked="{{item.hideAxisRegister::change}}"/>
+                  <label for$="hideAxisRegister{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
+                  <div class="u-ml-">Hide axis register</div>
+                </div>
+                <div class="flex u-mb-">
+                  <input
+                    id="hideCategoryRegister{{indexPlusOne(index)}}"
+                    class="toggle__input toggle__input--small"
+                    type="checkbox"
+                    checked="{{item.hideCategoryRegister::change}}"/>
+                  <label for$="hideCategoryRegister{{indexPlusOne(index)}}" class="toggle__label toggle__label--small"></label>
+                  <div class="u-ml-">Hide category register</div>
+                </div>
+
+
               </div>
 
               <div class="demoContainer u-mt+">
@@ -205,6 +227,9 @@
                       category-key="[[item.categoryKey]]"
                       chart-data="[[item.chartData]]"
                       brush-to-remove="[[brushToRemove]]"
+                      dynamic-menu-config="[[item.dynamicMenuConfig]]"
+                      hide-axis-register="[[item.hideAxisRegister]]"
+                      hide-category-register="[[item.hideCategoryRegister]]"
                       margin='{
                         "left": -120,
                         "right": -120,
@@ -383,13 +408,32 @@
           },
           categories = [],
           chartExtents = {'y': [0 , 10]},
+          menuConfig = [
+            {
+              "name": "Delete",
+              "eventName": "delete",
+              "icon": "fa-trash",
+              "action": function(itemConfig, additionalDetail) {
+                //usually we would just pass the chart as the context for this action,
+                //unfortunately due to how our demo dynamically build the charts we don't
+                //have access to the chart when creating this config, so we manually
+                //get the chart every time
+                var chart = document.getElementById('radar1'),
+                    newAxes = chart.axes;
+                newAxes.splice(newAxes.indexOf(additionalDetail.name),1);
+                chart.set("axes", []);
+                chart.set("axes", newAxes);
+              }
+            }
+          ],
 
           optionsArray = [
             {
-              "height":800,
+              "height":500,
               "width":800,
               "seriesKey": "TimeStamp",
               "preventResize":false,
+              "dynamicMenuConfig":menuConfig,
               "chartData":chartData1,
               "seriesConfig": seriesConfig1,
               "axes": ["axis1", "axis2", "axis3", "axis4", "axis5"],
@@ -400,6 +444,8 @@
               "chartExtents": chartExtents,
               "chartHorizontalAlignment": "center",
               "chartVerticalAlignment": "center",
+              "hideCategoryRegister": false,
+              "hideAxisRegister": false
             }
           ],
           indexPlusOne = function(num) {
@@ -438,7 +484,7 @@
           } else { //in case for some reason it isnt, find it
             var path = e.path;
             for(var i = 0; i < path.length; i++){
-              if(path[i].tagName.toUpperCase() === 'PX-SLIDER'){
+              if(path[i].tagName && path[i].tagName.toUpperCase() === 'PX-SLIDER'){
                 elem = path[i];
                 break;
               }
@@ -448,7 +494,7 @@
           var counter = 0;
           var curElem = e.target;
           while(curElem.parentNode !== null && counter < 1000) {
-            if(curElem.tagName.toUpperCase() === 'PX-SLIDER') {
+            if(curElem.tagName && curElem.tagName.toUpperCase() === 'PX-SLIDER') {
               elem = curElem;
               break;
             }

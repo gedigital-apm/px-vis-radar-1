@@ -86,6 +86,7 @@ px-vis component which creates a radar (spider) chart.
             height="[[_registerHeight]]">
           </px-vis-register>
           <px-vis-svg-canvas
+            id="svgCanvas"
             canvas-context="{{canvasContext}}"
             svg="{{svg}}"
             px-svg-elem="{{pxSvgElem}}"
@@ -446,7 +447,8 @@ px-vis component which creates a radar (spider) chart.
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
       '_selectedDomain(selectedDomain.x, _loadedOnPage)',
-      '_createLayersOnce(svg, numberOfLayers)'
+      '_createLayersOnce(svg, numberOfLayers)',
+      '_computeRegisterHeight(height)'
     ],
 
     listeners: {
@@ -704,9 +706,16 @@ px-vis component which creates a radar (spider) chart.
 
           this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
           this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
-          this.set('_registerHeight', Math.max(wrapperRect.height, 0));
+          this._computeRegisterHeight();
          }
       },100);
+    },
+    _computeRegisterHeight: function() {
+
+      this.debounce('_computeRegisterHeight', function() {
+
+        this.set('_registerHeight', Math.max(this.$.svgCanvas.height, 0));
+      }.bind(this), 50);
     },
     /**
      * Returns the width for the gridlines
