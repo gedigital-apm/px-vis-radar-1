@@ -66,21 +66,36 @@ px-vis component which creates a radar (spider) chart.
         current-domain-y="{{currentDomainY}}"
         center-offset="[[centerOffset]]">
       </px-vis-radial-scale>
-      <div id="registerWrapper" class$="{{_registerWrapperClass}}">
-        <!--TODO: INSERT REGISTERS HERE-->
-        <div
-          >
+      <div id="registerWrapper" class="flex flex--col">
+        <px-vis-register
+          id="categoryRegister"
+          class$="{{_getHideClass(_hideCategoryRegister)}}"
+          tooltip-data="[[_categoryRegisterTooltipData]]"
+          complete-series-config="[[_categoryRegisterConfig]]"
+          type="horizontal"
+          prevent-muting>
+        </px-vis-register>
+        <div class="flex flex--row--rev">
+          <px-vis-register
+            id="axisRegister"
+            class$="{{_getHideClass(hideAxisRegister)}}"
+            dynamic-menu-config="[[dynamicMenuConfig]]"
+            tooltip-data="[[_axisRegisterTooltipData]]"
+            complete-series-config="[[_axisRegisterConfig]]"
+            type="vertical"
+            height="[[_registerHeight]]">
+          </px-vis-register>
+          <px-vis-svg-canvas
+            canvas-context="{{canvasContext}}"
+            svg="{{svg}}"
+            px-svg-elem="{{pxSvgElem}}"
+            svg-lower="{{svgLower}}"
+            px-svg-elem-lower="{{pxSvgElemLower}}"
+            width="[[_extendedWidth]]"
+            height="[[_smallerSide]]"
+            offset="[[_extendedCenter]]">
+          </px-vis-svg-canvas>
         </div>
-        <px-vis-svg-canvas
-          canvas-context="{{canvasContext}}"
-          svg="{{svg}}"
-          px-svg-elem="{{pxSvgElem}}"
-          svg-lower="{{svgLower}}"
-          px-svg-elem-lower="{{pxSvgElemLower}}"
-          width="[[_extendedWidth]]"
-          height="[[_smallerSide]]"
-          offset="[[_extendedCenter]]">
-        </px-vis-svg-canvas>
       </div>
 
       <template is="dom-if" if="[[!renderToSvg]]" restamp>
@@ -235,13 +250,16 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorD3.radialAxisConfig,
     PxVisBehaviorD3.clipPath,
     PxVisBehaviorChart.waitForAttach,
-    PxVisBehaviorChart.registerPositioning,
     PxVisBehaviorChart.circleChart,
     PxVisBehaviorChart.subConfiguration,
     PxVisBehaviorChart.chartCommonMethods,
     PxVisBehaviorChart.layers,
     PxColorsBehavior.commonColors,
-    PxColorsBehavior.dataVisColorTheming
+    PxColorsBehavior.dataVisColorTheming,
+    PxVisBehaviorChart.axisRegister,
+    PxVisBehaviorChart.categoryRegister,
+    PxVisBehaviorChart.categoryAndAxisRegisterConfigs,
+    PxVisBehavior.dynamicMenuConfig
   ],
 
     /**
@@ -416,6 +434,9 @@ px-vis component which creates a radar (spider) chart.
       startColorIndex: {
         type: Number,
         value: 0
+      },
+      _registerHeight: {
+        type: Number
       }
     },
 
@@ -432,7 +453,8 @@ px-vis component which creates a radar (spider) chart.
       'iron-resize': '_onIronResize',
       'px-vis-domain-changed-updated': '_setDomainChanged',
       'px-vis-redraw-lines' : '_redrawLines',
-      'px-vis-multi-axis-mousemove': '_calcTooltip'
+      'px-vis-multi-axis-mousemove': '_calcTooltip',
+      'px-vis-muted-series-updated': '_muteUnmute'
     },
 
     ready: function() {
@@ -671,11 +693,18 @@ px-vis component which creates a radar (spider) chart.
     _onIronResize: function() {
       this.debounce('ironresize', function() {
          if(!this.preventResize) {
-          wrapperRect = this.$.wrapper.getBoundingClientRect();
+          var wrapperRect = this.$.wrapper.getBoundingClientRect(),
+              axisRegisterRect = this.$.axisRegister.getBoundingClientRect(),
+              categoryRegisterRect = this.$.categoryRegister.getBoundingClientRect(),
+              widthDeduct = 0,
+              heightDeduct = 0;
 
-          //TODO: measure and substract register appropriately
-          this.set('width', wrapperRect.width);
-          this.set('height', wrapperRect.height);
+          heightDeduct += categoryRegisterRect.height;
+          widthDeduct += axisRegisterRect.width;
+
+          this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
+          this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
+          this.set('_registerHeight', Math.max(wrapperRect.height, 0));
          }
       },100);
     },
@@ -817,6 +846,19 @@ px-vis component which creates a radar (spider) chart.
         // if it is off the screen, still need to give mouse coords or else it errors out
         this.set('mousePosition', [-1000, -1000]);
       }
-     }
+     },
+     /**
+     * Mute/unmute axis on register requests
+     */
+    _muteUnmute: function(evt) {
+      
+      if(evt.detail.fromRegister) {
+        if(evt.detail.value) {
+          this.addToMutedAxes(evt.detail.name);
+        } else {
+          this.removeFromMutedAxes(evt.detail.name);
+        }
+      }
+    }
   });
 </script>
