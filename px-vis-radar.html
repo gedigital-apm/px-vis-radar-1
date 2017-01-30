@@ -62,8 +62,6 @@ px-vis component which creates a radar (spider) chart.
         chart-extents="[[chartExtents]]"
         x="{{x}}"
         y="{{y}}"
-        current-domain-x="{{currentDomainX}}"
-        current-domain-y="{{currentDomainY}}"
         center-offset="[[centerOffset]]">
       </px-vis-radial-scale>
       <div id="registerWrapper" class="flex flex--col">
@@ -116,7 +114,6 @@ px-vis component which creates a radar (spider) chart.
           muted-opacity="0"
           x="[[x]]"
           y="[[y]]"
-          current-domain-y="[[currentDomainY]]"
           domain-changed="[[domainChanged]]"
           selected-domain="[[selectedDomain]]"
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
@@ -151,7 +148,6 @@ px-vis component which creates a radar (spider) chart.
           x="[[x]]"
           y="[[y]]"
           domain-changed="[[domainChanged]]"
-          current-domain-y="[[currentDomainY]]"
           chart-data="[[chartData]]"
           dimensions="[[dimensions]]"
           clip-path="{{clipPath}}">
@@ -167,8 +163,6 @@ px-vis component which creates a radar (spider) chart.
         length="[[_radius]]"
         x="[[x]]"
         y="[[y]]"
-        current-domain-x="[[currentDomainX]]"
-        current-domain-y="[[currentDomainY]]"
         complete-series-config="{{completeSeriesConfig}}"
         series-key="[[seriesKey]]"
         chart-data="[[chartData]]"
@@ -817,7 +811,7 @@ px-vis component which creates a radar (spider) chart.
       }
 
       //only update if the value is on the screen
-      if(this.currentDomainY[0] < yVal && yVal < this.currentDomainY[1]) {
+      if(this.y.domain()[0] < yVal && yVal < this.y.domain()[1]) {
         //calc the screen positions for the tooltip
         screenX = this.y(yVal) * Math.sin(this.x(aid)) + this._extendedCenter[0] + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX;
 
