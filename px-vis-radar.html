@@ -69,6 +69,8 @@ px-vis component which creates a radar (spider) chart.
           id="categoryRegister"
           class$="{{_getHideClass(_hideCategoryRegister)}}"
           tooltip-data="[[_categoryRegisterTooltipData]]"
+          x-axis-type="linear"
+          y-axis-type="linear"
           complete-series-config="[[_categoryRegisterConfig]]"
           type="horizontal"
           prevent-muting>
@@ -76,6 +78,8 @@ px-vis component which creates a radar (spider) chart.
         <div class="flex flex--row--rev">
           <px-vis-register
             id="axisRegister"
+            x-axis-type="linear"
+          y-axis-type="linear"
             class$="{{_getHideClass(hideAxisRegister)}}"
             dynamic-menu-config="[[dynamicMenuConfig]]"
             tooltip-data="[[_axisRegisterTooltipData]]"
