@@ -207,6 +207,8 @@ px-vis component which creates a radar (spider) chart.
       </px-vis-radar-grid>
       <px-vis-tooltip
         id="tooltip"
+        x-axis-type="linear"
+        y-axis-type="linear"
         hover-target="[[brushElems]]"
         mouse-position="[[mousePosition]]"
         chart-data="[[chartData]]"
@@ -258,7 +260,8 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorChart.axisRegister,
     PxVisBehaviorChart.categoryRegister,
     PxVisBehaviorChart.categoryAndAxisRegisterConfigs,
-    PxVisBehavior.dynamicMenuConfig
+    PxVisBehavior.dynamicMenuConfig,
+    PxVisBehaviorChart.actionRequest
   ],
 
     /**
@@ -454,6 +457,7 @@ px-vis component which creates a radar (spider) chart.
       'px-vis-domain-changed-updated': '_setDomainChanged',
       'px-vis-redraw-lines' : '_redrawLines',
       'px-vis-multi-axis-mousemove': '_calcTooltip',
+      'px-vis-multi-axis-mouseleave': '_hideTooltip',
       'px-vis-muted-series-updated': '_muteUnmute'
     },
 
@@ -827,11 +831,11 @@ px-vis component which creates a radar (spider) chart.
         //create our fake configuration object
         tooltipConfig[aid] = {};
         //if using categies, use it, otherwise default
-        tooltipConfig[aid]["color"] = group && this.completeSeriesConfig[group] ? this.completeSeriesConfig[group]["color"] : this.completeSeriesConfig[this.seriesKey]["color"];
+        tooltipConfig[aid]['color'] = group && this.completeSeriesConfig[group] ? this.completeSeriesConfig[group]['color'] : this.completeSeriesConfig[this.seriesKey]['color'];
         //if title is specified, use it, otherwiuse id
-        tooltipConfig[aid]["name"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['title'] ? this.completeSeriesConfig[aid]["title"] : aid;
+        tooltipConfig[aid]['name'] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['title'] ? this.completeSeriesConfig[aid]['title'] : aid;
         //if there is a unit, add it
-        tooltipConfig[aid]["yAxisUnit"] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]["yAxisUnit"] ? this.completeSeriesConfig[aid]["yAxisUnit"] : '';
+        tooltipConfig[aid]['yAxisUnit'] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['yAxisUnit'] ? this.completeSeriesConfig[aid]['yAxisUnit'] : '';
         //add the y series id
         tooltipConfig[aid]['y'] = aid;
 
@@ -839,12 +843,16 @@ px-vis component which creates a radar (spider) chart.
         value[aid] = yVal;
         //create our tooltipData obj
         data = {
-          "mouse": mousePos,
-          "time": time,
+          'mouse': mousePos,
+          'time': time,
           'series': [
             { 'name': aid, 'value': value }
           ]
         };
+
+        //update axis register value
+        this._buildAxisTooltipData(aid, value, time);
+        this._updateAxisConfig(aid, tooltipConfig[aid]['color']);
 
         this.set('tooltipData', data);
         this.set('_tooltipSeriesConfig', tooltipConfig);
@@ -852,8 +860,13 @@ px-vis component which creates a radar (spider) chart.
       } else {
         // if it is off the screen, still need to give mouse coords or else it errors out
         this.set('mousePosition', [-1000, -1000]);
+        
+        //clear axis register
+        this._buildAxisTooltipData();
+        this._updateAxisConfig();
       }
      },
+     
      /**
      * Mute/unmute axis on register requests
      */
@@ -866,6 +879,11 @@ px-vis component which creates a radar (spider) chart.
           this.removeFromMutedAxes(evt.detail.name);
         }
       }
+    },
+    _hideTooltip: function() {
+      //clear axis register
+      this._buildAxisTooltipData();
+      this._updateAxisConfig();
     }
   });
 </script>
