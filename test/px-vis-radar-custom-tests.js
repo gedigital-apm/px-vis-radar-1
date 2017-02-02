@@ -49,7 +49,7 @@ function runCustomTests() {
       basicRadar.set('axes',dim);
       basicRadar.set('chartData',d);
 
-      setTimeout(function(){done()},500);
+      setTimeout(function() { done(); }, 1000);
       // done();
     });
 
@@ -762,7 +762,7 @@ function runCustomTests() {
       fromDataRadar.set('seriesKey',"x");
       fromDataRadar.set('chartData',d);
 
-      setTimeout(function(){done()},500);
+      setTimeout(function() { done(); }, 1000);
       // done();
     });
 
