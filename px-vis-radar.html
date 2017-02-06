@@ -12,6 +12,7 @@
 <link rel="import" href="../px-vis/px-vis-tooltip.html"/>
 <link rel="import" href="../px-vis/px-vis-radar-grid.html"/>
 <link rel="import" href="../px-vis/px-vis-clip-path-complex-area.html"/>
+<link rel="import" href="../px-vis/px-vis-toolbar.html"/>
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
 
 
@@ -87,17 +88,28 @@ px-vis component which creates a radar (spider) chart.
             type="vertical"
             height="[[_registerHeight]]">
           </px-vis-register>
-          <px-vis-svg-canvas
-            id="svgCanvas"
-            canvas-context="{{canvasContext}}"
-            svg="{{svg}}"
-            px-svg-elem="{{pxSvgElem}}"
-            svg-lower="{{svgLower}}"
-            px-svg-elem-lower="{{pxSvgElemLower}}"
-            width="[[_extendedWidth]]"
-            height="[[_smallerSide]]"
-            offset="[[_extendedCenter]]">
-          </px-vis-svg-canvas>
+          <!-- toolbar + drawing -->
+          <div class="flex flex--col">
+            <px-vis-toolbar
+              id="toolbar"
+              current-sub-config='[[toolbarSubConfig]]'
+              action-config='{{actionConfig}}'
+              within-chart
+              chart-margin="[[_internalLabelMargin]]"
+              show-tooltip="{{_internalShowTooltip}}">
+            </px-vis-toolbar>
+            <px-vis-svg-canvas
+              id="svgCanvas"
+              canvas-context="{{canvasContext}}"
+              svg="{{svg}}"
+              px-svg-elem="{{pxSvgElem}}"
+              svg-lower="{{svgLower}}"
+              px-svg-elem-lower="{{pxSvgElemLower}}"
+              width="[[_extendedWidth]]"
+              height="[[_smallerSide]]"
+              offset="[[_extendedCenter]]">
+            </px-vis-svg-canvas>
+          </div>
         </div>
       </div>
 
@@ -262,7 +274,9 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorChart.categoryAndAxisRegisterConfigs,
     PxVisBehavior.dynamicMenuConfig,
     PxVisBehaviorChart.actionRequest,
-    PxVisBehaviorChart.showTooltip 
+    PxVisBehaviorChart.showTooltip,
+    PxVisBehaviorChart.showTooltip,
+    PxVisBehaviorChart.toolbarSubConfig
   ],
 
     /**
@@ -399,8 +413,7 @@ px-vis component which creates a radar (spider) chart.
        * - forceDateTimeDisplay
        */
       tooltipConfig: {
-        type: Object,
-        observer: '_tooltipConfigChanged'
+        type: Object
       },
       /**
        * Boolean specifying if the axis brushes should remove the brushed data or retain it
@@ -440,6 +453,23 @@ px-vis component which creates a radar (spider) chart.
       },
       _registerHeight: {
         type: Number
+      },
+      /**
+      * Configuration object used to customize the toolbar
+      * Please refer to px-vis-toolbar (https://github.com/PredixDev/px-vis) for a list of supported properties.
+      * Toolbar is empty by default and this chart does not support zooming or panning
+      * Most interesting properties include:
+      * - config (complex object for customizing the toolbar)
+      * - horizontalAlignment
+      * - subToolbarAlignment
+      */
+    toolbarConfig: {
+        type: Object,
+        value: function() {
+          return {
+              "config": {}
+          };
+        }
       }
     },
 
@@ -450,7 +480,10 @@ px-vis component which creates a radar (spider) chart.
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
       '_selectedDomain(selectedDomain.x, _loadedOnPage)',
       '_createLayersOnce(svg, numberOfLayers)',
-      '_computeRegisterHeight(height)'
+      '_computeRegisterHeight(height)',
+      '_tooltipConfigChanged(tooltipConfig)',
+      '_toolbarConfigChanged(toolbarConfig)',
+
     ],
 
     listeners: {
@@ -474,6 +507,9 @@ px-vis component which creates a radar (spider) chart.
 
     _tooltipConfigChanged: function(conf) {
       this._applyConfigToElement(this.tooltipConfig, this.$.tooltip);
+    },
+    _toolbarConfigChanged: function(conf) {
+      this._applyConfigToElement(this.toolbarConfig, this.$.toolbar);
     },
     /**
      * Event listener resetting domainChanged when fired from elsewhere in the tree
@@ -701,10 +737,12 @@ px-vis component which creates a radar (spider) chart.
           var wrapperRect = this.$.wrapper.getBoundingClientRect(),
               axisRegisterRect = this.$.axisRegister.getBoundingClientRect(),
               categoryRegisterRect = this.$.categoryRegister.getBoundingClientRect(),
+              toolbarRect = this.$.toolbar.getBoundingClientRect(),
               widthDeduct = 0,
               heightDeduct = 0;
 
           heightDeduct += categoryRegisterRect.height;
+          heightDeduct += toolbarRect.height;
           widthDeduct += axisRegisterRect.width;
 
           this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
