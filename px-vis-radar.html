@@ -275,8 +275,8 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehavior.dynamicMenuConfig,
     PxVisBehaviorChart.actionRequest,
     PxVisBehaviorChart.showTooltip,
-    PxVisBehaviorChart.showTooltip,
-    PxVisBehaviorChart.toolbarSubConfig
+    PxVisBehaviorChart.toolbarSubConfig,
+    PxVisBehaviorChart.chartToolbarConfig
   ],
 
     /**
@@ -453,23 +453,6 @@ px-vis component which creates a radar (spider) chart.
       },
       _registerHeight: {
         type: Number
-      },
-      /**
-      * Configuration object used to customize the toolbar
-      * Please refer to px-vis-toolbar (https://github.com/PredixDev/px-vis) for a list of supported properties.
-      * Toolbar is empty by default and this chart does not support zooming or panning
-      * Most interesting properties include:
-      * - config (complex object for customizing the toolbar)
-      * - horizontalAlignment
-      * - subToolbarAlignment
-      */
-    toolbarConfig: {
-        type: Object,
-        value: function() {
-          return {
-              "config": {}
-          };
-        }
       }
     },
 
@@ -482,8 +465,7 @@ px-vis component which creates a radar (spider) chart.
       '_createLayersOnce(svg, numberOfLayers)',
       '_computeRegisterHeight(height)',
       '_tooltipConfigChanged(tooltipConfig)',
-      '_toolbarConfigChanged(toolbarConfig)',
-
+      '_toolbarConfigChanged(toolbarConfig)'
     ],
 
     listeners: {
