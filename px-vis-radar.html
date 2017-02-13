@@ -28,17 +28,18 @@ px-vis component which creates a radar (spider) chart.
         height="[[height]]"
         axes='["Axes_1","Axes_2","Axes_n"]'
         chart-data="[[chartData]]"
-        series-key="[[timestampKey]]"
+        series-key="[[timestampKey]]">
     </px-vis-radar>
 
 
 ##### Usage - Specifying your axes manually
+
     <px-vis-radar
         width="[[width]]"
         height="[[height]]"
         chart-data="[[chartData]]"
         series-key="[[timestampKey]]"
-        generate-axes-from-data
+        generate-axes-from-data>
     </px-vis-radar>
 
 
@@ -241,13 +242,13 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorD3.svg,
     PxVisBehaviorD3.svgLower,
     PxVisBehaviorD3.canvas,
-    PxVisBehaviorD3.axis,
+    PxVisBehaviorD3.axes,
     PxVisBehavior.dataset,
     PxVisBehavior.dimensions,
     PxVisBehavior.commonMethods,
     PxVisBehavior.chartExtents,
     PxVisBehavior.completeSeriesConfig,
-    PxVisBehaviorD3.axisConfig,
+    PxVisBehaviorD3.labelTypeSize,
     PxVisBehavior.mutedSeries,
     PxVisBehaviorD3.dynamicRedraw,
     PxVisBehavior.categories,
@@ -520,6 +521,7 @@ px-vis component which creates a radar (spider) chart.
         var scaled,center;
 
         //figure out how big the center hole is
+        // if it is a small chart, make the center hole 15% of the size, otherwise, max out at 75
         scaled = this._smallerSide * 0.15;
         center = scaled < 75 ? scaled : 75;
 
@@ -877,18 +879,18 @@ px-vis component which creates a radar (spider) chart.
       } else {
         // if it is off the screen, still need to give mouse coords or else it errors out
         this.set('mousePosition', [-1000, -1000]);
-        
+
         //clear axis register
         this._buildAxisTooltipData();
         this._updateAxisConfig();
       }
      },
-     
+
      /**
      * Mute/unmute axis on register requests
      */
     _muteUnmute: function(evt) {
-      
+
       if(evt.detail.fromRegister) {
         if(evt.detail.value) {
           this.addToMutedAxes(evt.detail.name);
