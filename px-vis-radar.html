@@ -86,7 +86,7 @@ px-vis component which creates a radar (spider) chart.
             tooltip-data="[[_axisRegisterTooltipData]]"
             complete-series-config="[[_axisRegisterConfig]]"
             type="vertical"
-            height="[[_registerHeight]]">
+            height="[[_verticalRegisterHeight]]">
           </px-vis-register>
           <!-- toolbar + drawing -->
           <div class="flex flex--col">
@@ -276,7 +276,8 @@ px-vis component which creates a radar (spider) chart.
     PxVisBehaviorChart.actionRequest,
     PxVisBehaviorChart.showTooltip,
     PxVisBehaviorChart.toolbarSubConfig,
-    PxVisBehaviorChart.chartToolbarConfig
+    PxVisBehaviorChart.chartToolbarConfig,
+    PxVisBehaviorChart.sizeVerticalRegister 
   ],
 
     /**
@@ -450,9 +451,6 @@ px-vis component which creates a radar (spider) chart.
       startColorIndex: {
         type: Number,
         value: 0
-      },
-      _registerHeight: {
-        type: Number
       }
     },
 
@@ -463,7 +461,6 @@ px-vis component which creates a radar (spider) chart.
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
       '_selectedDomain(selectedDomain.x, _loadedOnPage)',
       '_createLayersOnce(svg, numberOfLayers)',
-      '_computeRegisterHeight(height)',
       '_tooltipConfigChanged(tooltipConfig)',
       '_toolbarConfigChanged(toolbarConfig)'
     ],
@@ -480,6 +477,8 @@ px-vis component which creates a radar (spider) chart.
     ready: function() {
       this.set('numberOfLayers',2);
       //use some default internal margins to make space for labels
+      this.set('_verticalRegisterDrawingCanvasId', 'svgCanvas');
+      this.set('_verticalRegisterHeightDeductions', ['toolbar']);
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
     },
 
@@ -717,28 +716,21 @@ px-vis component which creates a radar (spider) chart.
       this.debounce('ironresize', function() {
          if(!this.preventResize) {
           var wrapperRect = this.$.wrapper.getBoundingClientRect(),
-              axisRegisterRect = this.$.axisRegister.getBoundingClientRect(),
-              categoryRegisterRect = this.$.categoryRegister.getBoundingClientRect(),
+              axisRegisterWidth = this.hideAxisRegister ? 0 : this.$.axisRegister.getBoundingClientRect().width,
+              categoryRegisterHeight = this._hideCategoryRegister ? 0 : this.$.categoryRegister.getBoundingClientRect().height,
               toolbarRect = this.$.toolbar.getBoundingClientRect(),
               widthDeduct = 0,
               heightDeduct = 0;
 
-          heightDeduct += categoryRegisterRect.height;
+          heightDeduct += categoryRegisterHeight;
           heightDeduct += toolbarRect.height;
-          widthDeduct += axisRegisterRect.width;
+          widthDeduct += axisRegisterWidth;
 
           this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
           this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
-          this._computeRegisterHeight();
+          this._computeVerticalRegisterHeight([toolbarRect.height, categoryRegisterHeight]);
          }
       },100);
-    },
-    _computeRegisterHeight: function() {
-
-      this.debounce('_computeRegisterHeight', function() {
-
-        this.set('_registerHeight', Math.max(this.$.svgCanvas.height, 0));
-      }.bind(this), 50);
     },
     /**
      * Returns the width for the gridlines
