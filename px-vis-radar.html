@@ -533,7 +533,7 @@ Custom property | Description | Default
 
     observers: [
       '_processSizing(height, width, margin, _smallerSide)',
-      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, seriesColorOrder.*)',
+      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, dataVisColors.*)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
       '_selectedDomain(selectedDomain.x, _loadedOnPage)',
@@ -702,42 +702,46 @@ Custom property | Description | Default
      *
      */
     _generateSeriesConfig: function(dimensions, seriesConfig, categories) {
-      // TODO make work with multiple series
-      var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
-      // add a seriesConfig with seriesKey as default
-      if(!config[this.seriesKey]) {
-        config[this.seriesKey] = {};
-      }
 
-      if(!config[this.seriesKey]['name']) {
-        config[this.seriesKey]['name'] = this.seriesKey;
-      }
+      //wait for colors design to have finished processing...
+      if(this.dataVisColors['pxVisSeriesColor0']) {
+        // TODO make work with multiple series
+        var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
+        // add a seriesConfig with seriesKey as default
+        if(!config[this.seriesKey]) {
+          config[this.seriesKey] = {};
+        }
 
-      if(!config[this.seriesKey]['x']) {
-        config[this.seriesKey]['x'] = dimensions;
-      }
+        if(!config[this.seriesKey]['name']) {
+          config[this.seriesKey]['name'] = this.seriesKey;
+        }
 
-      if(!config[this.seriesKey]['y']) {
-        config[this.seriesKey]['y'] = dimensions;
-      }
+        if(!config[this.seriesKey]['x']) {
+          config[this.seriesKey]['x'] = dimensions;
+        }
 
-      if(!config[this.seriesKey]['color']) {
-        config[this.seriesKey]['color'] = this._getColor(this.startColorIndex);
-      }
+        if(!config[this.seriesKey]['y']) {
+          config[this.seriesKey]['y'] = dimensions;
+        }
 
-      // if categories are specified, use them
-      if(typeof(this.categoryKey) !== 'undefined') {
-        for(var i = 0; i < this.categories.length; i ++) {
-          config[this.categories[i]] = {
-            "color": this._getColor(this.startColorIndex + i),
-            "name": this.categories[i],
-            "x": dimensions,
-            "y": dimensions
+        if(!config[this.seriesKey]['color']) {
+          config[this.seriesKey]['color'] = this._getColor(this.startColorIndex);
+        }
+
+        // if categories are specified, use them
+        if(typeof(this.categoryKey) !== 'undefined') {
+          for(var i = 0; i < this.categories.length; i ++) {
+            config[this.categories[i]] = {
+              "color": this._getColor(this.startColorIndex + i),
+              "name": this.categories[i],
+              "x": dimensions,
+              "y": dimensions
+            }
           }
         }
-      }
 
-      this.set('completeSeriesConfig',config);
+        this.set('completeSeriesConfig',config);
+      }
     },
 
     /**
