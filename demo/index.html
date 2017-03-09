@@ -55,12 +55,12 @@
             handle-as="json"
             last-response="{{eventData}}" auto></iron-ajax> -->
 
-        <div style="width:100%; height: 500px">
+        <div class="flex--column flex__item" style="width:100%;">
           <px-vis-radar
             id="radar"
             prevent-resize = "{{props.preventResize.value}}"
-            width = "{{props.width.value}}"
-            height = "{{props.height.value}}"
+            width = "{{appliedWidth}}"
+            height = "{{appliedHeight}}"
             chart-horizontal-alignment="{{props.chartHorizontalAlignment.value}}"
             chart-vertical-alignment="{{props.chartVerticalAlignment.value}}"
             margin="[[props.margin.value]]"
@@ -68,18 +68,23 @@
             series-key="[[props.seriesKey.value]]"
             series-config="[[props.seriesConfig.value]]"
             axes="[[props.axes.value]]"
+            category-key="[[props.categoryKey.value]]"
+            categories='[[props.categories.value]]'
             chart-extents="[[props.chartExtents.value]]"
             category-key="[[props.categoryKey.value]]"
             categories='[[props.categories.value]]'
             brush-to-remove="[[props.brushToRemove.value]]"
             render-to-svg="[[props.renderToSvg.value]]"
             match-ticks="{{props.matchTicks.value}}"
-            common-axis="[[props.commonAxis.value]]"
             hide-axis-register="[[props.hideAxisRegister.value]]"
+            axis-register-config="{{props.axisRegisterConfig.value}}"
             hide-category-register="[[props.hideCategoryRegister.value]]"
+            category-register-config="{{props.categoryRegisterConfig.value}}"
             show-tooltip="[[props.showTooltip.value]]"
             tooltip-config="[[props.tooltipConfig.value]]"
-            dynamic-menu-config="[[props.dynamicMenuConfig.value]]">
+            dynamic-menu-config="[[props.dynamicMenuConfig.value]]"
+            skip-keys="[[props.skipKeys.value]]"
+            generate-axes-from-data="[[props.generateAxesFromData.value]]">
           </px-vis-radar>
         </div>
       </px-demo-component>
@@ -326,7 +331,15 @@
         value: function() {
           return ['numbro*+MeTaNoV+*'];
         }
-      }
+      },
+
+      appliedWidth: {
+        type: Number
+      },
+
+      appliedHeight: {
+        type: Number
+      },
     },
 
     /**
@@ -340,15 +353,19 @@
         inputType: 'toggle'
       },
 
+      //we need inputDisabled: false to be able to dynamically turn it on
       width: {
         type: Number,
         defaultValue: 800,
+        inputDisabled: false,
         inputType: 'text'
       },
 
+      //we need inputDisabled: false to be able to dynamically turn it on
       height: {
         type: Number,
         defaultValue: 800,
+        inputDisabled: false,
         inputType: 'text'
       },
 
@@ -374,6 +391,42 @@
           "top": 0,
           "bottom": 0
         },
+        inputType: 'code:JSON'
+      },
+
+      hideAxisRegister: {
+        type: Boolean,
+        defaultValue: false,
+        inputType: 'toggle'
+      },
+
+      axisRegisterConfig: {
+        type: Object,
+        defaultValue: {},
+        inputType: 'code:JSON'
+      },
+
+      hideCategoryRegister: {
+        type: Boolean,
+        defaultValue: false,
+        inputType: 'toggle'
+      },
+
+      categoryRegisterConfig: {
+        type: Object,
+        defaultValue: {},
+        inputType: 'code:JSON'
+      },
+
+      showTooltip: {
+        type: Boolean,
+        defaultValue: false,
+        inputType: 'toggle'
+      },
+
+      tooltipConfig: {
+        type: Object,
+        defaultValue: { "forceDateTimeDisplay" : true },
         inputType: 'code:JSON'
       },
 
@@ -472,6 +525,12 @@
         inputPlaceholder: 'Dataset series key'
       },
 
+      skipKeys: {
+        type: Object,
+        defaultValue: {},
+        inputType: 'code:JSON'
+      },
+
       seriesConfig: {
         type: Object,
         defaultValue: {
@@ -530,97 +589,48 @@
         inputType: 'toggle'
       },
 
-      commonAxis: {
-        type: Boolean,
-        defaultValue: false,
-        inputType: 'toggle'
-      },
-
-      hideAxisRegister: {
-        type: Boolean,
-        defaultValue: false,
-        inputType: 'toggle'
-      },
-
-      hideCategoryRegister: {
-        type: Boolean,
-        defaultValue: false,
-        inputType: 'toggle'
-      },
-
-      showTooltip: {
-        type: Boolean,
-        defaultValue: false,
-        inputType: 'toggle'
-      },
-
-      tooltipConfig: {
-        type: Object,
-        defaultValue: { "forceDateTimeDisplay" : true },
-        inputType: 'code:JSON'
-      },
-
-      menuConfig: {
+      dynamicMenuConfig: {
         type: Array,
         defaultValue: [
           {
             "name": "Delete",
             "eventName": "delete",
             "icon": "fa-trash",
-            "action": function(data) {
-              var newAxes = this.axes;
-              newAxes.splice(newAxes.indexOf(data.additionalDetail.name),1);
-              this.set("axes", []);
-              this.set("axes", newAxes);
-            }
+            "action": 'function(data) {var newAxes = this.axes; newAxes.splice(newAxes.indexOf(data.additionalDetail.name),1); this.set("axes", []); this.set("axes", newAxes);}'
           }
         ],
         inputType: 'code:JSON'
-      },
-
-      // dynamicMenuConfig: {
-      //   type: Array,
-      //   defaultValue: [
-      //     {
-      //       'name': 'Delete',
-      //       'action': function(data) {
-      //         var conf = this.seriesConfig;
-      //         delete conf[data.additionalDetail.name];
-      //         this.set('seriesConfig', {});
-      //         this.set('seriesConfig', conf);
-      //       },
-      //       'eventName': 'delete',
-      //       'icon': 'fa-trash',
-      //     },
-      //     {
-      //       'name': 'Bring To Front',
-      //       'action': function(data) {
-      //         this.set('serieToRedrawOnTop', data.additionalDetail.name);
-      //       },
-      //       'eventName': 'bring-to-front',
-      //       'icon': 'fa-arrow-up'
-      //     }
-      //   ],
-      //   inputType: 'code:JSON'
-      // }
-    },
-
-    listeners: {
-      'px-demo-component-light-dom-loaded' : '_handleDemoLoaded'
-    },
-
-    /**
-     * When the chart is loaded, try to call `notifyResize()` on it to ensure
-     * that it resizes to the correct dimensions.
-     */
-    _handleDemoLoaded: function() {
-      var chart = this.$$('px-vis-radar');
-      if(chart && typeof chart.notifyResize === 'function') {
-        // Wait 1000ms to make sure the parent is sized and ready for the redraw
-        this.async(function(){
-          chart.notifyResize();
-        }, 1000);
       }
-    }
+
+    },
+
+    observers: [
+      '_preventResizeChanged(props.preventResize.value)',
+      '_appliedWidthChanged(appliedWidth)',
+      '_appliedHeightChanged(appliedHeight)',
+      '_widthChanged(props.width.value)',
+      '_heightChanged(props.height.value)'
+    ],
+
+    _preventResizeChanged: function() {
+      this.set('props.width.inputDisabled', !this.props.preventResize.value);
+      this.set('props.height.inputDisabled', !this.props.preventResize.value);
+    },
+    _widthChanged: function() {
+      if(this.props.preventResize.value) {
+       this.set('appliedWidth', this.props.width.value);
+      }
+    },
+    _heightChanged: function() {
+      if(this.props.preventResize.value) {
+       this.set('appliedHeight', this.props.height.value);
+      }
+    },
+    _appliedWidthChanged: function() {
+      this.set('props.width.value', this.appliedWidth);
+    },
+    _appliedHeightChanged: function() {
+      this.set('props.height.value', this.appliedHeight);
+    },
   });
 </script>
