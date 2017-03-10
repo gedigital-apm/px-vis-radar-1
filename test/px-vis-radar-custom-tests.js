@@ -49,7 +49,7 @@ function runCustomTests() {
       basicRadar.set('axes',dim);
       basicRadar.set('chartData',d);
 
-      setTimeout(function() { done(); }, 1000);
+      setTimeout(function() { done(); }, 2000);
       // done();
     });
 
