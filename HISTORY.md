@@ -1,7 +1,3 @@
-v1.0.1
-==================
-* changing ghp.sh to account for Alpha releases
-
 v1.0.0
 ==================
 * modified internal mechanism for sizing and laying out the chart
@@ -11,11 +7,12 @@ v1.0.0
 * update to vis 1.0.0
 * added PxVisBehaviorChart.chartCommonMethods and associated changes
 * Added layers and svgLower
-* Added axis register (on the right) and category register (on top, only if using categories). 
+* Added axis register (on the right) and category register (on top, only if using categories).
 Can be hidden respectively with hideAxisRegister and hideCategoryRegister. Can be configured respectively with axisRegisterConfig and categoryRegisterConfig
 * Axis register can have dynamic menus
 * Tooltip is now off by default. Enable with showTooltip
 * Added toolbar, configurable through toolbarConfig
+* changing ghp.sh to account for Alpha releases
 
 v0.1.1
 ==================
