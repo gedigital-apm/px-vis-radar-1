@@ -1,3 +1,7 @@
+v1.0.1
+==================
+* Updating docs
+
 v1.0.0
 ==================
 * modified internal mechanism for sizing and laying out the chart
