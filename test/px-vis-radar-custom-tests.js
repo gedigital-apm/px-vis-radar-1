@@ -677,6 +677,7 @@ function runCustomTests() {
 
   suite('px-vis-radar generateAxesFromData works', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
+
     var colors = baseColors.properties.colors.value;
     var colorOrder = dataVisColors.properties.seriesColorOrder.value;
     var colorSet = dataVisColors.properties.dataVisColors.value;
@@ -950,12 +951,11 @@ function runCustomTests() {
             "y1": 20,
             'y4': 35
           }
-        ],
-        dim = ['y','y1','y3','y4'];
+        ];
 
       fromDataRadar.set('chartData',d);
 
-      setTimeout(function(){done()}, 1000);
+      setTimeout(function() { done(); }, 1000);
       // done();
     });
 
