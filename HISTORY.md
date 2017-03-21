@@ -1,3 +1,7 @@
+v1.0.2
+==================
+* Fixing dark theme demo
+
 v1.0.1
 ==================
 * Updating docs
