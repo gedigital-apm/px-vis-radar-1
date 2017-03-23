@@ -537,7 +537,7 @@ Custom property | Description | Default
 
     observers: [
       '_processSizing(height, width, margin, _smallerSide)',
-      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, dataVisColors.*)',
+      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
       '_selectedDomain(selectedDomain.x, _loadedOnPage)',
@@ -552,7 +552,8 @@ Custom property | Description | Default
       'px-vis-redraw-lines' : '_redrawLines',
       'px-vis-multi-axis-mousemove': '_calcTooltip',
       'px-vis-multi-axis-mouseleave': '_hideTooltip',
-      'px-vis-muted-series-updated': '_muteUnmute'
+      'px-vis-muted-series-updated': '_muteUnmute',
+      "px-data-vis-colors-applied" : '_generateSeriesConfig'
     },
 
     ready: function() {
@@ -705,10 +706,10 @@ Custom property | Description | Default
      * Creates the series configuration file
      *
      */
-    _generateSeriesConfig: function(dimensions, seriesConfig, categories) {
+    _generateSeriesConfig: function() {
 
       //wait for colors design to have finished processing...
-      if(this.dataVisColors['pxVisSeriesColor0']) {
+      if(this.dataVisColors['pxVisSeriesColor0'] && this._haveChartData && this._doesObjHaveValues(this.dimensions)) {
         // TODO make work with multiple series
         var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
         // add a seriesConfig with seriesKey as default
@@ -721,11 +722,11 @@ Custom property | Description | Default
         }
 
         if(!config[this.seriesKey]['x']) {
-          config[this.seriesKey]['x'] = dimensions;
+          config[this.seriesKey]['x'] = this.dimensions;
         }
 
         if(!config[this.seriesKey]['y']) {
-          config[this.seriesKey]['y'] = dimensions;
+          config[this.seriesKey]['y'] = this.dimensions;
         }
 
         if(!config[this.seriesKey]['color']) {
@@ -738,8 +739,8 @@ Custom property | Description | Default
             config[this.categories[i]] = {
               "color": this._getColor(this.startColorIndex + i),
               "name": this.categories[i],
-              "x": dimensions,
-              "y": dimensions
+              "x": this.dimensions,
+              "y": this.dimensions
             }
           }
         }

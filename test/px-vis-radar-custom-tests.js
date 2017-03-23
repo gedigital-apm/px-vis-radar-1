@@ -49,7 +49,7 @@ function runCustomTests() {
       basicRadar.set('axes',dim);
       basicRadar.set('chartData',d);
 
-      setTimeout(function() { done(); }, 1000);
+      setTimeout(function() { done(); }, 2000);
       // done();
     });
 
@@ -128,11 +128,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 4);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 4);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 4);
     });
 
     test('basicRadar drawnTickValues', function() {
@@ -251,11 +248,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 3);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 3);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 3);
     });
 
   }); //suite
@@ -303,11 +297,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 4);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 4);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 4);
     });
 
   }); //suite
@@ -350,11 +341,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 3);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 3);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 3);
     });
 
   }); //suite
@@ -399,11 +387,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 4);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 4);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 4);
     });
 
   }); //suite
@@ -506,11 +491,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 5);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 5);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 5);
     });
 
     test('basicRadar drawnTickValues', function() {
@@ -556,11 +538,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 3);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 3);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 3);
     });
 
   }); //suite
@@ -605,11 +584,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 5);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 5);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 5);
     });
 
   }); //suite
@@ -686,11 +662,8 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      assert.equal(basicRadar.axisGroups.nodes().length, 4);
-    });
-
-    test('basicRadar brushElems', function() {
-      assert.equal(basicRadar.brushElems.length, 4);
+      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 4);
     });
 
     test('basicRadar drawnTickValues', function() {
@@ -704,6 +677,7 @@ function runCustomTests() {
 
   suite('px-vis-radar generateAxesFromData works', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
+
     var colors = baseColors.properties.colors.value;
     var colorOrder = dataVisColors.properties.seriesColorOrder.value;
     var colorSet = dataVisColors.properties.dataVisColors.value;
@@ -845,11 +819,8 @@ function runCustomTests() {
     });
 
     test('fromDataRadar axisGroups', function() {
-      assert.equal(fromDataRadar.axisGroups.nodes().length, 4);
-    });
-
-    test('fromDataRadar brushElems', function() {
-      assert.equal(fromDataRadar.brushElems.length, 4);
+      var ia = fromDataRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 4);
     });
 
     test('fromDataRadar drawnTickValues', function() {
@@ -910,7 +881,7 @@ function runCustomTests() {
 
       fromDataRadar.set('chartData',d);
 
-      setTimeout(function(){done()},500);
+      setTimeout(function(){done()}, 1000);
       // done();
     });
 
@@ -938,11 +909,8 @@ function runCustomTests() {
     });
 
     test('fromDataRadar axisGroups', function() {
-      assert.equal(fromDataRadar.axisGroups.nodes().length, 5);
-    });
-
-    test('fromDataRadar brushElems', function() {
-      assert.equal(fromDataRadar.brushElems.length, 5);
+      var ia = fromDataRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 5);
     });
 
     test('fromDataRadar drawnTickValues', function() {
@@ -983,12 +951,11 @@ function runCustomTests() {
             "y1": 20,
             'y4': 35
           }
-        ],
-        dim = ['y','y1','y3','y4'];
+        ];
 
       fromDataRadar.set('chartData',d);
 
-      setTimeout(function(){done()},500);
+      setTimeout(function() { done(); }, 1000);
       // done();
     });
 
@@ -1016,11 +983,8 @@ function runCustomTests() {
     });
 
     test('fromDataRadar axisGroups', function() {
-      assert.equal(fromDataRadar.axisGroups.nodes().length, 3);
-    });
-
-    test('fromDataRadar brushElems', function() {
-      assert.equal(fromDataRadar.brushElems.length, 3);
+      var ia = fromDataRadar.querySelectorAll('px-vis-interactive-axis');
+      assert.equal(ia.length, 3);
     });
 
     test('fromDataRadar drawnTickValues', function() {
