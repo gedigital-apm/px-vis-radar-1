@@ -211,7 +211,10 @@ Custom property | Description | Default
           selected-domain="[[selectedDomain]]"
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
           no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
-          interpolation-function="bofCompleteManually">
+          progressive-rendering-points-per-frame="[[progressiveRenderingPointsPerFrame]]"
+          progressive-rendering-minimum-frames="[[progressiveRenderingMinimumFrames]]"
+          interpolation-function="bofCompleteManually"
+          clean-on-detached="[[cleanOnDetached]]">
         </px-vis-line-canvas>
       </template>
       <template is="dom-if" if="[[renderToSvg]]" restamp>
@@ -234,7 +237,8 @@ Custom property | Description | Default
           selected-domain="[[selectedDomain]]"
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
           interpolation-function="bofCompleteManually"
-          clip-path="[[clipPath]]">
+          clip-path="[[clipPath]]"
+          clean-on-detached="[[cleanOnDetached]]">
         </px-vis-line-svg>
         <px-vis-clip-path-complex-area
           svg="[[layer.0]]"
@@ -812,7 +816,7 @@ Custom property | Description | Default
           this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
           this._computeVerticalRegisterHeight([toolbarRect.height, categoryRegisterHeight]);
          }
-      },100);
+      }, this.debounceResizeTiming);
     },
     /**
      * Returns the width for the gridlines
@@ -995,7 +999,7 @@ Custom property | Description | Default
             'xArr': null,
             'yArr': null
           });
-          
+
       //clear axis register
       this._buildAxisTooltipData();
       this._updateAxisConfig();
