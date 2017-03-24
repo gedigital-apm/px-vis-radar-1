@@ -1,3 +1,7 @@
+v1.1.1
+==================
+* fixed bug where register doesnt mute on start with mutedAxes
+
 v1.1.0
 ==================
 * upgraded to vis 1.1.0
