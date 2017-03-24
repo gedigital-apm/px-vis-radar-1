@@ -24,13 +24,14 @@
 
   <body>
     <h3>Web Component Test : Fixture for px-vis-radar</h3>
+    <template is="dom-bind">
     <div>
       <px-vis-radar
         id="basicRadar"
         prevent-resize>
       </px-vis-radar>
     </div>
-    
+
     <div>
       <px-vis-radar
         id="fromDataRadar"
@@ -38,5 +39,6 @@
         prevent-resize>
       </px-vis-radar>
     </div>
+    </template>
   </body>
 </html>
