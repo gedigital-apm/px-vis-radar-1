@@ -70,16 +70,6 @@ function runCustomTests() {
       assert.equal(basicRadar.ticks, 4);
     });
 
-    test('basicRadar label margin', function() {
-      assert.closeTo(basicRadar._internalLabelMargin, 25, 0.2);
-     // assert.deepEqual(basicRadar._measuredLabels, [12,12,21,12]);
-    });
-
-    test('basicRadar displayed values', function() {
-    //  assert.closeTo(basicRadar._internalLabelMargin, 25, 0.2);
-      assert.deepEqual(basicRadar._measuredLabels, [12,12,21,12]);
-    });
-
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
       assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
@@ -206,33 +196,6 @@ function runCustomTests() {
 
     test('basicRadar label margin', function() {
       assert.closeTo(basicRadar._internalLabelMargin, 116, 1);
-     // assert.deepEqual(basicRadar._measuredLabels, [12,12,21,12]);
-    });
-
-    test('basicRadar displayed values', function() {
-    //  assert.closeTo(basicRadar._internalLabelMargin, 25, 0.2);
-      assert.equal(basicRadar._measuredLabels[0], "sdsd");
-
-    });
-
-    test('basicRadar displayed values', function() {
-    //  assert.closeTo(basicRadar._internalLabelMargin, 25, 0.2);
-
-       assert.equal(basicRadar._measuredLabels[1], "sdsd");
-
-    });
-
-    test('basicRadar displayed values', function() {
-    //  assert.closeTo(basicRadar._internalLabelMargin, 25, 0.2);
-
-        assert.equal(basicRadar._measuredLabels[2], "sdsd");
-
-    });
-
-    test('basicRadar displayed values', function() {
-    //  assert.closeTo(basicRadar._internalLabelMargin, 25, 0.2);e
-
-         assert.equal(basicRadar._measuredLabels[3], "sdsd");
     });
 
     test('basicRadar dislplayed Titles', function() {

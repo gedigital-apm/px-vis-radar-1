@@ -535,9 +535,6 @@ Custom property | Description | Default
       startColorIndex: {
         type: Number,
         value: 0
-      },
-      _measuredLabels: {
-        type:Array
       }
     },
 
@@ -620,7 +617,6 @@ Custom property | Description | Default
         //only measure this axis title if it's not muted
         if(!this.mutedAxes || !this.mutedAxes[keys[i]]) {
           size = this._measureTextOnCanvas(this.displayedValues[keys[i]]).width;
-          this._measuredLabels.push(this.displayedValues[keys[i]]);
           if(size > max) {
             max = size;
           }
