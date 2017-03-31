@@ -1,3 +1,7 @@
+v1.1.2
+==================
+* fixed issue with auto resize and take label length into account for determining size
+
 v1.1.1
 ==================
 * fixed bug where register doesnt mute on start with mutedAxes
