@@ -543,6 +543,7 @@ Custom property | Description | Default
 
     observers: [
       '_processSizing(width, margin, _smallerSide, _internalLabelMargin)',
+      '_calcCenter(_diameter)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
@@ -667,23 +668,27 @@ Custom property | Description | Default
           //extend width and recalculate internal margins for this adjustment
           this.set('_extendedWidth', this._smallerSide + adjust);
           this.set('_internalCircleMargins', newMargin);
-
-          var scaled,center;
-
-          //figure out how big the center hole is
-          // if it is a small chart, make the center hole 15% of the size, otherwise, max out at 75
-          scaled = this._diameter * 0.15;
-          center = scaled < 75 ? scaled : 75;
-
-          this.set('centerOffset', center);
-          this.set('ticks', Math.round(this._diameter/100));
-
-          // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
-          if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
-            this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
-          }
     //    }, 10);
       }
+    },
+
+    _calcCenter: function() {
+
+      var scaled,center;
+
+      //figure out how big the center hole is
+      // if it is a small chart, make the center hole 15% of the size, otherwise, max out at 75
+      scaled = this._diameter * 0.15;
+      center = scaled < 75 ? scaled : 75;
+
+      this.set('centerOffset', center);
+      this.set('ticks', Math.round(this._diameter/100));
+
+      // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
+      if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
+        this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
+      }
+
     },
 
     /**
