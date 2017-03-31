@@ -138,6 +138,7 @@ Custom property | Description | Default
         amplitude-keys="[[dimensions]]"
         chart-data="[[chartData]]"
         chart-extents="[[chartExtents]]"
+        domain-changed="{{domainChanged}}"
         x="{{x}}"
         y="{{y}}"
         center-offset="[[centerOffset]]">
@@ -359,7 +360,8 @@ Custom property | Description | Default
     PxVisBehaviorChart.showTooltip,
     PxVisBehaviorChart.toolbarSubConfig,
     PxVisBehaviorChart.chartToolbarConfig,
-    PxVisBehaviorChart.sizeVerticalRegister
+    PxVisBehaviorChart.sizeVerticalRegister,
+    PxVisBehavior.measureText
   ],
 
     /**
@@ -537,19 +539,21 @@ Custom property | Description | Default
     },
 
     observers: [
-      '_processSizing(height, width, margin, _smallerSide)',
+      '_processSizing(width, margin, _smallerSide, _internalLabelMargin)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
       '_selectedDomain(selectedDomain.x, _loadedOnPage)',
       '_createLayersOnce(svg, numberOfLayers)',
+      '_measureLabels(displayedValues.*)',
+
       '_tooltipConfigChanged(tooltipConfig)',
       '_toolbarConfigChanged(toolbarConfig)'
     ],
 
     listeners: {
       'iron-resize': '_onIronResize',
-      'px-vis-domain-changed-updated': '_setDomainChanged',
+
       'px-vis-redraw-lines' : '_redrawLines',
       'px-vis-multi-axis-mousemove': '_calcTooltip',
       'px-vis-multi-axis-mouseleave': '_hideTooltip',
@@ -559,6 +563,9 @@ Custom property | Description | Default
 
     ready: function() {
       this.set('numberOfLayers',2);
+
+      //create canvas used to measure text
+      this._createMeasurementCanvas(500,500, '15px GE Inspira Sans,sans-serif');
       //use some default internal margins to make space for labels
       this.set('_verticalRegisterDrawingCanvasId', 'svgCanvas');
       this.set('_verticalRegisterHeightDeductions', ['toolbar']);
@@ -579,8 +586,10 @@ Custom property | Description | Default
      * Event listener resetting domainChanged when fired from elsewhere in the tree
      */
     _setDomainChanged: function(evt) {
-      this.$.multiAxis.dimensions = this.dimensions;
-      this.set('domainChanged',evt.detail.data);
+      this.debounce('setdomainchanged', function() {
+        this.$.multiAxis.dimensions = this.dimensions;
+        this.set('domainChanged',evt.detail.data);
+      }.bind(this), 10);
     },
     /**
      * Computed value saying if we have chart data
@@ -593,58 +602,83 @@ Custom property | Description | Default
     _getExtendedCenter: function(_center, _extendedWidth) {
       return [this._center[0] + (this._extendedWidth - this._smallerSide)/2, this._center[1]];
     },
+    _measureLabels: function() {
+
+      var max = 0,
+          keys = Object.keys(this.displayedValues),
+          spaceBetweenTitleAndAxis = 10,
+          size;
+
+      for(var i=0; i<keys.length; i++) {
+
+        //only measure this axis title if it's not muted
+        if(!this.mutedAxes || !this.mutedAxes[keys[i]]) {
+          size = this._measureTextOnCanvas(this.displayedValues[keys[i]]).width;
+
+          if(size > max) {
+            max = size;
+          }
+        }
+      }
+
+      max += spaceBetweenTitleAndAxis;
+      this.set('_internalLabelMargin', max);
+      console.log(max)
+
+    },
     /**
      * Sets several base vars based on sizing
      */
     _processSizing: function(smallerSide) {
 
-      this.debounce('processSizing', function() {
+      if(this.displayedValues) {
+       // this.debounce('processSizing', function() {
 
-        var scaled,center;
+          var adjust = 0,
+              newMargin;
 
-        //figure out how big the center hole is
-        // if it is a small chart, make the center hole 15% of the size, otherwise, max out at 75
-        scaled = this._smallerSide * 0.15;
-        center = scaled < 75 ? scaled : 75;
+          //if width is not the lmiting factor try to extend it
+          if(this._smallerSide !== this.width) {
 
-        this.set('centerOffset', center);
-        this.set('ticks', Math.round(this._smallerSide/100));
+            //find out if we can extend the width
+            var wrapperRect = this.$.wrapper.getBoundingClientRect(),
+                registerRect = this.$.axisRegister.getBoundingClientRect(),
+                availableWidth = Math.max(0, wrapperRect.width - registerRect.width);
 
-
-        var adjust = 0,
-            newMargin;
-
-        //if width is not the lmiting factor try to extend it
-        if(this._smallerSide !== this.width) {
-
-          //find out if we can extend the width
-          var wrapperRect = this.$.wrapper.getBoundingClientRect(),
-              registerRect = this.$.registerWrapper.getBoundingClientRect(),
-              availableWidth = Math.max(0, wrapperRect.width - registerRect.width);
-
-          //adjust available width if we're already extended
-          if(this._extendedWidth && availableWidth > 0) {
-            availableWidth += Math.min(availableWidth, this._extendedWidth - this._smallerSide);
+            //adjust available width if we're already extended
+            if(this._extendedWidth && availableWidth > 0) {
+              // availableWidth += Math.min(availableWidth, this._extendedWidth - this._smallerSide);
+            }
+            adjust = Math.min(this._internalLabelMargin * 2, availableWidth - this._smallerSide);
           }
-          adjust = Math.min(this._internalLabelMargin * 2, availableWidth);
-        }
 
-        newMargin = {
-          top: this._internalCircleMargins.top,
-          bottom: this._internalCircleMargins.bottom,
-          left: this._internalLabelMargin - adjust/2,
-          right: this._internalLabelMargin - adjust/2
-        };
+          newMargin = {
+            top: this._internalCircleMargins.top,
+            bottom: this._internalCircleMargins.bottom,
+            left: this._internalLabelMargin - adjust/2,
+            right: this._internalLabelMargin - adjust/2
+          };
 
-        //extend width and recalculate internal margins for this adjustment
-        this.set('_extendedWidth', this._smallerSide + adjust);
-        this.set('_internalCircleMargins', newMargin);
+          //extend width and recalculate internal margins for this adjustment
+          this.set('_extendedWidth', this._smallerSide + adjust);
+          this.set('_internalCircleMargins', newMargin);
 
-        // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
-        if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
-          this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
-        }
-      }, 10);
+          var scaled,center;
+
+          //figure out how big the center hole is
+          // if it is a small chart, make the center hole 15% of the size, otherwise, max out at 75
+          scaled = this._diameter * 0.15;
+          center = scaled < 75 ? scaled : 75;
+
+          this.set('centerOffset', center);
+          this.set('ticks', Math.round(this._diameter/100));
+
+          // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
+          if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
+            this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
+          }
+    //    }, 10);
+      }
     },
 
     /**

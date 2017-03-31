@@ -30,7 +30,7 @@
 
     <h3>Radar Chart</h3>
     <template is="dom-bind">
-      <div id="bigdiv">
+      <div id="bigdiv" style="height:800px">
         <button id="btn">add</button>
         <button id="btnR">remove</button>
         <h3>Radar Chart linked with a rangepicker and navigator</h3>
@@ -48,8 +48,7 @@
         <px-vis-radar
           id="parall"
           height="800"
-          width="1200"
-          prevent-resize
+
           chart-data="[[chartData]]"
           skip-keys='{"UnitNumber":true,"DLN_MODE":true}'
           series-key="TimeStamp"
@@ -60,10 +59,11 @@
           selected-domain="{{selectedDomain}}"
           generate-axes-from-data
           brush-to-remove
+          truncation-length="200"
           series-config='{
               "TTXD1_1":{
                 "yAxisUnit": "Hz",
-                "title": "verylongname"
+                "title": "verylongnasdasdame"
               },
               "TTXD1_12":{
                 "yAxisUnit": "F",
@@ -100,7 +100,7 @@
 
         for(var i=0; i<1; i++) {
           newDiv.classList.add('divwrapper');
-          
+
           newChart = document.createElement('px-vis-radar');
           newChart.generateAxesFromData = true;
           newChart.preventResize = true;
@@ -114,14 +114,14 @@
           newChart.selectedDomain = chart.selectedDomain
           Polymer.dom(newDiv).appendChild(newChart);
         }
-        
+
         Polymer.dom(bigdiv).appendChild(newDiv);
       });
-         
+
       btnR.addEventListener('click', function() {
         var wrappers = document.getElementsByClassName('divwrapper');
         Polymer.dom(bigdiv).removeChild(wrappers[wrappers.length - 1]);
-        
+
       });
 
     });
