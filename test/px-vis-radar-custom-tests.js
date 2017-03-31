@@ -58,15 +58,16 @@ function runCustomTests() {
     });
 
     test('basicRadar _offset', function() {
-      assert.deepEqual(basicRadar._extendedCenter, [380,230]);
+      assert.closeTo(basicRadar._extendedCenter[0], 255, 3);
+      assert.closeTo(basicRadar._extendedCenter[1], 230, 3);
     });
 
     test('basicRadar centerOffset', function() {
-      assert.equal(basicRadar.centerOffset, 69);
+      assert.closeTo(basicRadar.centerOffset, 61.5, 3);
     });
 
     test('basicRadar ticks', function() {
-      assert.equal(basicRadar.ticks, 5);
+      assert.equal(basicRadar.ticks, 4);
     });
 
     test('basicRadar completeSeriesConfig', function() {
@@ -82,27 +83,28 @@ function runCustomTests() {
     });
 
     test('basicRadar svg', function() {
-      var re = /translate\((\d+)\s?,?(\d*)\)/,
+      var re = /translate\((\d+\.?\d*)\s?,?(\d+\.?\d*)\)/,
           translate = re.exec(basicRadar.svg.attr('transform'));
 
       assert.equal(basicRadar.svg.node().tagName, 'g');
-      assert.equal(translate[1], 380);
-      assert.equal(translate[2], 230);
+      assert.closeTo(Number(translate[1]), 255, 3);
+      assert.closeTo(Number(translate[2]), 230, 3);
     });
 
     test('basicRadar pxSvgElem', function() {
       assert.equal(basicRadar.pxSvgElem.tagName, 'svg');
-      assert.equal(basicRadar.pxSvgElem.width.baseVal.value, 760);
-      assert.equal(basicRadar.pxSvgElem.height.baseVal.value, 460);
+      assert.closeTo(basicRadar.pxSvgElem.width.baseVal.value, 510, 3);
+      assert.closeTo(basicRadar.pxSvgElem.height.baseVal.value, 460, 3);
     });
 
     test('basicRadar canvasContext', function() {
-      assert.deepEqual(basicRadar.canvasContext._translation, [380,230]);
+      assert.closeTo(basicRadar.canvasContext._translation[0], 255, 3);
+      assert.closeTo(basicRadar.canvasContext._translation[1], 230, 3);
       assert.equal(basicRadar.canvasContext._pxLinesRedraw, 1);
       assert.equal(basicRadar.canvasContext._pxLinesTotal, 1);
       assert.deepEqual(basicRadar.canvasContext._pxLinesSeries, {"x":true});
-      assert.equal(basicRadar.canvasContext.canvas.width, 760);
-      assert.equal(basicRadar.canvasContext.canvas.height, 460);
+      assert.closeTo(basicRadar.canvasContext.canvas.width, 509, 3);
+      assert.closeTo(basicRadar.canvasContext.canvas.height, 460, 3);
     });
 
     test('basicRadar x', function() {
@@ -111,7 +113,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -243,7 +246,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -292,7 +296,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -336,7 +341,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -382,7 +388,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [1,75]);
     });
 
@@ -404,12 +411,13 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
     test('basicRadar drawnTickValues', function() {
-      assert.deepEqual(basicRadar.drawnTickValues, [20, 25, 30, 35, 40, 45, 50]);
+      assert.deepEqual(basicRadar.drawnTickValues, [20, 30, 40, 50]);
     });
 
   }); //suite
@@ -486,7 +494,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -496,7 +505,7 @@ function runCustomTests() {
     });
 
     test('basicRadar drawnTickValues', function() {
-      assert.deepEqual(basicRadar.drawnTickValues, [20, 25, 30, 35, 40, 45, 50]);
+      assert.deepEqual(basicRadar.drawnTickValues, [20, 30, 40, 50]);
     });
   }); //suite
 
@@ -533,7 +542,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -579,7 +589,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -657,7 +668,8 @@ function runCustomTests() {
     });
 
     test('basicRadar y', function() {
-      assert.deepEqual(basicRadar.y.range(), [69,205]);
+      assert.closeTo(basicRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(basicRadar.y.range()[1], 205, 3);
       assert.deepEqual(basicRadar.y.domain(), [20,50]);
     });
 
@@ -667,7 +679,7 @@ function runCustomTests() {
     });
 
     test('basicRadar drawnTickValues', function() {
-      assert.deepEqual(basicRadar.drawnTickValues, [20, 25, 30, 35, 40, 45, 50]);
+      assert.deepEqual(basicRadar.drawnTickValues, [20, 30, 40, 50]);
     });
   }); //suite
 
@@ -745,15 +757,16 @@ function runCustomTests() {
     });
 
     test('fromDataRadar _offset', function() {
-      assert.deepEqual(fromDataRadar._extendedCenter, [380,230]);
+      assert.closeTo(fromDataRadar._extendedCenter[0], 255, 3);
+      assert.closeTo(fromDataRadar._extendedCenter[1], 230, 3);
     });
 
     test('fromDataRadar centerOffset', function() {
-      assert.equal(fromDataRadar.centerOffset, 69);
+      assert.closeTo(fromDataRadar.centerOffset, 61.5, 3);
     });
 
     test('fromDataRadar ticks', function() {
-      assert.equal(fromDataRadar.ticks, 5);
+      assert.equal(fromDataRadar.ticks, 4);
     });
 
     test('fromDataRadar completeSeriesConfig', function() {
@@ -764,36 +777,33 @@ function runCustomTests() {
       assert.deepEqual(fromDataRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
     });
 
-    test('fromDataRadar ticks', function() {
-      assert.equal(fromDataRadar.ticks, 5);
-    });
-
     test('fromDataRadar dimensions', function() {
       assert.deepEqual(fromDataRadar.dimensions, ['y','y1','y2','y3']);
     });
 
     test('fromDataRadar svg', function() {
-      var re = /translate\((\d+)\s?,?(\d*)\)/,
+      var re = /translate\((\d+\.?\d*)\s?,?(\d+\.?\d*)\)/,
           translate = re.exec(fromDataRadar.svg.attr('transform'));
 
       assert.equal(fromDataRadar.svg.node().tagName, 'g');
-      assert.equal(translate[1], 380);
-      assert.equal(translate[2], 230);
+      assert.closeTo(Number(translate[1]), 255, 3);
+      assert.closeTo(Number(translate[2]), 230, 3);
     });
 
     test('fromDataRadar pxSvgElem', function() {
       assert.equal(fromDataRadar.pxSvgElem.tagName, 'svg');
-      assert.equal(fromDataRadar.pxSvgElem.width.baseVal.value, 760);
-      assert.equal(fromDataRadar.pxSvgElem.height.baseVal.value, 460);
+      assert.closeTo(fromDataRadar.pxSvgElem.width.baseVal.value, 510, 3);
+      assert.closeTo(fromDataRadar.pxSvgElem.height.baseVal.value, 460, 3);
     });
 
     test('fromDataRadar canvasContext', function() {
-      assert.deepEqual(fromDataRadar.canvasContext._translation, [380,230]);
+      assert.closeTo(fromDataRadar.canvasContext._translation[0], 255, 3);
+      assert.closeTo(fromDataRadar.canvasContext._translation[1], 230, 3);
       assert.equal(fromDataRadar.canvasContext._pxLinesRedraw, 1);
       assert.equal(fromDataRadar.canvasContext._pxLinesTotal, 1);
       assert.deepEqual(fromDataRadar.canvasContext._pxLinesSeries, {"x":true});
-      assert.equal(fromDataRadar.canvasContext.canvas.width, 760);
-      assert.equal(fromDataRadar.canvasContext.canvas.height, 460);
+      assert.closeTo(fromDataRadar.canvasContext.canvas.width, 509, 3);
+      assert.closeTo(fromDataRadar.canvasContext.canvas.height, 460, 3);
     });
 
     test('fromDataRadar x', function() {
@@ -802,7 +812,8 @@ function runCustomTests() {
     });
 
     test('fromDataRadar y', function() {
-      assert.deepEqual(fromDataRadar.y.range(), [69,205]);
+      assert.closeTo(fromDataRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(fromDataRadar.y.range()[1], 205, 3);
       assert.deepEqual(fromDataRadar.y.domain(), [1,75]);
     });
 
@@ -904,7 +915,8 @@ function runCustomTests() {
     });
 
     test('fromDataRadar y', function() {
-      assert.deepEqual(fromDataRadar.y.range(), [69,205]);
+      assert.closeTo(fromDataRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(fromDataRadar.y.range()[1], 205, 3);
       assert.deepEqual(fromDataRadar.y.domain(), [1,75]);
     });
 
@@ -978,7 +990,8 @@ function runCustomTests() {
     });
 
     test('fromDataRadar y', function() {
-      assert.deepEqual(fromDataRadar.y.range(), [69,205]);
+      assert.closeTo(fromDataRadar.y.range()[0], 61.5, 3);
+      assert.closeTo(fromDataRadar.y.range()[1], 205, 3);
       assert.deepEqual(fromDataRadar.y.domain(), [1,35]);
     });
 
@@ -988,7 +1001,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar drawnTickValues', function() {
-      assert.deepEqual(fromDataRadar.drawnTickValues, [ 5, 10, 15, 20, 25, 30, 35, 1, 35]);
+      assert.deepEqual(fromDataRadar.drawnTickValues, [ 10, 20, 30, 1, 35]);
     });
   }); //suite
 
