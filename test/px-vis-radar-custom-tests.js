@@ -195,7 +195,7 @@ function runCustomTests() {
     });
 
     test('basicRadar label margin', function() {
-      assert.closeTo(basicRadar._internalLabelMargin, 116, 1);
+      assert.closeTo(basicRadar._internalLabelMargin, 116, 2);
     });
 
     test('basicRadar dislplayed Titles', function() {
