@@ -70,6 +70,11 @@ function runCustomTests() {
       assert.equal(basicRadar.ticks, 4);
     });
 
+    test('basicRadar ticks', function() {
+      assert.closeTo(basicRadar._internalLabelMargin, 25, 0.2);
+     // assert.deepEqual(basicRadar._measuredLabels, [12,12,21,12]);
+    });
+
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
       assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);

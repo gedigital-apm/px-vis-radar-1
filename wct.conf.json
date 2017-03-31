@@ -1,5 +1,10 @@
 {
   "verbose": false,
+
+  "webserver": {
+      "port": 8080,
+      "hostname": "localhost"
+    },
   "plugins": {
     "local": {
       "browsers": [
@@ -36,5 +41,4 @@
   "suites": [
     "test/px-vis-radar-test-fixture.html"
   ]
-
 }
