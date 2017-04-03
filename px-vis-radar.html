@@ -215,8 +215,7 @@ Custom property | Description | Default
           no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
           progressive-rendering-points-per-frame="[[progressiveRenderingPointsPerFrame]]"
           progressive-rendering-minimum-frames="[[progressiveRenderingMinimumFrames]]"
-          interpolation-function="bofCompleteManually"
-          clean-on-detached="[[cleanOnDetached]]">
+          interpolation-function="bofCompleteManually">
         </px-vis-line-canvas>
       </template>
       <template is="dom-if" if="[[renderToSvg]]" restamp>
@@ -239,8 +238,7 @@ Custom property | Description | Default
           selected-domain="[[selectedDomain]]"
           muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
           interpolation-function="bofCompleteManually"
-          clip-path="[[clipPath]]"
-          clean-on-detached="[[cleanOnDetached]]">
+          clip-path="[[clipPath]]">
         </px-vis-line-svg>
         <px-vis-clip-path-complex-area
           svg="[[layer.0]]"

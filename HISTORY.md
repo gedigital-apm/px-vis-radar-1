@@ -1,3 +1,7 @@
+v1.1.3
+==================
+* remove cleanOnDetached
+
 v1.1.2
 ==================
 * fixed issue with auto resize and take label length into account for determining size. The chart should now more precisely use the space available
