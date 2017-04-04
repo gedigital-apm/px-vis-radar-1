@@ -752,7 +752,7 @@ function runCustomTests() {
       fromDataRadar.set('seriesKey',"x");
       fromDataRadar.set('chartData',d);
 
-      setTimeout(function() { done(); }, 1000);
+      setTimeout(function() { done(); }, 1200);
       // done();
     });
 
