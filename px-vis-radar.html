@@ -141,6 +141,7 @@ Custom property | Description | Default
         domain-changed="{{domainChanged}}"
         x="{{x}}"
         y="{{y}}"
+        radar
         center-offset="[[centerOffset]]">
       </px-vis-radial-scale>
       <div id="registerWrapper" class="flex flex--col">
@@ -971,9 +972,6 @@ Custom property | Description | Default
         screenX = this.y(yVal) * Math.sin(this.x(aid)) + this._extendedCenter[0] + elem.ownerSVGElement.getBoundingClientRect().left + window.pageXOffset;
 
         screenY = this.y(yVal) * Math.cos(Math.PI - this.x(aid)) + this._smallerSide/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.pageYOffset;
-        //stick on axis, but follow mouse
-        // screenX = mousePos[1] * Math.sin(this.x(aid)) + this.width/2 + elem.ownerSVGElement.getBoundingClientRect().left + window.scrollX + 5;
-        // screenY = mousePos[1] * Math.cos(Math.PI - this.x(aid)) + this.height/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.scrollY;
 
         //create our fake configuration object
         tooltipConfig[aid] = {};
