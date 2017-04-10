@@ -14,6 +14,7 @@
 <link rel="import" href="../px-vis/px-vis-clip-path-complex-area.html"/>
 <link rel="import" href="../px-vis/px-vis-toolbar.html"/>
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
+<link rel="import" href="../px-vis/px-vis-highlight-line.html"/>
 
 
 <link rel="import" href="css/px-vis-radar-styles.html">
@@ -176,7 +177,8 @@ Custom property | Description | Default
               action-config='{{actionConfig}}'
               within-chart
               chart-margin="[[_internalLabelMargin]]"
-              show-tooltip="{{_internalShowTooltip}}">
+              show-tooltip="{{_internalShowTooltip}}"
+              config='{"axisBrush": true, "axisDrag": true, "tooltip": true}'>
             </px-vis-toolbar>
             <px-vis-svg-canvas
               id="svgCanvas"
@@ -284,10 +286,12 @@ Custom property | Description | Default
         label-rotation="180"
         brush-to-remove="[[brushToRemove]]"
         center-offset="[[centerOffset]]"
+        smaller-side="[[_smallerSide]]"
         drawn-tick-values="{{drawnTickValues}}"
         displayed-values="{{displayedValues}}"
         title-type-size="15"
-        label-type-size="12">
+        label-type-size="12"
+        action-config="[[actionConfig]]">
       </px-vis-multi-axis>
       <px-vis-radar-grid
         svg="[[svgLower]]"
@@ -309,6 +313,21 @@ Custom property | Description | Default
         tooltip-data="[[tooltipData]]"
         complete-series-config="[[_tooltipSeriesConfig]]">
       </px-vis-tooltip>
+      <px-vis-highlight-line
+        id="highlighter"
+        svg="[[layer.1]]"
+        x="[[x]]"
+        y="[[y]]"
+        radial-line
+        interpolation-function="bofCompleteManually"
+        dimensions="[[dimensions]]"
+        domain-changed="[[domainChanged]]"
+        time-data="[[seriesKey]]"
+        complete-series-config="[[completeSeriesConfig]]"
+        chart-data="[[chartData]]"
+        generating-crosshair-data="[[generatingCrosshairData]]"
+        crosshair-data="[[crosshairData]]">
+      </px-vis-highlight-line>
     </div>
   </template>
 </dom-module>
@@ -360,7 +379,9 @@ Custom property | Description | Default
     PxVisBehaviorChart.toolbarSubConfig,
     PxVisBehaviorChart.chartToolbarConfig,
     PxVisBehaviorChart.sizeVerticalRegister,
-    PxVisBehavior.measureText
+    PxVisBehavior.measureText,
+    PxVisBehaviorChart.highlighterConfigs,
+    PxVisBehavior.crosshairData
   ],
 
     /**
@@ -548,15 +569,18 @@ Custom property | Description | Default
       '_measureLabels(displayedValues.*)',
 
       '_tooltipConfigChanged(tooltipConfig)',
-      '_toolbarConfigChanged(toolbarConfig)'
+      '_toolbarConfigChanged(toolbarConfig)',
+      '_highlighterConfigChanged(highlighterConfig.*)'
     ],
 
     listeners: {
       'iron-resize': '_onIronResize',
 
       'px-vis-redraw-lines' : '_redrawLines',
-      'px-vis-multi-axis-mousemove': '_calcTooltip',
-      'px-vis-multi-axis-mouseleave': '_hideTooltip',
+      'px-vis-axis-interaction-space-tooltip-data': '_calcTooltip',
+      'px-vis-axis-interaction-space-reset-tooltip': '_hideTooltip',
+      'px-vis-axis-interaction-space-crosshair-data': '_calcCrosshair',
+      'px-vis-axis-interaction-space-reset-crosshair': '_hideCrosshair',
       'px-vis-muted-series-updated': '_muteUnmute',
       "px-data-vis-colors-applied" : '_generateSeriesConfig'
     },
@@ -581,6 +605,9 @@ Custom property | Description | Default
     },
     _toolbarConfigChanged: function(conf) {
       this._applyConfigToElement(this.toolbarConfig, this.$.toolbar);
+    },
+    _highlighterConfigChanged: function(conf) {
+      this._applyConfigToElement(this.highlighterConfig, this.$.highlighter);
     },
     /**
      * Event listener resetting domainChanged when fired from elsewhere in the tree
@@ -624,7 +651,6 @@ Custom property | Description | Default
 
       max += spaceBetweenTitleAndAxis;
       this.set('_internalLabelMargin', max);
-      console.log(max)
 
     },
     /**
@@ -930,89 +956,6 @@ Custom property | Description | Default
          console.error("Cannot add/remove axis. Improper axis type")
        }
      },
-     /**
-      * Creates tooltip objects -- tooltipData, config, mouse coords -- on mouseover.
-      */
-     _calcTooltip: function(evt) {
-      var aid = evt.detail.axis,          //axis ID
-          elem = evt.detail.elem,         //the group elem being hovered over
-          mousePos = evt.detail.mousePos, //the mouse position
-          mouseVal = this.y.invert(mousePos[1]), // the data space value
-          distance = Number.MAX_VALUE,    //difference between cursor and value
-          minDistance = Number.MAX_VALUE, //difference between cursor and value
-          yVal = null,                    //the data value we will calc
-          time,                           //time we will calc
-          screenX,                        //the mouse x on the scree
-          screenY,                        //the mouse y on the scree
-          tooltipConfig = {},             //a fake configuration object we will build
-          group,                          //the group if categoryKey is being used
-          data,                           //our tooltipData obj
-          value = {},                     //the series obj within tooltipData
-          dataFound;
-
-      //loop through our chart data and find a closetest match
-      for(var i = 0; i < this.chartData.length; i++) {
-        //figure out the differnce between the data value and our saved value
-        distance = Math.abs(this.chartData[i][aid] - mouseVal);
-        // if it is smaller than last time, save the data info
-        if(distance < minDistance) {
-          dataFound = this.chartData[i];
-          yVal = this.chartData[i][aid];
-          minDistance = distance;
-          time = this.chartData[i][this.seriesKey];
-          if(this.categoryKey) {
-            group = this.chartData[i][this.categoryKey];
-          }
-        }
-      }
-
-      //only update if the value is on the screen
-      if(this.y.domain()[0] < yVal && yVal < this.y.domain()[1]) {
-        //calc the screen positions for the tooltip
-        screenX = this.y(yVal) * Math.sin(this.x(aid)) + this._extendedCenter[0] + elem.ownerSVGElement.getBoundingClientRect().left + window.pageXOffset;
-
-        screenY = this.y(yVal) * Math.cos(Math.PI - this.x(aid)) + this._smallerSide/2 + elem.ownerSVGElement.getBoundingClientRect().top + window.pageYOffset;
-
-        //create our fake configuration object
-        tooltipConfig[aid] = {};
-        //if using categies, use it, otherwise default
-        tooltipConfig[aid]['color'] = group && this.completeSeriesConfig[group] ? this.completeSeriesConfig[group]['color'] : this.completeSeriesConfig[this.seriesKey]['color'];
-        //if title is specified, use it, otherwiuse id
-        tooltipConfig[aid]['name'] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['title'] ? this.completeSeriesConfig[aid]['title'] : aid;
-        //if there is a unit, add it
-        tooltipConfig[aid]['yAxisUnit'] = this.completeSeriesConfig[aid] && this.completeSeriesConfig[aid]['yAxisUnit'] ? this.completeSeriesConfig[aid]['yAxisUnit'] : '';
-        //add the y series id
-        tooltipConfig[aid]['y'] = aid;
-
-        //create our value obj
-        value[aid] = yVal;
-        //create our tooltipData obj
-        data = {
-          'mouse': mousePos,
-          'time': time,
-          'series': [
-            { 'name': aid, 'value': value }
-          ]
-        };
-
-        //update axis register value
-        this._buildAxisTooltipData(dataFound, time);
-        this._updateAxisConfig(tooltipConfig[aid]['color']);
-
-        if(this.showTooltip) {
-          this.set('tooltipData', data);
-          this.set('_tooltipSeriesConfig', tooltipConfig);
-          this.set('mousePosition', [screenX, screenY]);
-        }
-      } else {
-        // if it is off the screen, still need to give mouse coords or else it errors out
-        this.set('mousePosition', [-1000, -1000]);
-
-        //clear axis register
-        this._buildAxisTooltipData();
-        this._updateAxisConfig();
-      }
-     },
 
      /**
      * Mute/unmute axis on register requests
@@ -1027,20 +970,40 @@ Custom property | Description | Default
         }
       }
     },
-    _hideTooltip: function() {
+
+    _calcTooltip: function(evt) {
+       var d = evt.detail;
+
+      //update axis register value
+      this._buildAxisTooltipData(d.dataset, d.time);
+      this._updateAxisConfig(d.color);
+
+      if(this.showTooltip) {
+        this.set('mousePosition', d.dataPos);
+
+        this.set('_tooltipSeriesConfig', d.tooltipConfig);
+        this.set('tooltipData', d);
+      }
+    },
+
+    _hideTooltip: function(evt) {
       //hide tooltip
-      this.set('tooltipData', {
-            'time': null,
-            'hidden': true,
-            'series': [],
-            'mouse': null,
-            'xArr': null,
-            'yArr': null
-          });
+      this.set('tooltipData', evt.detail);
+      this.set('mousePosition', evt.detail.dataPos);
 
       //clear axis register
       this._buildAxisTooltipData();
       this._updateAxisConfig();
+    },
+
+    _calcCrosshair: function(evt) {
+      this.generatingCrosshairData = true;
+      this.set('crosshairData', evt.detail);
+    },
+
+    _hideCrosshair: function(evt) {
+      this.generatingCrosshairData = false;
+      this.set('crosshairData', evt.detail);
     }
   });
 </script>
