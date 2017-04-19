@@ -15,6 +15,7 @@
 <link rel="import" href="../px-vis/px-vis-toolbar.html"/>
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
 <link rel="import" href="../px-vis/px-vis-highlight-line.html"/>
+<link rel="import" href="../px-vis/px-vis-highlight-line-canvas.html"/>
 
 
 <link rel="import" href="css/px-vis-radar-styles.html">
@@ -183,6 +184,7 @@ Custom property | Description | Default
             <px-vis-svg-canvas
               id="svgCanvas"
               canvas-context="{{canvasContext}}"
+              canvas-context-top="{{canvasContextTop}}"
               svg="{{svg}}"
               px-svg-elem="{{pxSvgElem}}"
               svg-lower="{{svgLower}}"
@@ -313,21 +315,41 @@ Custom property | Description | Default
         tooltip-data="[[tooltipData]]"
         complete-series-config="[[_tooltipSeriesConfig]]">
       </px-vis-tooltip>
-      <px-vis-highlight-line
-        id="highlighter"
-        svg="[[layer.1]]"
-        x="[[x]]"
-        y="[[y]]"
-        radial-line
-        interpolation-function="bofCompleteManually"
-        dimensions="[[dimensions]]"
-        domain-changed="[[domainChanged]]"
-        time-data="[[seriesKey]]"
-        complete-series-config="[[completeSeriesConfig]]"
-        chart-data="[[chartData]]"
-        generating-crosshair-data="[[generatingCrosshairData]]"
-        crosshair-data="[[crosshairData]]">
-      </px-vis-highlight-line>
+
+      <template id="highlighterDomIf" is="dom-if" if="[[!renderToSvg]]" restamp>
+        <px-vis-highlight-line-canvas
+          id="highlighterCanvas"
+          canvas-context="{{canvasContextTop}}"
+          x="[[x]]"
+          y="[[y]]"
+          radial-line
+          interpolation-function="bofCompleteManually"
+          dimensions="[[dimensions]]"
+          domain-changed="[[domainChanged]]"
+          time-data="[[seriesKey]]"
+          complete-series-config="[[completeSeriesConfig]]"
+          chart-data="[[chartData]]"
+          generating-crosshair-data="[[generatingCrosshairData]]"
+          crosshair-data="[[crosshairData]]">
+        </px-vis-highlight-line-canvas>
+      </template>
+      <template is="dom-if" if="[[renderToSvg]]" restamp>
+         <px-vis-highlight-line
+          id="highlighter"
+          svg="[[layer.1]]"
+          x="[[x]]"
+          y="[[y]]"
+          radial-line
+          interpolation-function="bofCompleteManually"
+          dimensions="[[dimensions]]"
+          domain-changed="[[domainChanged]]"
+          time-data="[[seriesKey]]"
+          complete-series-config="[[completeSeriesConfig]]"
+          chart-data="[[chartData]]"
+          generating-crosshair-data="[[generatingCrosshairData]]"
+          crosshair-data="[[crosshairData]]">
+        </px-vis-highlight-line>
+      </template>
     </div>
   </template>
 </dom-module>
@@ -563,8 +585,8 @@ Custom property | Description | Default
       '_calcCenter(_diameter)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
       '_computeAxes(chartData.*,skipKeys.*)',
-      '_computeDimensions(axes.*, mutedAxes.*, _loadedOnPage)',
-      '_selectedDomain(selectedDomain.x, _loadedOnPage)',
+      '_computeDimensions(axes.*, mutedAxes.*)',
+      '_selectedDomain(selectedDomain.x)',
       '_createLayersOnce(svg, numberOfLayers)',
       '_measureLabels(displayedValues.*)',
 
@@ -585,6 +607,10 @@ Custom property | Description | Default
       "px-data-vis-colors-applied" : '_generateSeriesConfig'
     },
 
+    detached: function() {
+      this.unlisten(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
+    },
+
     ready: function() {
       this.set('numberOfLayers',2);
 
@@ -594,10 +620,9 @@ Custom property | Description | Default
       this.set('_verticalRegisterDrawingCanvasId', 'svgCanvas');
       this.set('_verticalRegisterHeightDeductions', ['toolbar']);
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
-    },
 
-    attached: function() {
-      this._isLoadedOnPage();
+      // only listen to one since it is a toggle
+      this.listen(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
     },
 
     _tooltipConfigChanged: function(conf) {
@@ -607,7 +632,10 @@ Custom property | Description | Default
       this._applyConfigToElement(this.toolbarConfig, this.$.toolbar);
     },
     _highlighterConfigChanged: function(conf) {
-      this._applyConfigToElement(this.highlighterConfig, this.$.highlighter);
+      var elem = this.renderToSvg ? this.$$('#highlighter') : this.$$('#highlighterCanvas');
+      if(elem && this._doesObjHaveValues(this.highlighterConfig)) {
+        this._applyConfigToElement(this.highlighterConfig, elem);
+      }
     },
     /**
      * Event listener resetting domainChanged when fired from elsewhere in the tree
