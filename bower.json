@@ -23,8 +23,7 @@
     "polymer": "^1.6.0",
     "px-theme": "^2.0.1",
     "px-vis": "~1.1.0",
-    "px-colors-design": "^0.3.0",
-    "app-localize-behavior": "^1.0.2"
+    "px-colors-design": "^0.3.0"
   },
   "devDependencies": {
     "iron-ajax": "~1.4.3",
