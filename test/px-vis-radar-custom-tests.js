@@ -101,7 +101,6 @@ function runCustomTests() {
       assert.closeTo(basicRadar.canvasContext._translation[0], 255, 3);
       assert.closeTo(basicRadar.canvasContext._translation[1], 230, 3);
       assert.equal(basicRadar.canvasContext._pxLinesRedraw, 1);
-      assert.equal(basicRadar.canvasContext._pxLinesTotal, 1);
       assert.deepEqual(basicRadar.canvasContext._pxLinesSeries, {"x":true});
       assert.closeTo(basicRadar.canvasContext.canvas.width, 509, 3);
       assert.closeTo(basicRadar.canvasContext.canvas.height, 460, 3);
@@ -804,7 +803,6 @@ function runCustomTests() {
       assert.closeTo(fromDataRadar.canvasContext._translation[0], 255, 3);
       assert.closeTo(fromDataRadar.canvasContext._translation[1], 230, 3);
       assert.equal(fromDataRadar.canvasContext._pxLinesRedraw, 1);
-      assert.equal(fromDataRadar.canvasContext._pxLinesTotal, 1);
       assert.deepEqual(fromDataRadar.canvasContext._pxLinesSeries, {"x":true});
       assert.closeTo(fromDataRadar.canvasContext.canvas.width, 509, 3);
       assert.closeTo(fromDataRadar.canvasContext.canvas.height, 460, 3);
