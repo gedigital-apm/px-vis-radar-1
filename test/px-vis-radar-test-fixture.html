@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Web Component Test : Fixture for px-vis-radar</title>
-    
+
     <!-- Requires Webcomponents.js polyfill is provided by the page for browsers that don't support html imports -->
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <!-- web-component-tester automatically provides local copy of brower.js below
@@ -28,7 +28,9 @@
     <div style="width: 900px; height:460px">
       <px-vis-radar
         id="basicRadar"
-        >
+        prevent-resize
+        width="900"
+        height="460">
       </px-vis-radar>
     </div>
 
@@ -36,7 +38,9 @@
       <px-vis-radar
         id="fromDataRadar"
         generate-axes-from-data
-        >
+        prevent-resize
+        width="900"
+        height="460">
       </px-vis-radar>
     </div>
     </template>
