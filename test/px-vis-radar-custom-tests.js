@@ -105,7 +105,6 @@ function runCustomTests() {
     test('basicRadar canvasContext', function() {
       assert.closeTo(basicRadar.canvasContext._translation[0], 255, 3);
       assert.closeTo(basicRadar.canvasContext._translation[1], 230, 3);
-      assert.equal(basicRadar.canvasContext._pxLinesRedraw, 1);
       assert.deepEqual(basicRadar.canvasContext._pxLinesSeries, ["x"]);
       assert.closeTo(basicRadar.canvasContext.canvas.width, 509, 3);
       assert.closeTo(basicRadar.canvasContext.canvas.height, 460, 3);
