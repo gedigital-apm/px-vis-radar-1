@@ -3,6 +3,8 @@ v1.2.0
 * upgrade vis to 2.0.0
 * Add highlight components for optional crosshair
 * Add cursor component
+* Categories colorscan now be configured through seriesConfig
+* Ensure category and axis register gets category color
 
 v1.1.3
 ==================
