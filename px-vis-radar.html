@@ -297,7 +297,8 @@ Custom property | Description | Default
         title-type-size="15"
         label-type-size="12"
         action-config="[[actionConfig]]"
-        interaction-space-config="[[interactionSpaceConfig]]">
+        interaction-space-config="[[interactionSpaceConfig]]"
+        category-key="[[categoryKey]]">
       </px-vis-multi-axis>
       <px-vis-radar-grid
         svg="[[svgLower]]"
@@ -375,6 +376,8 @@ Custom property | Description | Default
         x="[[x]]"
         y="[[y]]"
         radial-line
+        line-radius-limit="25"
+        clip-path="[[clipPath]]"
         interpolation-function="bofCompleteManually"
         dimensions="[[dimensions]]"
         domain-changed="[[domainChanged]]"
@@ -439,7 +442,6 @@ Custom property | Description | Default
     PxVisBehavior.measureText,
     PxVisBehaviorChart.highlighterConfigs,
     PxVisBehavior.crosshairData,
-    Polymer.AppLocalizeBehavior,
     PxVisBehavior.interactionSpaceConfigGeneric
   ],
 
@@ -627,11 +629,6 @@ Custom property | Description | Default
         type: Number,
         value: 150
       },
-      //TODO: REMOVE WHEN REGISTERS IMPLEMENTED
-      _registerType: {
-        type: String,
-        value: "vertical"
-      },
       /**
        * Specifies which seriesColorOrder color to start with for assigning the series color
        */
@@ -639,36 +636,19 @@ Custom property | Description | Default
         type: Number,
         value: 0
       },
-      /*
-       * List of key/values to be included for translating this component
-       */
-      resources: {
-        type: Object,
-        value: function() {
-          return {};
-        }
-      },
       /**
-      * set a default for localizing
+      * set a default for localizing. Switch it for the chart to pick * up a possibly new d3 or moment locale
       */
       language: {
         type: String,
         value: 'en'
-      },
-      /**
-      * Use the key for localization if value for  language is missing. Should
-      * always be true for  our components
-      */
-      useKeyIfMissing: {
-        type: Boolean,
-        value: true
       }
     },
 
     observers: [
       '_processSizing(width, margin, _smallerSide, _internalLabelMargin)',
       '_calcCenter(_diameter)',
-      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData)',
+      '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, dataVisColors, seriesColorOrder)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*)',
       '_selectedDomain(selectedDomain.x)',
@@ -888,45 +868,61 @@ Custom property | Description | Default
      */
     _generateSeriesConfig: function() {
 
-      //wait for colors design to have finished processing...
-      if(this.dataVisColors['pxVisSeriesColor0'] && this._haveChartData && this._doesObjHaveValues(this.dimensions)) {
-        // TODO make work with multiple series
-        var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
-        // add a seriesConfig with seriesKey as default
-        if(!config[this.seriesKey]) {
-          config[this.seriesKey] = {};
-        }
+      this.debounce('_generateSeriesConfig', function() {
 
-        if(!config[this.seriesKey]['name']) {
-          config[this.seriesKey]['name'] = this.seriesKey;
-        }
+        //wait for colors design to have finished processing...
+        if(this.dataVisColors['pxVisSeriesColor0'] && this._haveChartData && this._doesObjHaveValues(this.dimensions)) {
 
-        if(!config[this.seriesKey]['x']) {
-          config[this.seriesKey]['x'] = this.dimensions;
-        }
+          // TODO make work with multiple series
+          var config = (this.seriesConfig) ? JSON.parse(JSON.stringify(this.seriesConfig)) : {};
+          // add a seriesConfig with seriesKey as default
+          if(!config[this.seriesKey]) {
+            config[this.seriesKey] = {};
+          }
 
-        if(!config[this.seriesKey]['y']) {
-          config[this.seriesKey]['y'] = this.dimensions;
-        }
+          if(!config[this.seriesKey]['name']) {
+            config[this.seriesKey]['name'] = this.seriesKey;
+          }
 
-        if(!config[this.seriesKey]['color']) {
-          config[this.seriesKey]['color'] = this._getColor(this.startColorIndex);
-        }
+          if(!config[this.seriesKey]['x']) {
+            config[this.seriesKey]['x'] = this.dimensions;
+          }
 
-        // if categories are specified, use them
-        if(typeof(this.categoryKey) !== 'undefined') {
-          for(var i = 0; i < this.categories.length; i ++) {
-            config[this.categories[i]] = {
-              "color": this._getColor(this.startColorIndex + i),
-              "name": this.categories[i],
-              "x": this.dimensions,
-              "y": this.dimensions
+          if(!config[this.seriesKey]['y']) {
+            config[this.seriesKey]['y'] = this.dimensions;
+          }
+
+          if(!config[this.seriesKey]['color']) {
+            config[this.seriesKey]['color'] = this._getColor(this.startColorIndex);
+          }
+
+          // if categories are specified, use them
+          if(typeof(this.categoryKey) !== 'undefined') {
+            for(var i = 0; i < this.categories.length; i ++) {
+
+              if(!config[this.categories[i]]) {
+
+                //no config, create one
+                config[this.categories[i]] = {
+                  "color": this._getColor(this.startColorIndex + i),
+                  "name": this.categories[i],
+                  "x": this.dimensions,
+                  "y": this.dimensions
+                }
+              } else {
+
+                //there's a config, make sure it has everything
+                config[this.categories[i]].color = config[this.categories[i]].color ? config[this.categories[i]].color : this._getColor(this.startColorIndex + i);
+                config[this.categories[i]].name = config[this.categories[i]].name ? config[this.categories[i]].name : this.categories[i];
+                config[this.categories[i]].x = config[this.categories[i]].x ? config[this.categories[i]].x : this.dimensions;
+                config[this.categories[i]].y = config[this.categories[i]].y ? config[this.categories[i]].y : this.dimensions;
+              }
             }
           }
-        }
 
-        this.set('completeSeriesConfig',config);
-      }
+          this.set('completeSeriesConfig',config);
+        }
+      }.bind(this), 20);
     },
 
     /**
