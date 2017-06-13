@@ -248,17 +248,16 @@ Custom property | Description | Default
           interpolation-function="bofCompleteManually"
           clip-path="[[clipPath]]">
         </px-vis-line-svg>
-        <px-vis-clip-path-complex-area
-          svg="[[layer.0]]"
-          x="[[x]]"
-          y="[[y]]"
-          domain-changed="[[domainChanged]]"
-          chart-data="[[chartData]]"
-          dimensions="[[dimensions]]"
-          clip-path="{{clipPath}}">
-        </px-vis-clip-path-complex-area>
       </template>
-
+      <px-vis-clip-path-complex-area
+        svg="[[layer.0]]"
+        x="[[x]]"
+        y="[[y]]"
+        domain-changed="[[domainChanged]]"
+        chart-data="[[chartData]]"
+        dimensions="[[dimensions]]"
+        clip-path="{{clipPath}}">
+      </px-vis-clip-path-complex-area>
       <px-vis-multi-axis
         id="multiAxis"
         svg="[[layer.2]]"
