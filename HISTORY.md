@@ -1,10 +1,15 @@
-v1.2.0
+v2.0.0
 ==================
 * upgrade vis to 2.0.0
 * Add highlight components for optional crosshair
 * Add cursor component
 * Categories colorscan now be configured through seriesConfig
 * Ensure category and axis register gets category color
+* Toolbar now controls axis actions
+
+v1.2.0 && 1.2.1
+==================
+* clearfix pr
 
 v1.1.3
 ==================
