@@ -3,6 +3,7 @@
 <link rel="import" href="../px-vis/px-vis-behavior-common.html" />
 <link rel="import" href="../px-vis/px-vis-behavior-d3.html" />
 <link rel="import" href="../px-vis/px-vis-behavior-chart.html"/>
+<link rel="import" href="../px-vis/px-vis-behavior-renderer.html"/>
 <link rel="import" href="../px-vis/px-vis-svg-canvas.html"/>
 <link rel="import" href="../px-vis/px-vis-line-svg.html"/>
 <link rel="import" href="../px-vis/px-vis-line-canvas.html"/>
@@ -219,10 +220,7 @@ Custom property | Description | Default
           y="[[y]]"
           domain-changed="[[domainChanged]]"
           selected-domain="[[selectedDomain]]"
-          muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
-          no-canvas-progressive-rendering="[[noCanvasProgressiveRendering]]"
-          progressive-rendering-points-per-frame="[[progressiveRenderingPointsPerFrame]]"
-          progressive-rendering-minimum-frames="[[progressiveRenderingMinimumFrames]]"
+          muted-series="[[_combinedMutedSeries]]"
           interpolation-function="bofCompleteManually">
         </px-vis-line-canvas>
       </template>
@@ -244,7 +242,7 @@ Custom property | Description | Default
           y="[[y]]"
           domain-changed="[[domainChanged]]"
           selected-domain="[[selectedDomain]]"
-          muted-series="[[_combineMutes(mutedSeriesBrush,mutedSeriesDomain)]]"
+          muted-series="[[_combinedMutedSeries]]"
           interpolation-function="bofCompleteManually"
           clip-path="[[clipPath]]">
         </px-vis-line-svg>
@@ -297,7 +295,8 @@ Custom property | Description | Default
         label-type-size="12"
         action-config="[[actionConfig]]"
         interaction-space-config="[[interactionSpaceConfig]]"
-        category-key="[[categoryKey]]">
+        category-key="[[categoryKey]]"
+        prevent-initial-drawing="[[preventInitialDrawing]]">
       </px-vis-multi-axis>
       <px-vis-radar-grid
         svg="[[svgLower]]"
@@ -414,7 +413,6 @@ Custom property | Description | Default
     PxVisBehavior.commonAxis,
     PxVisBehaviorD3.selectedTimeDomain,
     PxVisBehaviorChart.saveImage,
-    PxVisBehavior.progressiveRendering,
     PxVisBehaviorChart.chartAutoResize,
     PxVisBehavior.truncating,
     PxVisBehaviorD3.domainUpdate,
@@ -441,7 +439,9 @@ Custom property | Description | Default
     PxVisBehavior.measureText,
     PxVisBehaviorChart.highlighterConfigs,
     PxVisBehavior.crosshairData,
-    PxVisBehavior.interactionSpaceConfigGeneric
+    PxVisBehavior.interactionSpaceConfigGeneric,
+    PxVisBehaviorRenderer.base,
+    PxVisBehaviorChart.combineMutes
   ],
 
     /**
@@ -476,25 +476,6 @@ Custom property | Description | Default
        */
       seriesKey: {
         type: String,
-        notify: true
-      },
-      /**
-       * An object which holds the series lines that have been muted based on the selected domain
-       *
-       * @private
-       */
-      mutedSeriesDomain: {
-        type:Object,
-        notify: true,
-        value: function() { return {} }
-      },
-      /**
-       * An object which holds the series lines that have been muted based on the axes brushes
-       *
-       * @private
-       */
-      mutedSeriesBrush: {
-        type:Object,
         notify: true
       },
       /**
@@ -641,6 +622,13 @@ Custom property | Description | Default
       language: {
         type: String,
         value: 'en'
+      },
+      /**
+      * blocks initial drawings of axis until set to false
+      */
+      preventInitialDrawing: {
+        type: Boolean,
+        value: true
       }
     },
 
@@ -663,7 +651,6 @@ Custom property | Description | Default
     listeners: {
       'iron-resize': '_onIronResize',
 
-      'px-vis-redraw-lines' : '_redrawLines',
       'px-vis-axis-interaction-space-tooltip-data': '_calcTooltip',
       'px-vis-axis-interaction-space-reset-tooltip': '_hideTooltip',
       'px-vis-axis-interaction-space-crosshair-data': '_calcCrosshair',
@@ -674,6 +661,7 @@ Custom property | Description | Default
 
     detached: function() {
       this.unlisten(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
+      this.set('preventInitialDrawing', true);
     },
 
     ready: function() {
@@ -686,8 +674,23 @@ Custom property | Description | Default
       this.set('_verticalRegisterHeightDeductions', ['toolbar']);
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
 
-      // only listen to one since it is a toggle
+       // only listen to one since it is a toggle
       this.listen(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
+    },
+
+    attached: function() {
+
+      // we need this in attached as well in case the chart is
+      // moved in the dom or reused
+      this.listen(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
+
+      //we probably are re-attaching. if nothing has changed (neither series nor size) we might
+      //still need to kick this in order for preventInitialDrawing to go false
+      if(this.displayedValues) {
+        window.requestAnimationFrame(function() {
+          this._processSizing();
+        }.bind(this));
+      }
     },
 
     _tooltipConfigChanged: function(conf) {
@@ -753,7 +756,6 @@ Custom property | Description | Default
 
       if(this.displayedValues) {
        // this.debounce('processSizing', function() {
-
           var adjust = 0,
               newMargin;
 
@@ -782,6 +784,7 @@ Custom property | Description | Default
           //extend width and recalculate internal margins for this adjustment
           this.set('_extendedWidth', this._smallerSide + adjust);
           this.set('_internalCircleMargins', newMargin);
+          this.set('preventInitialDrawing', false);
     //    }, 10);
       }
     },
@@ -941,37 +944,6 @@ Custom property | Description | Default
         }
       },200);
     },
-    /**
-     * Takes the muted series from the axis brush and the selected domain and returns a merged copy of them
-     *
-     */
-    _combineMutes: function(m1,m2) {
-      var muted = {};
-      // for these, we assume that "false" items will just have been removed
-      for(var k in m1) {
-        muted[k] = m1[k];
-      }
-      for(var k in m2) {
-        muted[k] = m2[k];
-      }
-      return muted;
-    },
-
-    /**
-     * call the line draw methods vis event.
-     *
-     */
-    _redrawLines: function() {
-      if(this.renderToSvg) {
-        this.$$('#lineSVG').drawElement();
-        this.$$('#highlighter').reDrawElement();
-      } else {
-        this.$$('#lineCanvas').drawCanvas();
-        this.$$('#highlighterCanvas').reDrawElement();
-      }
-
-      this.$.lineCursor.reDrawElement();
-    },
 
     /**
      * Resizes the chart based on a container resize if prevent-resize is false (default)
@@ -992,6 +964,7 @@ Custom property | Description | Default
           heightDeduct += toolbarRect.height;
           widthDeduct += axisRegisterWidth;
 
+          this.set('preventInitialDrawing', true);
           this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
           this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
           this._computeVerticalRegisterHeight([toolbarRect.height, categoryRegisterHeight]);
