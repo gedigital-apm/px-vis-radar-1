@@ -247,35 +247,41 @@
 
         //fetch svg+canvas from chart and svg
         //from navigator and render them on a canvas
-        var canvas = document.createElement('canvas'),
-                context,
-                chartCanvasContext = parall.canvasContext,
-                svgChart = parall.pxSvgElem,
-                svgNavigator = navigator.pxSvgElem,
-                count = 0;
+        // var canvas = document.createElement('canvas'),
+        //         context,
+        //         chartCanvasContext = parall.canvasContext,
+        //         svgChart = parall.pxSvgElem,
+        //         svgNavigator = navigator.pxSvgElem,
+        //         count = 0;
 
-        canvas.width = Math.max(chartCanvasContext.canvas.width, navigator.width);
-        canvas.height = chartCanvasContext.canvas.height + navigator.height;
-        context = canvas.getContext('2d');
+        // canvas.width = Math.max(chartCanvasContext.canvas.width, navigator.width);
+        // canvas.height = chartCanvasContext.canvas.height + navigator.height;
+        // context = canvas.getContext('2d');
 
-        //render chart canvas
-        context.drawImage(chartCanvasContext.canvas, 0, 0);
+        // //render chart canvas
+        // context.drawImage(chartCanvasContext.canvas, 0, 0);
 
-        //to be called when svg is done drawing
-        var callback = function(res) {
-          if(count === 0) {
-            //first svg has rendered, wait for second one
-            count++;
-          } else {
+        // //to be called when svg is done drawing
+        // var callback = function(res) {
+        //   if(count === 0) {
+        //     //first svg has rendered, wait for second one
+        //     count++;
+        //   } else {
 
-            //everything done
-            window.open().location = res.toDataURL("image/png");
-          }
-        }
+        //     //everything done
+        //     window.open().location = res.toDataURL("image/png");
+        //   }
+        parall.getImage(function(result) {
+            var img = document.createElement('img');
+            img.src= result.image;
+            document.body.appendChild(img);
+         //   window.open().location = result.image;
+          }, true);
+
 
         //render chart svg and navigator svg
-        parall._drawSVGOnCanvas(canvas, callback);
-        navigator._drawSVGOnCanvas(canvas, callback, 0, parall.height);
+        // parall._drawSVGOnCanvas(canvas, callback);
+        // navigator._drawSVGOnCanvas(canvas, callback, 0, parall.height);
       });
 
       btnInc.addEventListener('click', function() {
