@@ -1103,7 +1103,7 @@ Custom property | Description | Default
      */
     _muteUnmute: function(evt) {
 
-      if(evt.detail.fromRegister && this.dimensions.indexOf(evt.detail.name) !== -1) {
+      if(evt.detail.fromRegister && this.axes.indexOf(evt.detail.name) !== -1) {
         if(evt.detail.value) {
           this.addToMutedAxes(evt.detail.name);
         } else {
