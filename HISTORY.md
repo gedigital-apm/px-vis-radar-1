@@ -1,3 +1,12 @@
+v2.1.2
+==================
+* fix issue where an axes couldn't be un muted from the register
+
+v2.1.1
+==================
+* Ensure lower svg is taken into account when getting image
+* muted categories are now reflected (and can be set) in mutedSeriesCategories
+
 v2.0.0
 ==================
 * upgrade vis to 2.0.0
