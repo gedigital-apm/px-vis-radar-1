@@ -1,6 +1,5 @@
 #Px-Vis-Radar
 
-[![px-vis-radar demo](px-vis-radar.png?raw=true)](https://predixdev.github.io/px-vis-radar)
 
 ## Overview
 
