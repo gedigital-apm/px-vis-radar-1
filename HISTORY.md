@@ -1,3 +1,9 @@
+v3.0.0
+==================
+* Design refresh
+* Updates for new renderer
+* See px-vis release notes for a list breaking changes
+
 v2.1.2
 ==================
 * fix issue where an axes couldn't be un muted from the register

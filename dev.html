@@ -16,6 +16,7 @@
     <style include="px-theme-styles" is="custom-style"></style>
 
     <!-- Import custom element. Note: see comment about relative paths to dependencies in the *.html file referenced below -->
+    <link rel="import" href="../promise-polyfill/promise-polyfill-lite.html">
     <link rel="import" href="../iron-ajax/iron-ajax.html"/>
 
     <link rel="import" href="../px-vis/px-vis-chart-navigator.html" />
@@ -75,6 +76,7 @@
         <px-vis-chart-navigator
             id="navigator"
             prevent-resize
+            prevent-web-worker-synchronization
             width="1280"
             height="100"
             x-axis-type="time"
@@ -137,7 +139,7 @@
       <br />
       <h3>Radar Chart with developer specified axes and control of axis extents</h3>
       <div style="width: 500px;">
-        <px-slider id="slider" value="-1050" start-value="-1050" end-value="217" min="-1050" max="217" step="1"></px-slider>
+        <px-slider id="slider" is-range value="-1050" start-value="-1050" end-value="217" min="-1050" max="217" step="1"></px-slider>
         <button id="sliderButton">Submit</button>
       </div>
       <px-vis-radar
@@ -276,7 +278,7 @@
             img.src= result.image;
             document.body.appendChild(img);
          //   window.open().location = result.image;
-          }, true);
+          }, false);
 
 
         //render chart svg and navigator svg
