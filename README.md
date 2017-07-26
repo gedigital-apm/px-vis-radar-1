@@ -1,9 +1,8 @@
-#Px-Vis-Radar
-
+# px-vis-radar
 
 ## Overview
 
-Px-Vis-Radar is a Predix UI component
+`Px-vis-radar` is a Predix UI component that allows you to draw a radar (spider) chart.
 
 ## Usage
 
@@ -13,17 +12,17 @@ Px-Vis-Radar is a Predix UI component
 3. bower
 4. [webcomponents-lite.js polyfill](https://github.com/webcomponents/webcomponentsjs)
 
-Node, npm and bower are necessary to install the component and dependencies. webcomponents.js adds support for web components and custom elements to your application.
+Node, npm, and bower are necessary to install the component and dependencies. webcomponents.js adds support for web components and custom elements to your application.
 
 ## Getting Started
 
-First, install the component via bower on the command line.
+First, install the component via bower on the command line:
 
 ```
 bower install Px-Vis-Radar --save
 ```
 
-Second, import the component to your application with the following tag in your head.
+Second, import the component in your application with the following tag in your head:
 
 ```
 <link rel="import" href="/bower_components/Px-Vis-Radar/Px-Vis-Radar.html"/>
@@ -45,7 +44,7 @@ Finally, use the component in your application:
 <br />
 <hr />
 
-## documentation
+## Documentation
 
 Read the full API and view the demo [here](https://predixdev.github.io/px-vis-radar).
 
