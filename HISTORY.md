@@ -1,3 +1,7 @@
+v3.0.2
+==================
+* Improve flexing in demo
+
 v3.0.1
 ==================
 * Improved demo
