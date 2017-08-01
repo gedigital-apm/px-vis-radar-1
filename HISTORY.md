@@ -1,3 +1,8 @@
+v3.0.3
+==================
+* Add safari flex fix
+* Add vis sass partial and remove helpers design
+
 v3.0.2
 ==================
 * Improve flexing in demo
