@@ -1,6 +1,5 @@
 v3.1.0
 ==================
-* Adding ability to pass strokeWidth down to lines from seriesConfig
 * Change CodePen to Glitch
 * Use updated demo snippet
 * Added PxVisBehavior.updateStylesOverride behavior
