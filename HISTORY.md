@@ -1,3 +1,8 @@
+v3.1.1
+==================
+* Fix to demo
+* removed width from _processSizing
+
 v3.1.0
 ==================
 * Change CodePen to Glitch
