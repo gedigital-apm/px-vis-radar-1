@@ -7,7 +7,7 @@
 <link rel="import" href="../px-vis/px-vis-line-svg.html"/>
 <link rel="import" href="../px-vis/px-vis-line-canvas.html"/>
 <link rel="import" href="../px-vis/px-vis-multi-axis.html"/>
-<link rel="import" href="../px-vis/px-vis-radial-scale.html"/>
+<link rel="import" href="../px-vis/px-vis-behavior-scale-radar.html"/>
 <link rel="import" href="../px-vis/px-vis-gridlines.html"/>
 <link rel="import" href="../px-vis/px-vis-tooltip.html"/>
 <link rel="import" href="../px-vis/px-vis-radar-grid.html"/>
@@ -109,7 +109,7 @@ Custom property | Description
 
 
     <div id="wrapper" class$="{{_chartWrapperClass}}">
-      <px-vis-radial-scale
+      <!--<px-vis-radial-scale
         id="scale"
         width="[[_radius]]"
         height="[[_radius]]"
@@ -122,7 +122,7 @@ Custom property | Description
         y="{{y}}"
         radar
         center-offset="[[centerOffset]]">
-      </px-vis-radial-scale>
+      </px-vis-radial-scale>-->
       <div id="registerWrapper" class="flex flex--col safari-flex-fix">
         <px-vis-register
           id="categoryRegister"
@@ -156,7 +156,7 @@ Custom property | Description
               within-chart
               chart-margin="[[_internalLabelMargin]]"
               show-tooltip="{{_internalShowTooltip}}"
-              config='{"axisBrush": true, "axisDrag": true, "tooltip": true}'>
+              config='{"axisMuteSeries": true, "axisDrag": true, "tooltip": true, "zoom": true}'>
             </px-vis-toolbar>
             <px-vis-svg-canvas
               id="svgCanvas"
@@ -193,7 +193,7 @@ Custom property | Description
           x="[[x]]"
           y="[[y]]"
           domain-changed="[[domainChanged]]"
-          selected-domain="[[selectedDomain]]"
+          time-domain="[[timeDomain]]"
           muted-series="[[_combinedMutedSeries]]"
           interpolation-function="bofCompleteManually">
         </px-vis-line-canvas>
@@ -215,7 +215,7 @@ Custom property | Description
           x="[[x]]"
           y="[[y]]"
           domain-changed="[[domainChanged]]"
-          selected-domain="[[selectedDomain]]"
+          time-domain="[[timeDomain]]"
           muted-series="[[_combinedMutedSeries]]"
           interpolation-function="bofCompleteManually"
           clip-path="[[clipPath]]">
@@ -376,6 +376,7 @@ Custom property | Description
     PxVisBehavior.dataset,
     PxVisBehavior.dimensions,
     PxVisBehavior.commonMethods,
+    PxVisBehaviorScale.radar,
     PxVisBehavior.chartExtents,
     PxVisBehavior.completeSeriesConfig,
     PxVisBehaviorD3.labelTypeSize,
@@ -414,7 +415,11 @@ Custom property | Description
     PxVisBehavior.interactionSpaceConfigGeneric,
     PxVisBehaviorRenderer.base,
     PxVisBehaviorChart.combineMutes,
-    PxVisBehavior.updateStylesOverride
+    PxVisBehavior.updateStylesOverride,
+    PxVisBehavior.timeDomain,
+    PxVisBehavior.axesDomain,
+    PxVisBehaviorChart.multiAxisMuting,
+    PxVisBehaviorChart.multiAxisZoom
   ],
 
     /**
@@ -611,7 +616,7 @@ Custom property | Description
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, seriesColorList.*)',
       '_computeAxes(chartData.*,skipKeys.*)',
       '_computeDimensions(axes.*, mutedAxes.*)',
-      '_selectedDomain(selectedDomain.x)',
+      '_setMutedSeriesDomain(timeDomain.x)',
       '_createLayersOnce(svg, numberOfLayers)',
       '_measureLabels(displayedValues.*)',
 
@@ -620,10 +625,21 @@ Custom property | Description
       '_highlighterConfigChanged(highlighterConfig.*)',
       '_langChanged(language)',
 
+      '_setXScale(_radius, useDegrees)',
+      '_setYScale(_radius,centerOffset)',
+      '_generateChartExtents(chartData.*, dimensions)',
+      '_generateChartExtents(chartExtents)',
+      '_currentDomain(x, y, _calculatedExtents)',
+      '_updateDomain(axesDomain.*)',
+
       //renderer
       '_renderChartData(domainChanged, canvasContext, chartData.*, mutedSeries.*, completeSeriesConfig.*, preventInitialDrawing)',
       '_renderHighlight(domainChanged, canvasLayers.highlighter, completeSeriesConfig.*, preventInitialDrawing)',
-      '_mutedChanged(_combinedMutedSeries)'
+      '_mutedChanged(_combinedMutedSeries)',
+
+      // temporary shim to maintain backawards compatibility
+      '_setTimeDomain(selectedDomain.*)'
+
     ],
 
     listeners: {
@@ -634,7 +650,9 @@ Custom property | Description
       'px-vis-axis-interaction-space-crosshair-data': '_calcCrosshair',
       'px-vis-axis-interaction-space-reset-crosshair': '_hideCrosshair',
       'px-vis-muted-series-updated': '_muteUnmute',
-      "px-data-vis-colors-applied" : '_generateSeriesConfig'
+      "px-data-vis-colors-applied" : '_generateSeriesConfig',
+
+      'px-vis-axis-interaction-space-extents-data': '_setExtentsData'
     },
 
     detached: function() {
@@ -713,7 +731,6 @@ Custom property | Description
           this._measuredLabels = [];
 
       for(var i=0; i<keys.length; i++) {
-
         //only measure this axis title if it's not muted
         if(!this.mutedAxes || !this.mutedAxes[keys[i]]) {
           size = this._measureTextOnCanvas(this.displayedValues[keys[i]]).width;
@@ -909,8 +926,10 @@ Custom property | Description
      * Adds data to a muted series based on the selected domain
      *
      */
-    _selectedDomain: function(sd) {
-      this.debounce('selected_domain',function() {
+    _setMutedSeriesDomain: function(sd) {
+      this.debounce('muted_series_domain',function() {
+        if(!sd || !sd.length) { return; }
+
         if(this.chartData && this.chartData.length > 0) {
           var muted = {};
           for(var i = 0; i < this.chartData.length; i++) {
@@ -1075,9 +1094,27 @@ Custom property | Description
       this.set('crosshairData', evt.detail);
     },
     _langChanged: function() {
-
       //recreate X and Y in case d3 locale changed
-      this.$.scale._recreateScales();
+      this._recreateScales();
+    },
+
+    // shim to maintain backwards compatibility
+    _setTimeDomain: function() {
+      if(this.selectedDomain && this.selectedDomain.x && this.selectedDomain.x.length) {
+        this.set('timeDomain', this.selectedDomain);
+      }
+    },
+
+    _setExtentsData: function(e) {
+      if(!e.detail.extents) { return; }
+
+      this.extentsAction = e.detail.action;
+
+      var extentsData = {};
+      extentsData.dimension = e.detail.dimension;
+      extentsData.extents = e.detail.extents;
+
+      this.set('extentsData', extentsData);
     }
   });
 </script>
