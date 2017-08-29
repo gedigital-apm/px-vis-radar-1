@@ -607,7 +607,7 @@ Custom property | Description
     },
 
     observers: [
-      '_processSizing(margin, _smallerSide, _internalLabelMargin)',
+      '_processSizing(margin, width, _smallerSide, _internalLabelMargin)',
       '_calcCenter(_diameter)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, seriesColorList.*)',
       '_computeAxes(chartData.*,skipKeys.*)',
@@ -779,12 +779,6 @@ Custom property | Description
 
       this.set('centerOffset', center);
       this.set('ticks', Math.round(this._diameter/100));
-
-      // for some reason, canvas needs to be redrawn if there is no change, so manually fire it in that case.
-      if(!this.renderToSvg && this.$$('#lineCanvas')) { //if no change and we need to refire canvas...
-        this.$$('#lineCanvas').set('_canvasRedraw', !this.$$('#lineCanvas')._canvasRedraw);
-      }
-
     },
 
     /**

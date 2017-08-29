@@ -1,3 +1,7 @@
+v3.1.2
+==================
+* restored width in _processSizing. Removed canvas drawing workaround
+
 v3.1.1
 ==================
 * Fix to demo
