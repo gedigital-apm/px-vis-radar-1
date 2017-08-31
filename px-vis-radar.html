@@ -244,7 +244,6 @@ Custom property | Description
         chart-data="[[chartData]]"
         dimensions="[[dimensions]]"
         axes="[[axes]]"
-        muted-series="{{mutedSeriesBrush}}"
         redraw-series="true"
         stroke-width="2"
         truncation-length="[[truncationLength]]"
@@ -613,7 +612,14 @@ Custom property | Description
     },
 
     observers: [
-      '_processSizing(margin, _smallerSide, _internalLabelMargin)',
+      /*
+        width should be unnessary in this obs (width triggers _smallerSide calc),
+        but in the case where height is the smaller side and the width changed,
+        preventInitialDrawing is set to true by onIronResize and cannot be set to
+        false. So we add width to _processSizing so it can set preventInitialDrawing
+        to false. Probably should find a better way.
+      */
+      '_processSizing(margin, width, _smallerSide, _internalLabelMargin)',
       '_calcCenter(_diameter)',
       '_generateSeriesConfig(dimensions, seriesConfig, categories.*, seriesKey, _haveChartData, seriesColorList.*)',
       '_computeAxes(chartData.*,skipKeys.*)',
@@ -637,7 +643,7 @@ Custom property | Description
       //renderer
       '_renderChartData(domainChanged, canvasContext, chartData.*, mutedSeries.*, completeSeriesConfig.*, preventInitialDrawing)',
       '_renderHighlight(domainChanged, canvasLayers.highlighter, completeSeriesConfig.*, preventInitialDrawing)',
-      '_mutedChanged(_combinedMutedSeries)',
+      '_mutedChanged(_combinedMutedSeries.*)',
 
       // temporary shim to maintain backawards compatibility
       '_setTimeDomain(selectedDomain.*)'
@@ -749,7 +755,7 @@ Custom property | Description
     /**
      * Sets several base vars based on sizing
      */
-    _processSizing: function(smallerSide) {
+    _processSizing: function() {
 
       if(this.displayedValues) {
        // this.debounce('processSizing', function() {
