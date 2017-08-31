@@ -641,13 +641,11 @@ Custom property | Description
       '_updateDomain(axesDomain.*)',
 
       //renderer
-      '_renderChartData(domainChanged, canvasContext, chartData.*, mutedSeries.*, completeSeriesConfig.*, preventInitialDrawing)',
+      '_renderChartData(domainChanged, canvasContext, chartData.*, mutedSeries.*, completeSeriesConfig.*, preventInitialDrawing, _combinedMutedSeries, renderToSvg)',
       '_renderHighlight(domainChanged, canvasLayers.highlighter, completeSeriesConfig.*, preventInitialDrawing)',
-      '_mutedChanged(_combinedMutedSeries.*)',
 
       // temporary shim to maintain backawards compatibility
       '_setTimeDomain(selectedDomain.*)'
-
     ],
 
     listeners: {
