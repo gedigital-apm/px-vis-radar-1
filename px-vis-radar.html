@@ -661,6 +661,8 @@ Custom property | Description
       'px-vis-axis-interaction-space-extents-data': '_setExtentsData'
     },
 
+    _flipAxisLogic: true,
+
     detached: function() {
       this.unlisten(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
       this.set('preventInitialDrawing', true);
