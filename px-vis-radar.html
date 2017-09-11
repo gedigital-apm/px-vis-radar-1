@@ -109,20 +109,6 @@ Custom property | Description
 
 
     <div id="wrapper" class$="{{_chartWrapperClass}}">
-      <!--<px-vis-radial-scale
-        id="scale"
-        width="[[_radius]]"
-        height="[[_radius]]"
-        margin="[[margin]]"
-        amplitude-keys="[[dimensions]]"
-        chart-data="[[chartData]]"
-        chart-extents="[[chartExtents]]"
-        domain-changed="{{domainChanged}}"
-        x="{{x}}"
-        y="{{y}}"
-        radar
-        center-offset="[[centerOffset]]">
-      </px-vis-radial-scale>-->
       <div id="registerWrapper" class="flex flex--col safari-flex-fix">
         <px-vis-register
           id="categoryRegister"
@@ -633,11 +619,11 @@ Custom property | Description
       '_highlighterConfigChanged(highlighterConfig.*)',
       '_langChanged(language)',
 
-      '_setXScale(_radius, useDegrees)',
+      '_setXScale(_radius)',
       '_setYScale(_radius,centerOffset)',
       '_generateChartExtents(chartData.*, dimensions)',
       '_generateChartExtents(chartExtents)',
-      '_currentDomain(x, y, _calculatedExtents)',
+      '_setDomain(x, y, _calculatedExtents)',
       '_updateDomain(axesDomain.*)',
 
       //renderer
