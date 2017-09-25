@@ -1,10 +1,11 @@
+document.addEventListener("WebComponentsReady", function() {
+  runCustomTests();
+});
+
 // This is the wrapper for custom tests, called upon web components ready state
 function runCustomTests() {
   suite('px-vis-radar basic setup works', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var d = [{
@@ -44,18 +45,17 @@ function runCustomTests() {
         h = 460;
 
       var rendered = function() {
-        basicRadar.removeEventListener('px-vis-line-canvas-rendering-ended', rendered);
+        basicRadar.removeEventListener('px-vis-chart-canvas-rendering-ended', rendered);
         setTimeout(function() { done(); }, 2000);
       };
 
-      basicRadar.addEventListener('px-vis-line-canvas-rendering-ended', rendered);
+      basicRadar.addEventListener('px-vis-chart-canvas-rendering-ended', rendered);
 
       basicRadar.set('width',w);
       basicRadar.set('height',h);
       basicRadar.set('seriesKey',"x");
       basicRadar.set('axes',dim);
       basicRadar.set('chartData',d);
-
     });
 
     test('basicRadar fixture is created', function() {
@@ -77,7 +77,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
@@ -105,7 +105,6 @@ function runCustomTests() {
     test('basicRadar canvasContext', function() {
       assert.closeTo(basicRadar.canvasContext._translation[0], 255, 3);
       assert.closeTo(basicRadar.canvasContext._translation[1], 230, 3);
-      assert.deepEqual(basicRadar.canvasContext._pxLinesSeries, ["x"]);
       assert.closeTo(basicRadar.canvasContext.canvas.width, 509, 3);
       assert.closeTo(basicRadar.canvasContext.canvas.height, 460, 3);
     });
@@ -150,9 +149,6 @@ function runCustomTests() {
 
   suite('px-vis-radar with seriesConfig', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var seriesConfig = {
@@ -214,9 +210,6 @@ function runCustomTests() {
 
   suite('px-vis-radar muting an axis works', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var muted = {
@@ -240,7 +233,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y1','y2','y3']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y1','y2','y3']);
@@ -266,9 +259,6 @@ function runCustomTests() {
 
   suite('px-vis-radar unmuting an axis works', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var muted = {
@@ -290,7 +280,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
@@ -316,9 +306,6 @@ function runCustomTests() {
 
   suite('px-vis-radar muting with addToMutedAxes works', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       basicRadar.addToMutedAxes('y1');
@@ -335,7 +322,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y2','y3']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y2','y3']);
@@ -361,9 +348,6 @@ function runCustomTests() {
 
   suite('px-vis-radar unmuting with removeFromMutedAxes works', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
 
@@ -382,7 +366,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
@@ -430,9 +414,6 @@ function runCustomTests() {
 
   suite('px-vis-radar adding an axis', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var d = [{
@@ -483,7 +464,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3','y4']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3','y4']);
@@ -517,9 +498,6 @@ function runCustomTests() {
 
   suite('px-vis-radar muting with addToMutedAxes works  with an array', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       basicRadar.addToMutedAxes(['y1','y3']);
@@ -536,7 +514,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y2','y4']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y2','y4']);
@@ -562,9 +540,6 @@ function runCustomTests() {
 
   suite('px-vis-radar unmuting with removeFromMutedAxes works with an array', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
 
@@ -583,7 +558,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3','y4']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3','y4']);
@@ -609,9 +584,6 @@ function runCustomTests() {
 
   suite('px-vis-radar delete an axis', function() {
     var basicRadar = document.getElementById('basicRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var d = [{
@@ -649,11 +621,11 @@ function runCustomTests() {
         dim = ['y','y1','y3','y4'];
 
       var rendered = function() {
-        basicRadar.removeEventListener('px-vis-line-canvas-rendering-ended', rendered);
+        basicRadar.removeEventListener('px-vis-chart-canvas-rendering-ended', rendered);
         done();
       };
 
-      basicRadar.addEventListener('px-vis-line-canvas-rendering-ended', rendered);
+      basicRadar.addEventListener('px-vis-chart-canvas-rendering-ended', rendered);
 
       basicRadar.set('axes',dim);
       basicRadar.set('chartData',d);
@@ -661,7 +633,7 @@ function runCustomTests() {
 
     test('basicRadar completeSeriesConfig', function() {
       assert.isObject(basicRadar.completeSeriesConfig.x);
-      assert.equal(basicRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(basicRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(basicRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(basicRadar.completeSeriesConfig.x.x, ['y','y1','y3','y4']);
       assert.deepEqual(basicRadar.completeSeriesConfig.x.y, ['y','y1','y3','y4']);
@@ -700,9 +672,6 @@ function runCustomTests() {
   suite('px-vis-radar generateAxesFromData works', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
 
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var d = [{
@@ -754,12 +723,12 @@ function runCustomTests() {
         h = 460;
 
       var rendered = function() {
-        fromDataRadar.removeEventListener('px-vis-line-canvas-rendering-ended', rendered);
+        fromDataRadar.removeEventListener('px-vis-chart-canvas-rendering-ended', rendered);
         setTimeout(function() { done(); }, 2000);
 
       };
 
-      fromDataRadar.addEventListener('px-vis-line-canvas-rendering-ended', rendered);
+      fromDataRadar.addEventListener('px-vis-chart-canvas-rendering-ended', rendered);
 
       fromDataRadar.set('width',w);
       fromDataRadar.set('height',h);
@@ -786,7 +755,7 @@ function runCustomTests() {
 
     test('fromDataRadar completeSeriesConfig', function() {
       assert.isObject(fromDataRadar.completeSeriesConfig.x);
-      assert.equal(fromDataRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(fromDataRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(fromDataRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3']);
       assert.deepEqual(fromDataRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3']);
@@ -814,8 +783,6 @@ function runCustomTests() {
     test('fromDataRadar canvasContext', function() {
       assert.closeTo(fromDataRadar.canvasContext._translation[0], 255, 3);
       assert.closeTo(fromDataRadar.canvasContext._translation[1], 230, 3);
-      assert.equal(fromDataRadar.canvasContext._pxLinesRedraw, 1);
-      assert.deepEqual(fromDataRadar.canvasContext._pxLinesSeries, ["x"]);
       assert.closeTo(fromDataRadar.canvasContext.canvas.width, 509, 3);
       assert.closeTo(fromDataRadar.canvasContext.canvas.height, 460, 3);
     });
@@ -860,9 +827,6 @@ function runCustomTests() {
 
   suite('px-vis-radar adding to data', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var d = [{
@@ -912,7 +876,7 @@ function runCustomTests() {
 
     test('fromDataRadar completeSeriesConfig', function() {
       assert.isObject(fromDataRadar.completeSeriesConfig.x);
-      assert.equal(fromDataRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(fromDataRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(fromDataRadar.completeSeriesConfig.x.x, ['y','y1','y2','y3','y4']);
       assert.deepEqual(fromDataRadar.completeSeriesConfig.x.y, ['y','y1','y2','y3','y4']);
@@ -946,9 +910,6 @@ function runCustomTests() {
 
   suite('px-vis-radar delete data ', function() {
     var fromDataRadar = document.getElementById('fromDataRadar');
-    var colors = baseColors.properties.colors.value;
-    var colorOrder = dataVisColors.properties.seriesColorOrder.value;
-    var colorSet = dataVisColors.properties.dataVisColors.value;
 
     suiteSetup(function(done){
       var d = [{
@@ -987,7 +948,7 @@ function runCustomTests() {
 
     test('fromDataRadar completeSeriesConfig', function() {
       assert.isObject(fromDataRadar.completeSeriesConfig.x);
-      assert.equal(fromDataRadar.completeSeriesConfig.x.color, colorSet[colorOrder[0]]);
+      assert.equal(fromDataRadar.completeSeriesConfig.x.color, 'rgb(90,191,248)');
       assert.equal(fromDataRadar.completeSeriesConfig.x.name, 'x');
       assert.deepEqual(fromDataRadar.completeSeriesConfig.x.x, ['y','y1','y4']);
       assert.deepEqual(fromDataRadar.completeSeriesConfig.x.y, ['y','y1','y4']);
