@@ -1,10 +1,11 @@
-
+v3.2.0
 ==================
 * Changing selectedDomain to timeDomain for consistency
   * For now, selectedDomain will still be supported. However, it will be removed at the next major.
   * We recommend changing switching over to using timeDomain to tie a chart navigator to the radar chart now.
 * Adding ability to zoom on axis
   * zooming sets axesDomain
+* Fixed issue with tooltip data generation when using crosshair and show tooltip
 
 v3.1.2
 ==================

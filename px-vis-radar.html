@@ -225,6 +225,8 @@ Custom property | Description
         length="[[_radius]]"
         x="[[x]]"
         y="[[y]]"
+        combined-muted-series="[[_combinedMutedSeries]]"
+        hard-mute="[[hardMute]]"
         complete-series-config="{{completeSeriesConfig}}"
         series-key="[[seriesKey]]"
         chart-data="[[chartData]]"
@@ -254,7 +256,8 @@ Custom property | Description
         action-config="[[actionConfig]]"
         interaction-space-config="[[interactionSpaceConfig]]"
         category-key="[[categoryKey]]"
-        prevent-initial-drawing="[[preventInitialDrawing]]">
+        prevent-initial-drawing="[[preventInitialDrawing]]"
+        >
       </px-vis-multi-axis>
       <px-vis-radar-grid
         svg="[[svgLower]]"
@@ -628,6 +631,7 @@ Custom property | Description
       '_generateChartExtents(chartExtents)',
       '_setDomain(x, y, _calculatedExtents)',
       '_updateDomain(axesDomain.*)',
+      '_mutedCategoriesChanged(mutedSeriesCategories.*, hardMute)',
 
       //renderer
       '_renderChartData(domainChanged, canvasContext, chartData.*, mutedSeries.*, completeSeriesConfig.*, preventInitialDrawing, _combinedMutedSeries, renderToSvg)',
@@ -1138,6 +1142,12 @@ Custom property | Description
       extentsData.extents = e.detail.extents;
 
       this.set('extentsData', extentsData);
+    },
+
+    _mutedCategoriesChanged: function() {
+      if(this.hardMute === true) {
+        this._generateChartExtents();
+      }
     }
   });
 </script>
