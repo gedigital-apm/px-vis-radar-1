@@ -300,7 +300,9 @@ Custom property | Description
           chart-data="[[chartData]]"
           generating-crosshair-data="[[generatingCrosshairData]]"
           crosshair-data="[[crosshairData]]"
-          default-empty-data="{{defaultEmptyData}}">
+          default-empty-data="{{defaultEmptyData}}"
+          width="[[_extendedWidth]]"
+          height="[[_smallerSide]]">
         </px-vis-highlight-line-canvas>
       </template>
       <template is="dom-if" if="[[renderToSvg]]" restamp>
@@ -322,7 +324,9 @@ Custom property | Description
           chart-data="[[chartData]]"
           generating-crosshair-data="[[generatingCrosshairData]]"
           crosshair-data="[[crosshairData]]"
-          default-empty-data="{{defaultEmptyData}}">
+          default-empty-data="{{defaultEmptyData}}"
+          width="[[_extendedWidth]]"
+          height="[[_smallerSide]]">
         </px-vis-highlight-line>
       </template>
 
