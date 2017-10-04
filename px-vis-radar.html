@@ -302,7 +302,9 @@ Custom property | Description
           crosshair-data="[[crosshairData]]"
           default-empty-data="{{defaultEmptyData}}"
           width="[[_extendedWidth]]"
-          height="[[_smallerSide]]">
+          height="[[_smallerSide]]"
+          muted-series="[[_combinedMutedSeries]]"
+          hard-mute="[[hardMute]]">
         </px-vis-highlight-line-canvas>
       </template>
       <template is="dom-if" if="[[renderToSvg]]" restamp>
@@ -326,7 +328,9 @@ Custom property | Description
           crosshair-data="[[crosshairData]]"
           default-empty-data="{{defaultEmptyData}}"
           width="[[_extendedWidth]]"
-          height="[[_smallerSide]]">
+          height="[[_smallerSide]]"
+          muted-series="[[_combinedMutedSeries]]"
+          hard-mute="[[hardMute]]">
         </px-vis-highlight-line>
       </template>
 
