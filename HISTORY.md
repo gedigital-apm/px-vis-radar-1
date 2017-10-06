@@ -1,3 +1,7 @@
+v3.3.0
+==================
+* Added hard-mute
+
 v3.2.0
 ==================
 * Changing selectedDomain to timeDomain for consistency
