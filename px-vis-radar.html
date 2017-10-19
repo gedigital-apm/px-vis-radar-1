@@ -1096,6 +1096,13 @@ Custom property | Description
             d.tooltipConfig[key].name = title;
           }
         }
+
+        if(d.adjustPosition) {
+          var bound = this.renderToSvg ? this.svg.getBoundingClientRect() : this.canvasContext.canvas.getBoundingClientRect();
+          d.dataPos[0] += bound.left;
+          d.dataPos[1] += bound.top;
+        }
+
         this.set('mousePosition', d.dataPos);
         this.set('_tooltipSeriesConfig', d.tooltipConfig);
       }
