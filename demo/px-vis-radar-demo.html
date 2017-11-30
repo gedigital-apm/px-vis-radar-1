@@ -13,7 +13,10 @@
 <link rel="import" href="../../px-demo/px-demo-component-snippet.html" />
 <link rel="import" href="../../px-demo/px-demo-code-editor.html" />
 <link rel="import" href="../../px-demo/css/px-demo-styles.html" />
-
+<link rel="import" href="../../px-theme/px-theme-styles.html">
+<custom-style>
+  <style include="px-theme-styles" is="custom-style"></style>
+</custom-style>
 <!-- Imports for this component -->
 <link rel="import" href="../../iron-ajax/iron-ajax.html"/>
 <link rel="import" href="../px-vis-radar.html" />
@@ -33,16 +36,16 @@
     <!-- Interactive -->
     <px-demo-interactive>
       <!-- Configs -->
-      <px-demo-configs configs="[[configs]]" props="{{props}}" chosen-config="{{chosenConfig}}"></px-demo-configs>
+      <px-demo-configs slot="px-demo-configs" configs="[[configs]]" props="{{props}}" chosen-config="{{chosenConfig}}"></px-demo-configs>
 
       <!-- Props -->
-      <px-demo-props props="{{props}}" config="[[chosenConfig]]"></px-demo-props>
+      <px-demo-props slot="px-demo-props" props="{{props}}" config="[[chosenConfig]]"></px-demo-props>
 
       <!-- Code Editor -->
       <px-demo-code-editor props="{{props}}"></px-demo-code-editor>
 
       <!-- Component ---------------------------------------------------------->
-      <px-demo-component class="flex" style="width:100%;">
+      <px-demo-component slot="px-demo-component" class="flex" style="width:100%;">
         <!-- <iron-ajax
           url="../../px-demo-data/demo_data.json"
           handle-as="json"
@@ -93,6 +96,7 @@
       <!-- END Component ------------------------------------------------------>
 
       <px-demo-component-snippet
+          slot="px-demo-component-snippet"
           element-properties="{{props}}"
           element-name="px-vis-radar"
           codepen-link="https://glitch.com/edit/#!/px-vis-radar-demo"
@@ -605,27 +609,51 @@
       '_renderToCanvasChanged(props.renderToSvg.value, props.noCanvasProgressiveRendering.value)'
     ],
 
-    _preventResizeChanged: function() {
+    _preventResizeChanged: function(prop) {
+      if(prop === undefined) {
+        return;
+      }
+
       this.set('props.width.inputDisabled', !this.props.preventResize.value);
       this.set('props.height.inputDisabled', !this.props.preventResize.value);
     },
-    _widthChanged: function() {
+    _widthChanged: function(prop) {
+      if(prop === undefined) {
+        return;
+      }
+
       if(this.props.preventResize.value) {
        this.set('appliedWidth', this.props.width.value);
       }
     },
-    _heightChanged: function() {
+    _heightChanged: function(prop) {
+      if(prop === undefined) {
+        return;
+      }
+
       if(this.props.preventResize.value) {
        this.set('appliedHeight', this.props.height.value);
       }
     },
-    _appliedWidthChanged: function() {
+    _appliedWidthChanged: function(prop) {
+      if(prop === undefined) {
+        return;
+      }
+
       this.set('props.width.value', this.appliedWidth);
     },
-    _appliedHeightChanged: function() {
+    _appliedHeightChanged: function(prop) {
+      if(prop === undefined) {
+        return;
+      }
+
       this.set('props.height.value', this.appliedHeight);
     },
-    _renderToCanvasChanged: function() {
+    _renderToCanvasChanged: function(prop, prop2) {
+      if(prop === undefined || prop2 === undefined) {
+        return;
+      }
+
       this.set('props.noCanvasProgressiveRendering.inputDisabled', this.props.renderToSvg.value);
 
       this.set('props.progressiveRenderingPointsPerFrame.inputDisabled', this.props.renderToSvg.value || this.props.noCanvasProgressiveRendering.value);

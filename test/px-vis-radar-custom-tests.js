@@ -133,7 +133,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 4);
     });
 
@@ -251,7 +251,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 3);
     });
 
@@ -298,7 +298,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 4);
     });
 
@@ -340,7 +340,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 3);
     });
 
@@ -384,7 +384,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 4);
     });
 
@@ -487,7 +487,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 5);
     });
 
@@ -532,7 +532,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 3);
     });
 
@@ -576,7 +576,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 5);
     });
 
@@ -656,7 +656,7 @@ function runCustomTests() {
     });
 
     test('basicRadar axisGroups', function() {
-      var ia = basicRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(basicRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 4);
     });
 
@@ -811,7 +811,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar axisGroups', function() {
-      var ia = fromDataRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(fromDataRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 4);
     });
 
@@ -899,7 +899,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar axisGroups', function() {
-      var ia = fromDataRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(fromDataRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 5);
     });
 
@@ -971,7 +971,7 @@ function runCustomTests() {
     });
 
     test('fromDataRadar axisGroups', function() {
-      var ia = fromDataRadar.querySelectorAll('px-vis-interactive-axis');
+      var ia = Polymer.dom(Polymer.dom(fromDataRadar.root).querySelector('px-vis-multi-axis').root).querySelectorAll('px-vis-interactive-axis');
       assert.equal(ia.length, 3);
     });
 

@@ -8,12 +8,14 @@
     <title>
       px-vis-radar Demo</title>
     <!-- Requires Webcomponents.js polyfill is provided by the page for browsers that don't support html imports -->
-    <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
 
     <link rel="import" href="../px-theme/px-theme-styles.html">
     <!-- <link rel="import" href="../px-dark-theme/px-dark-theme-styles.html"> -->
 
-    <style include="px-theme-styles" is="custom-style"></style>
+    <custom-style>
+      <style include="px-theme-styles" is="custom-style"></style>
+    </custom-style>
 
     <!-- Import custom element. Note: see comment about relative paths to dependencies in the *.html file referenced below -->
     <link rel="import" href="../promise-polyfill/promise-polyfill-lite.html">
@@ -30,6 +32,7 @@
 
 
     <h3>Radar Chart</h3>
+    <dom-bind>
     <template is="dom-bind">
       <h3>Radar Chart linked with a rangepicker and navigator</h3>
       <px-rangepicker
@@ -223,6 +226,7 @@
       </iron-ajax>
 
     </template>
+    </dom-bind>
   </body>
   <script>
     document.addEventListener('WebComponentsReady', function() {

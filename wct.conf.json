@@ -34,6 +34,6 @@
     }
   },
   "suites": [
-    "test/px-vis-radar-test-fixture.html"
+    "test/index.html"
   ]
 }

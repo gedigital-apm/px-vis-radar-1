@@ -368,6 +368,7 @@ Custom property | Description
     is: 'px-vis-radar',
 
     behaviors: [
+    PxVisBehavior.observerCheck,
     PxVisBehavior.sizing,
     PxVisBehaviorD3.svg,
     PxVisBehaviorD3.svgLower,
@@ -728,11 +729,19 @@ Custom property | Description
      * Computed value saying if we have chart data
      */
     _doWeHaveChartData: function(cD) {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
       if(this.chartData && this.chartData.length > 0) {
         return true
       }
     },
     _getExtendedCenter: function(_center, _extendedWidth) {
+     if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
+
       return [this._center[0] + (this._extendedWidth - this._smallerSide)/2, this._center[1]];
     },
     _measureLabels: function() {
@@ -762,6 +771,10 @@ Custom property | Description
      * Sets several base vars based on sizing
      */
     _processSizing: function() {
+
+      if(this.hasUndefinedArguments(arguments)) {
+       return;
+     }
 
       if(this.displayedValues) {
        // this.debounce('processSizing', function() {
