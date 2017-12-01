@@ -422,7 +422,8 @@ Custom property | Description
     PxVisBehaviorChart.multiAxisMuting,
     PxVisBehaviorChart.multiAxisZoom,
     PxVisBehavior.brushDomains,
-    PxVisBehaviorChart.useCategoryInTooltip
+    PxVisBehaviorChart.useCategoryInTooltip,
+    PxVisBehaviorChart.tooltipSizing
   ],
 
     /**
@@ -1115,37 +1116,8 @@ Custom property | Description
       this._buildAxisTooltipData(d.dataset, d.time);
       this._updateAxisConfig(d.color);
 
-      if(this.showTooltip) {
-
-        if(this.useCategoryInTooltip) {
-
-          //try to fetch category name
-          var key = Object.keys(d.tooltipConfig)[0],
-              cat = d.dataset[this.categoryKey],
-              title;
-
-          if(cat) {
-
-            // we have a category, use name if it has been defined,
-            // create one otherwise
-            if(this.completeSeriesConfig[cat] && this.completeSeriesConfig[cat].name.toString() !== cat) {
-              title = this.completeSeriesConfig[cat].name;
-            } else {
-              title = this.categoryKey + ' - ' + cat;
-            }
-
-            d.tooltipConfig[key].name = title;
-          }
-        }
-
-        if(d.adjustPosition) {
-          var bound = this.renderToSvg ? this.svg.getBoundingClientRect() : this.canvasContext.canvas.getBoundingClientRect();
-          d.dataPos[0] += bound.left;
-          d.dataPos[1] += bound.top;
-        }
-
-        this.set('mousePosition', d.dataPos);
-        this.set('_tooltipSeriesConfig', d.tooltipConfig);
+      if(this.showTooltip && d.tooltipConfig) {
+        this._doTooltipCalcs(d);
       }
 
       this.set('tooltipData', d);
@@ -1159,11 +1131,48 @@ Custom property | Description
 
       //hide tooltip
       this.set('tooltipData', evt.detail);
-      this.set('mousePosition', evt.detail.dataPos);
+      this.set('mousePosition', [-1000,-1000]);
 
       //clear axis register
       this._buildAxisTooltipData();
       this._updateAxisConfig();
+    },
+
+    _doTooltipCalcs(d) {
+      if(this.useCategoryInTooltip) {
+        //try to fetch category name
+        var key = Object.keys(d.tooltipConfig)[0],
+            cat = d.dataset[this.categoryKey],
+            title;
+
+        if(cat) {
+          // we have a category, use name if it has been defined,
+          // create one otherwise
+          if(this.completeSeriesConfig[cat] && this.completeSeriesConfig[cat].name.toString() !== cat) {
+            title = this.completeSeriesConfig[cat].name;
+          } else {
+            title = this.categoryKey + ' - ' + cat;
+          }
+
+          d.tooltipConfig[key].name = title;
+        }
+      }
+
+      if(!this._svgClientRect || !this._canvasClientRect) {
+        this._getImmediateSizing();
+      }
+
+      var screenX = this.y(d.yVal) * Math.sin(this.x(d.axis)) + this._extendedWidth/2 + this._svgClientRect.left + this._winX,
+          screenY = this.y(d.yVal) * Math.cos(Math.PI - this.x(d.axis)) + this._smallerSide/2 + this._svgClientRect.top + this._winY;
+
+      if(d.adjustPosition) {
+        var bound = this.renderToSvg ? this._svgClientRect : this._canvasClientRect;
+        screenX += bound.left;
+        screenY += bound.top;
+      }
+
+      this.set('mousePosition', [screenX, screenY]);
+      this.set('_tooltipSeriesConfig', d.tooltipConfig);
     },
 
     _calcCrosshair: function(evt) {
