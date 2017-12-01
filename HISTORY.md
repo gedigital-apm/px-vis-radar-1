@@ -1,3 +1,7 @@
+==================
+* Moved tooltip position calculations to here instead of axis interaction space
+* Added listeners to get sizing for said calculation in tooltipSizing behavior
+
 v3.3.3
 ==================
 * enable clipPath on canvas highlighter
