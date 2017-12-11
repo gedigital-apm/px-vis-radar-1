@@ -170,7 +170,7 @@ function runCustomTests() {
 
       basicRadar.set('seriesConfig',seriesConfig);
 
-      setTimeout(function(){ done(); }, 500);
+      setTimeout(function(){ done(); }, 2500);
     });
 
     test('basicRadar completeSeriesConfig', function() {
