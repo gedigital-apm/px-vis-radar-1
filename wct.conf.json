@@ -31,8 +31,8 @@
         },
         {
           "browserName": "firefox",
-          "platform": "OS X 10.12",
-          "version": "last"
+          "platform": "Windows 10",
+          "version": "latest"
         }
       ]
     }
