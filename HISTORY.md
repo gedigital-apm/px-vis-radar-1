@@ -2,6 +2,7 @@
 * Moved tooltip position calculations to here instead of axis interaction space
 * Added listeners to get sizing for said calculation in tooltipSizing behavior
 * Added timeDomain to multi axis
+* Added lasso functionality
 
 v3.4.0
 ==================
