@@ -293,7 +293,7 @@ Custom property | Description
         complete-series-config="[[_tooltipSeriesConfig]]">
       </px-vis-tooltip>
 
-      <template id="highlighterDomIf" is="dom-if" if="[[!renderToSvg]]" restamp>
+      <template id="highlighterDomIf" is="dom-if" if="[[!renderToSvg]]" restamp on-dom-change="_highlighterConfigChanged">
         <px-vis-highlight-line-canvas
           id="highlighterCanvas"
           canvas-context="[[canvasLayers.highlighter]]"
@@ -321,7 +321,7 @@ Custom property | Description
           hard-mute="[[hardMute]]">
         </px-vis-highlight-line-canvas>
       </template>
-      <template is="dom-if" if="[[renderToSvg]]" restamp>
+      <template is="dom-if" if="[[renderToSvg]]" restamp on-dom-change="_highlighterConfigChanged">
          <px-vis-highlight-line
           id="highlighter"
           svg="[[layer.1]]"
@@ -690,7 +690,6 @@ Custom property | Description
     _flipAxisLogic: true,
 
     detached: function() {
-      this.unlisten(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
       this.set('preventInitialDrawing', true);
     },
 
@@ -703,16 +702,9 @@ Custom property | Description
       this.set('_verticalRegisterDrawingCanvasId', 'svgCanvas');
       this.set('_verticalRegisterHeightDeductions', ['toolbar']);
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
-
-       // only listen to one since it is a toggle
-      this.listen(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
     },
 
     attached: function() {
-
-      // we need this in attached as well in case the chart is
-      // moved in the dom or reused
-      this.listen(this.$.highlighterDomIf, 'dom-change', '_highlighterConfigChanged');
 
       //we probably are re-attaching. if nothing has changed (neither series nor size) we might
       //still need to kick this in order for preventInitialDrawing to go false
