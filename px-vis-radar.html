@@ -132,7 +132,9 @@ Custom property | Description
             complete-series-config="[[_axisRegisterConfig]]"
             muted-series="[[mutedAxes]]"
             type="vertical"
-            height="[[_verticalRegisterHeight]]">
+            height="[[_verticalRegisterHeight]]"
+            display-y-values-only
+            icon-color="[[_axisRegisterIconColor]]">
           </px-vis-register>
           <!-- toolbar + drawing -->
           <div class="flex flex--col">
@@ -628,6 +630,11 @@ Custom property | Description
       preventInitialDrawing: {
         type: Boolean,
         value: true
+      },
+
+      _axisRegisterIconColor: {
+        type: String,
+        value: 'transparent'
       }
     },
 
@@ -1124,7 +1131,7 @@ Custom property | Description
 
       //update axis register value
       this._buildAxisTooltipData(d.dataset, d.time);
-      this._updateAxisConfig(d.color);
+      this.set('_axisRegisterIconColor', d.color);
 
       if(this.showTooltip && d.tooltipConfig) {
         this._doTooltipCalcs(d);
@@ -1145,7 +1152,7 @@ Custom property | Description
 
       //clear axis register
       this._buildAxisTooltipData();
-      this._updateAxisConfig();
+      this.set('_axisRegisterIconColor', 'transparent');
     },
 
     _doTooltipCalcs(d) {
