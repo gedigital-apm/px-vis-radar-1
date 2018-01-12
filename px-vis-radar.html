@@ -1148,7 +1148,7 @@ Custom property | Description
       this._updateAxisConfig();
     },
 
-    _doTooltipCalcs(d) {
+    _doTooltipCalcs: function(d) {
       if(this.useCategoryInTooltip) {
         //try to fetch category name
         var key = Object.keys(d.tooltipConfig)[0],

@@ -1,3 +1,7 @@
+v3.5.1
+==================
+* add `function` for IE
+
 v3.5.0
 ==================
 * Moved tooltip position calculations to here instead of axis interaction space
