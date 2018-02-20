@@ -445,7 +445,6 @@ Custom property | Description
     PxVisBehavior.annotationData,
     PxVisBehaviorChart.interactionSpaceConfig,
     PxVisBehaviorChart.multiAxisLasso,
-    PxVisBehaviorChart.registerConfigs,
     PxVisBehaviorChart.registerPagnationMultiAxis
   ],
 
@@ -663,7 +662,6 @@ Custom property | Description
       '_toolbarConfigChanged(toolbarConfig)',
       '_highlighterConfigChanged(highlighterConfig.*)',
       '_langChanged(language)',
-      '_registerConfigChanged(registerConfig)',
 
       '_setXScale(_radius)',
       '_setYScale(_radius,centerOffset)',
@@ -732,13 +730,6 @@ Custom property | Description
         return;
       }
       this._applyConfigToElement(this.tooltipConfig, this.$.tooltip);
-    },
-    _registerConfigChanged: function(conf) {
-      if(this.hasUndefinedArguments(arguments)) {
-        return;
-      }
-
-      this._applyConfigToElement(this.registerConfig, this.$.axisRegister);
     },
     _toolbarConfigChanged: function(conf) {
       if(this.hasUndefinedArguments(arguments)) {
