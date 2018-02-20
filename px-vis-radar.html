@@ -1038,7 +1038,7 @@ Custom property | Description
             this.set('preventInitialDrawing', true);
             this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
             this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
-            this._computeVerticalRegisterHeight([toolbarRect.height, categoryRegisterHeight]);
+            this._computeVerticalRegisterHeight([toolbarRect.height]);
           }
         }
       }, this.debounceResizeTiming);
