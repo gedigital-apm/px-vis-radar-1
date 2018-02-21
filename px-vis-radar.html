@@ -1175,12 +1175,6 @@ Custom property | Description
       var screenX = this.y(d.yVal) * Math.sin(this.x(d.axis)) + this._extendedWidth/2 + this._svgClientRect.left + this._winX,
           screenY = this.y(d.yVal) * Math.cos(Math.PI - this.x(d.axis)) + this._smallerSide/2 + this._svgClientRect.top + this._winY;
 
-      if(d.adjustPosition) {
-        var bound = this.renderToSvg ? this._svgClientRect : this._canvasClientRect;
-        screenX += bound.left;
-        screenY += bound.top;
-      }
-
       this.set('mousePosition', [screenX, screenY]);
       this.set('_tooltipSeriesConfig', d.tooltipConfig);
     },
