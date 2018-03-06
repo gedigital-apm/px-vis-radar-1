@@ -118,7 +118,8 @@ Custom property | Description
           y-axis-type="linear"
           complete-series-config="[[_categoryRegisterConfig]]"
           type="horizontal"
-          muted-series="{{mutedSeriesCategories}}">
+          muted-series="{{mutedSeriesCategories}}"
+          hide-pagination-controls>
         </px-vis-register>
         <div class="flex flex--row--rev">
           <px-vis-register
@@ -131,7 +132,6 @@ Custom property | Description
             complete-series-config="[[_axisRegisterConfig]]"
             muted-series="[[mutedAxes]]"
             type="vertical"
-            height="[[_verticalRegisterHeight]]"
             display-y-values-only
             icon-color="[[_axisRegisterIconColor]]"
             current-page="[[_registerCurrentPage]]"
@@ -427,7 +427,6 @@ Custom property | Description
     PxVisBehaviorChart.showTooltip,
     PxVisBehaviorChart.toolbarSubConfig,
     PxVisBehaviorChart.chartToolbarConfig,
-    PxVisBehaviorChart.sizeVerticalRegister,
     PxVisBehavior.measureText,
     PxVisBehaviorChart.highlighterConfigs,
     PxVisBehavior.crosshairData,
@@ -709,8 +708,6 @@ Custom property | Description
       //create canvas used to measure text
       this._createMeasurementCanvas(500,500, '15px GE Inspira Sans,sans-serif');
       //use some default internal margins to make space for labels
-      this.set('_verticalRegisterDrawingCanvasId', 'svgCanvas');
-      this.set('_verticalRegisterHeightDeductions', ['toolbar']);
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
     },
 
@@ -1038,7 +1035,6 @@ Custom property | Description
             this.set('preventInitialDrawing', true);
             this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
             this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
-            this._computeVerticalRegisterHeight([toolbarRect.height]);
           }
         }
       }, this.debounceResizeTiming);
