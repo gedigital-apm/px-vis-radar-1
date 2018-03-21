@@ -19,7 +19,8 @@
 <link rel="import" href="../px-vis/px-vis-highlight-line-canvas.html"/>
 <link rel="import" href="../px-vis/px-vis-annotations.html"/>
 <link rel="import" href="../app-localize-behavior/app-localize-behavior.html"/>
-
+<link rel="import" href="../px-vis/px-vis-central-tooltip-content.html"/>
+<link rel="import" href="../px-tooltip/px-tooltip.html"/>
 
 <link rel="import" href="css/px-vis-radar-styles.html">
 
@@ -378,6 +379,22 @@ Custom property | Description
         muted-series="[[_combinedMutedSeries]]">
       </px-vis-cursor-line>
     </div>
+
+    <px-tooltip
+      id="centralTooltip"
+      smart-orientation
+      ignore-target-events
+      orientation="[[tooltipOrientation]]">
+      <px-vis-central-tooltip-content
+        resources="[[resources]]"
+        use-key-if-missing="[[useKeyIfMissing]]"
+        language="[[language]]"
+        first-date-time-format="[[firstDateTimeFormat]]"
+        second-date-time-format="[[secondDateTimeFormat]]"
+        separator="[[separator]]"
+        timezone="[[timezone]]">
+      </px-vis-central-tooltip-content>
+    </px-tooltip>
   </template>
 </dom-module>
 
@@ -445,7 +462,9 @@ Custom property | Description
     PxVisBehavior.annotationData,
     PxVisBehaviorChart.interactionSpaceConfig,
     PxVisBehaviorChart.multiAxisLasso,
-    PxVisBehaviorChart.registerPagnationMultiAxis
+    PxVisBehaviorChart.registerPagnationMultiAxis,
+    PxVisBehaviorChart.centralTooltip
+
   ],
 
     /**
