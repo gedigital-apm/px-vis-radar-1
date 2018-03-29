@@ -462,6 +462,7 @@ Custom property | Description
     PxVisBehavior.annotationData,
     PxVisBehaviorChart.interactionSpaceConfig,
     PxVisBehaviorChart.multiAxisLasso,
+    PxVisBehaviorChart.sizeVerticalRegister,
     PxVisBehaviorChart.registerPagnationMultiAxis,
     PxVisBehaviorChart.centralTooltip
   ],
@@ -1044,7 +1045,8 @@ Custom property | Description
           toolbarRect = this.$.toolbar.getBoundingClientRect(),
           widthDeduct = 0,
           heightDeduct = 0,
-          w,h;
+          w,h,
+          hasChanged = false;
 
       heightDeduct += categoryRegisterHeight;
       heightDeduct += toolbarRect.height;
@@ -1056,10 +1058,17 @@ Custom property | Description
       if(this.width !== w) {
         this.set('preventInitialDrawing', true);
         this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
+        hasChanged = true;
       }
       if(this.height !== h) {
         this.set('preventInitialDrawing', true);
         this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
+        hasChanged = true;
+      }
+
+      if(hasChanged) {
+        //check in both scenarios as a width change might impact the height
+        //of the chart
         this._computeVerticalRegisterHeight([toolbarRect.height]);
       }
     },
