@@ -13,13 +13,13 @@
 <link rel="import" href="../px-vis/px-vis-radar-grid.html"/>
 <link rel="import" href="../px-vis/px-vis-clip-path-complex-area.html"/>
 <link rel="import" href="../px-vis/px-vis-toolbar.html"/>
-<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html" />
 <link rel="import" href="../px-vis/px-vis-cursor-line.html"/>
 <link rel="import" href="../px-vis/px-vis-highlight-line.html"/>
 <link rel="import" href="../px-vis/px-vis-highlight-line-canvas.html"/>
 <link rel="import" href="../px-vis/px-vis-annotations.html"/>
 <link rel="import" href="../app-localize-behavior/app-localize-behavior.html"/>
-
+<link rel="import" href="../px-vis/px-vis-central-tooltip-content.html"/>
+<link rel="import" href="../px-tooltip/px-tooltip.html"/>
 
 <link rel="import" href="css/px-vis-radar-styles.html">
 
@@ -108,7 +108,6 @@ Custom property | Description
   <template>
     <style include="px-vis-radar-styles"></style>
 
-
     <div id="wrapper" class$="{{_chartWrapperClass}}">
       <div id="registerWrapper" class="flex flex--col safari-flex-fix">
         <px-vis-register
@@ -119,7 +118,8 @@ Custom property | Description
           y-axis-type="linear"
           complete-series-config="[[_categoryRegisterConfig]]"
           type="horizontal"
-          muted-series="{{mutedSeriesCategories}}">
+          muted-series="{{mutedSeriesCategories}}"
+          hide-pagination-controls>
         </px-vis-register>
         <div class="flex flex--row--rev">
           <px-vis-register
@@ -132,7 +132,12 @@ Custom property | Description
             complete-series-config="[[_axisRegisterConfig]]"
             muted-series="[[mutedAxes]]"
             type="vertical"
-            height="[[_verticalRegisterHeight]]">
+            height="[[_registerHeight]]"
+            display-y-values-only
+            icon-color="[[_axisRegisterIconColor]]"
+            current-page="[[_registerCurrentPage]]"
+            total-pages="[[_registerTotalPages]]"
+            display-page-arrows="[[_registerDisplayPageArrows]]">
           </px-vis-register>
           <!-- toolbar + drawing -->
           <div class="flex flex--col">
@@ -290,7 +295,8 @@ Custom property | Description
         mouse-position="[[mousePosition]]"
         chart-data="[[chartData]]"
         tooltip-data="[[tooltipData]]"
-        complete-series-config="[[_tooltipSeriesConfig]]">
+        complete-series-config="[[_tooltipSeriesConfig]]"
+        display-y-values-only>
       </px-vis-tooltip>
 
       <template id="highlighterDomIf" is="dom-if" if="[[!renderToSvg]]" restamp on-dom-change="_highlighterConfigChanged">
@@ -369,10 +375,26 @@ Custom property | Description
         series-id="[[seriesKey]]"
         category-key="[[categoryKey]]"
         categories="[[categories]]"
-        tooltip-data="[[tooltipData.dataset]]"
+        tooltip-data="[[_axisRegisterTooltipData.dataset]]"
         muted-series="[[_combinedMutedSeries]]">
       </px-vis-cursor-line>
     </div>
+
+    <px-tooltip
+      id="centralTooltip"
+      smart-orientation
+      ignore-target-events
+      orientation="[[tooltipOrientation]]">
+      <px-vis-central-tooltip-content
+        resources="[[resources]]"
+        use-key-if-missing="[[useKeyIfMissing]]"
+        language="[[language]]"
+        first-date-time-format="[[firstDateTimeFormat]]"
+        second-date-time-format="[[secondDateTimeFormat]]"
+        separator="[[separator]]"
+        timezone="[[timezone]]">
+      </px-vis-central-tooltip-content>
+    </px-tooltip>
   </template>
 </dom-module>
 
@@ -423,7 +445,6 @@ Custom property | Description
     PxVisBehaviorChart.showTooltip,
     PxVisBehaviorChart.toolbarSubConfig,
     PxVisBehaviorChart.chartToolbarConfig,
-    PxVisBehaviorChart.sizeVerticalRegister,
     PxVisBehavior.measureText,
     PxVisBehaviorChart.highlighterConfigs,
     PxVisBehavior.crosshairData,
@@ -440,7 +461,10 @@ Custom property | Description
     PxVisBehaviorChart.tooltipSizing,
     PxVisBehavior.annotationData,
     PxVisBehaviorChart.interactionSpaceConfig,
-    PxVisBehaviorChart.multiAxisLasso
+    PxVisBehaviorChart.multiAxisLasso,
+    PxVisBehaviorChart.sizeVerticalRegister,
+    PxVisBehaviorChart.registerPagnationMultiAxis,
+    PxVisBehaviorChart.centralTooltip
   ],
 
     /**
@@ -628,6 +652,11 @@ Custom property | Description
       preventInitialDrawing: {
         type: Boolean,
         value: true
+      },
+
+      _axisRegisterIconColor: {
+        type: String,
+        value: 'transparent'
       }
     },
 
@@ -666,12 +695,12 @@ Custom property | Description
       '_renderHighlight(domainChanged, canvasLayers.highlighter, completeSeriesConfig.*, preventInitialDrawing)',
 
       // temporary shim to maintain backawards compatibility
-      '_setTimeDomain(selectedDomain.*)'
+      '_setTimeDomain(selectedDomain.*)',
+      //similar but not temporary
+      '_setTimeKey(seriesKey)'
     ],
 
     listeners: {
-      'iron-resize': '_onIronResize',
-
       'px-vis-axis-interaction-space-tooltip-data': '_calcTooltip',
       'px-vis-axis-interaction-space-reset-tooltip': '_hideTooltip',
       'px-vis-axis-interaction-space-crosshair-data': '_calcCrosshair',
@@ -698,9 +727,11 @@ Custom property | Description
 
       //create canvas used to measure text
       this._createMeasurementCanvas(500,500, '15px GE Inspira Sans,sans-serif');
-      //use some default internal margins to make space for labels
+
       this.set('_verticalRegisterDrawingCanvasId', 'svgCanvas');
       this.set('_verticalRegisterHeightDeductions', ['toolbar']);
+
+      //use some default internal margins to make space for labels
       this.set('_internalCircleMargins', {top: 25, right: this._internalLabelMargin, bottom: 25,left: this._internalLabelMargin});
     },
 
@@ -1006,32 +1037,40 @@ Custom property | Description
      *
      * Can also be called manually to force a chart resize to container.
      */
-    _onIronResize: function() {
-      this.debounce('ironresize', function() {
-        if(!this.preventResize) {
-          var wrapperRect = this.$.wrapper.getBoundingClientRect(),
-              axisRegisterWidth = this.hideAxisRegister ? 0 : this.$.axisRegister.getBoundingClientRect().width,
-              categoryRegisterHeight = this._hideCategoryRegister ? 0 : this.$.categoryRegister.getBoundingClientRect().height,
-              toolbarRect = this.$.toolbar.getBoundingClientRect(),
-              widthDeduct = 0,
-              heightDeduct = 0,
-              w,h;
+    _resizeCalculations: function() {
 
-          heightDeduct += categoryRegisterHeight;
-          heightDeduct += toolbarRect.height;
-          widthDeduct += axisRegisterWidth;
+      var wrapperRect = this.$.wrapper.getBoundingClientRect(),
+          axisRegisterWidth = this.hideAxisRegister ? 0 : this.$.axisRegister.getBoundingClientRect().width,
+          categoryRegisterHeight = this._hideCategoryRegister ? 0 : this.$.categoryRegister.getBoundingClientRect().height,
+          toolbarRect = this.$.toolbar.getBoundingClientRect(),
+          widthDeduct = 0,
+          heightDeduct = 0,
+          w,h,
+          hasChanged = false;
 
-          w = Math.max(wrapperRect.width - widthDeduct, 0);
-          h = Math.max(wrapperRect.height - heightDeduct, 0);
+      heightDeduct += categoryRegisterHeight;
+      heightDeduct += toolbarRect.height;
+      widthDeduct += axisRegisterWidth;
 
-          if(this.width !== w || this.height !== h) {
-            this.set('preventInitialDrawing', true);
-            this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
-            this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
-            this._computeVerticalRegisterHeight([toolbarRect.height, categoryRegisterHeight]);
-          }
-        }
-      }, this.debounceResizeTiming);
+      w = Math.max(wrapperRect.width - widthDeduct, 0);
+      h = Math.max(wrapperRect.height - heightDeduct, 0);
+
+      if(this.width !== w) {
+        this.set('preventInitialDrawing', true);
+        this.set('width', Math.max(wrapperRect.width - widthDeduct, 0));
+        hasChanged = true;
+      }
+      if(this.height !== h) {
+        this.set('preventInitialDrawing', true);
+        this.set('height', Math.max(wrapperRect.height - heightDeduct, 0));
+        hasChanged = true;
+      }
+
+      if(hasChanged) {
+        //check in both scenarios as a width change might impact the height
+        //of the chart
+        this._computeVerticalRegisterHeight([toolbarRect.height]);
+      }
     },
     /**
      * Returns the width for the gridlines
@@ -1120,17 +1159,18 @@ Custom property | Description
     },
 
     _calcTooltip: function(evt) {
-       var d = evt.detail;
+      var d = evt.detail;
 
       //update axis register value
       this._buildAxisTooltipData(d.dataset, d.time);
-      this._updateAxisConfig(d.color);
+      this.set('_axisRegisterIconColor', d.color);
 
       if(this.showTooltip && d.tooltipConfig) {
         this._doTooltipCalcs(d);
       }
 
       this.set('tooltipData', d);
+      this._resetPages();
     },
 
     _hideTooltip: function(evt) {
@@ -1145,7 +1185,9 @@ Custom property | Description
 
       //clear axis register
       this._buildAxisTooltipData();
-      this._updateAxisConfig();
+      this.set('_axisRegisterIconColor', 'transparent');
+
+      this._resetPages();
     },
 
     _doTooltipCalcs: function(d) {
@@ -1204,6 +1246,12 @@ Custom property | Description
       }
       if(this.selectedDomain && this.selectedDomain.x && this.selectedDomain.x.length) {
         this.set('timeDomain', this.selectedDomain);
+      }
+    },
+
+    _setTimeKey: function() {
+      if(this.seriesKey) {
+        this.set('timeKey', this.seriesKey);
       }
     },
 

@@ -1,6 +1,6 @@
 {
   "name": "px-vis-radar",
-  "version": "3.5.3",
+  "version": "4.0.0",
   "main": [
     "px-vis-radar.html"
   ],
@@ -22,7 +22,8 @@
   ],
   "dependencies": {
     "polymer": "#1.9 - 2",
-    "px-vis": "^4.7.4",
+    "px-vis": "^5.0.0",
+    "px-tooltip": "^1.3.0",
     "iron-resizable-behavior": "^2.0.0",
     "app-localize-behavior": "^2.0.0"
   },

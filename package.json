@@ -2,12 +2,12 @@
   "name": "px-vis-radar",
   "author": "General Electric",
   "description": "A Px component",
-  "version": "3.5.3",
+  "version": "4.0.0",
   "private": false,
   "extName": null,
   "repository": {
     "type": "git",
-    "url": "https://github.com/PredixDev/px-vis-radar"
+    "url": "https://github.com/predixdesignsystem/px-vis-radar"
   },
   "homepage": "https://www.predix-ui.com/",
   "devDependencies": {
