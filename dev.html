@@ -65,6 +65,9 @@
         generate-axes-from-data
         brush-to-remove
         series-config='{
+            "TimeStamp":{
+              "color": ["red", "blue"]
+            },
             "TTXD1_1":{
               "yAxisUnit": "Hz",
               "title": "verylongname"
@@ -79,6 +82,7 @@
       <div style="height:100px">
         <px-vis-chart-navigator
             id="navigator"
+            gradient-colors='["red", "blue"]'
             prevent-resize
             prevent-web-worker-synchronization
             width="1280"
