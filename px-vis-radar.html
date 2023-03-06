@@ -135,7 +135,8 @@ Custom property | Description
           complete-series-config="[[_categoryRegisterConfig]]"
           type="horizontal"
           muted-series="{{mutedSeriesCategories}}"
-          hide-pagination-controls>
+          hide-pagination-controls
+          decimal-format="[[decimalFormat]]">
         </px-vis-register>
         <div class="flex flex--row--rev">
           <px-vis-register
@@ -153,7 +154,8 @@ Custom property | Description
             icon-color="[[_axisRegisterIconColor]]"
             current-page="[[_registerCurrentPage]]"
             total-pages="[[_registerTotalPages]]"
-            display-page-arrows="[[_registerDisplayPageArrows]]">
+            display-page-arrows="[[_registerDisplayPageArrows]]"
+            decimal-format="[[decimalFormat]]">
           </px-vis-register>
           <!-- toolbar + drawing -->
           <div class="flex flex--col">
@@ -312,7 +314,8 @@ Custom property | Description
         chart-data="[[chartData]]"
         tooltip-data="[[tooltipData]]"
         complete-series-config="[[_tooltipSeriesConfig]]"
-        display-y-values-only>
+        display-y-values-only
+        decimal-format="[[decimalFormat]]">
       </px-vis-tooltip>
 
       <template id="highlighterDomIf" is="dom-if" if="[[!renderToSvg]]" restamp on-dom-change="_highlighterConfigChanged">
